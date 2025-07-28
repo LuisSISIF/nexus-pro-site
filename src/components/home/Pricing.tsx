@@ -133,16 +133,6 @@ const Pricing = () => {
                     </div>
                   ))}
                 </div>
-
-                <button 
-                  className={`w-full mt-auto py-4 px-6 rounded-lg font-semibold transition-all transform hover:scale-105 ${
-                    plan.popular
-                      ? 'bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl'
-                      : 'bg-gray-100 hover:bg-gray-200 text-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
-                  }`}
-                >
-                  {plan.popular ? 'Iniciar Teste Grátis' : 'Escolher Plano'}
-                </button>
               </div>
             )
           })}
