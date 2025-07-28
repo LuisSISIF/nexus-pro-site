@@ -1,46 +1,75 @@
 import React from 'react';
-import { Check, Star } from 'lucide-react';
+import { Check, Star, X, Briefcase, Building, Store } from 'lucide-react';
 
 const Pricing = () => {
   const plans = [
     {
-      name: "Básico",
+      name: "Essencial",
       price: "80",
-      originalPrice: "960",
-      yearlyPrice: "864",
-      description: "Perfeito para pequenos negócios",
-      popular: false,
+      description: "Pequenos comércios",
+      icon: Store,
       features: [
-        "Até 1.000 produtos",
-        "1 usuário",
-        "Controle de estoque básico",
-        "PDV simples",
-        "Impressão de etiquetas",
-        "Relatórios básicos",
-        "Suporte por e-mail"
-      ]
+        "Até 2 usuários simultâneos",
+        "Controle de Crédito Simples",
+        "Relatórios Básicos (vendas, caixa)",
+        "Acesso a tutoriais",
+        "Controle de Acesso (❌)",
+        "Gestão de Filiais (❌)",
+        "Marca personalizada (❌)",
+        "Integração E-commerce (❌)",
+      ],
+      popular: false
     },
     {
       name: "Profissional",
       price: "120",
-      originalPrice: "1440",
-      yearlyPrice: "1296",
-      description: "Para empresas em crescimento",
-      popular: true,
+      description: "Lojas de médio porte",
+      icon: Briefcase,
       features: [
-        "Produtos ilimitados",
-        "Até 5 usuários",
-        "Controle de estoque avançado",
-        "PDV completo",
-        "Impressão de etiquetas personalizadas",
-        "Relatórios avançados e dashboard",
-        "Integração com e-commerce",
-        "Backup automático",
-        "Suporte via WhatsApp",
-        "Treinamento incluído"
-      ]
+        "Até 5 usuários simultâneos",
+        "Controle de Crédito com limite e histórico",
+        "Relatórios Avançados",
+        "Controle de Acesso com permissões básicas",
+        "Treinamento incluso",
+        "Integração com E-commerce",
+        "Gestão de Filiais (❌)",
+        "Marca personalizada (❌)",
+      ],
+      popular: true
+    },
+    {
+      name: "Empresarial",
+      price: "190",
+      description: "Redes com filiais",
+      icon: Building,
+      features: [
+        "Usuários ilimitados",
+        "Controle de Crédito avançado por filial",
+        "Relatórios Estratégicos e personalizados",
+        "Controle de Acesso avançado + log de ações",
+        "Gerenciamento MultiLojas",
+        "Marca personalizada (opcional)",
+        "Integração com E-commerce",
+        "Treinamento incluso",
+      ],
+      popular: false
     }
   ];
+
+  const planSummaries = [
+    {
+      title: "🟢 Essencial (R$ 80/mês)",
+      description: "Para comércios que operam com equipe reduzida e precisam de um sistema ágil com controle básico de clientes, crédito e financeiro. Ideal para até 2 usuários simultâneos."
+    },
+    {
+      title: "🔵 Profissional (R$ 120/mês)",
+      description: "Voltado para lojas com maior fluxo de operação e equipe, com relatórios mais completos e maior controle de permissões. Suporta até 5 usuários simultâneos."
+    },
+    {
+      title: "🟣 Empresarial (R$ 190/mês)",
+      description: "Solução robusta para redes com múltiplas unidades, controle por setores, número ilimitado de usuários e recursos em expansão voltados à gestão avançada."
+    }
+  ]
 
   return (
     <section id="pricing" className="py-20 bg-white dark:bg-gray-900">
@@ -53,7 +82,6 @@ const Pricing = () => {
             Escolha o plano ideal para o seu negócio e comece hoje mesmo
           </p>
           
-          {/* Annual Discount Banner */}
           <div className="bg-green-50 dark:bg-green-900/50 border border-green-200 dark:border-green-800 rounded-lg p-4 max-w-md mx-auto">
             <p className="text-green-800 dark:text-green-300 font-medium">
               💰 Economize 10% pagando anualmente
@@ -61,62 +89,76 @@ const Pricing = () => {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {plans.map((plan, index) => (
-            <div 
-              key={index}
-              className={`bg-white dark:bg-gray-800 rounded-2xl shadow-xl border-2 p-8 relative ${
-                plan.popular ? 'border-blue-500 transform scale-105' : 'border-gray-200 dark:border-gray-700'
-              }`}
-            >
-              {plan.popular && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <div className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center space-x-1">
-                    <Star className="w-4 h-4 fill-current" />
-                    <span>Mais Popular</span>
-                  </div>
-                </div>
-              )}
-
-              <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{plan.name}</h3>
-                <p className="text-gray-600 dark:text-gray-300 mb-4">{plan.description}</p>
-                
-                <div className="space-y-2">
-                  <div className="flex items-baseline justify-center">
-                    <span className="text-5xl font-bold text-gray-900 dark:text-white">R$ {plan.price}</span>
-                    <span className="text-gray-500 dark:text-gray-400 ml-2">/mês</span>
-                  </div>
-                  
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
-                    <span className="line-through">R$ {plan.originalPrice}/ano</span>
-                    <span className="text-green-600 dark:text-green-400 font-semibold ml-2">
-                      R$ {plan.yearlyPrice}/ano
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4 mb-8">
-                {plan.features.map((feature, featureIndex) => (
-                  <div key={featureIndex} className="flex items-start space-x-3">
-                    <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700 dark:text-gray-300">{feature}</span>
-                  </div>
-                ))}
-              </div>
-
-              <button 
-                className={`w-full py-4 px-6 rounded-lg font-semibold transition-all transform hover:scale-105 ${
-                  plan.popular
-                    ? 'bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl'
-                    : 'bg-gray-100 hover:bg-gray-200 text-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+        <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+          {plans.map((plan, index) => {
+            const Icon = plan.icon;
+            return (
+              <div 
+                key={index}
+                className={`bg-white dark:bg-gray-800 rounded-2xl shadow-xl border-2 p-8 relative flex flex-col h-full ${
+                  plan.popular ? 'border-blue-500 transform lg:scale-105' : 'border-gray-200 dark:border-gray-700'
                 }`}
               >
-                {plan.popular ? 'Iniciar Teste Grátis' : 'Escolher Plano'}
-              </button>
+                {plan.popular && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <div className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center space-x-1">
+                      <Star className="w-4 h-4 fill-current" />
+                      <span>Mais Popular</span>
+                    </div>
+                  </div>
+                )}
+
+                <div className="text-center mb-8">
+                  <div className="w-16 h-16 mx-auto bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                     <Icon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{plan.name}</h3>
+                  <p className="text-gray-600 dark:text-gray-300 mb-4">{plan.description}</p>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-baseline justify-center">
+                      <span className="text-5xl font-bold text-gray-900 dark:text-white">R$ {plan.price}</span>
+                      <span className="text-gray-500 dark:text-gray-400 ml-2">/mês</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4 mb-8 flex-grow">
+                  {plan.features.map((feature, featureIndex) => (
+                    <div key={featureIndex} className="flex items-start space-x-3">
+                      {feature.includes('(❌)') ? 
+                        <X className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" /> : 
+                        <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />}
+                      <span className="text-gray-700 dark:text-gray-300">{feature.replace(' (❌)','')}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <button 
+                  className={`w-full mt-auto py-4 px-6 rounded-lg font-semibold transition-all transform hover:scale-105 ${
+                    plan.popular
+                      ? 'bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl'
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                  }`}
+                >
+                  {plan.popular ? 'Iniciar Teste Grátis' : 'Escolher Plano'}
+                </button>
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Plan Summaries */}
+        <div className="mt-20">
+            <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white text-center mb-10">🛒 Resumo dos Planos</h3>
+            <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-8">
+              {planSummaries.map((summary, index) => (
+                <div key={index} className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">{summary.title}</h4>
+                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{summary.description}</p>
+                </div>
+              ))}
             </div>
-          ))}
         </div>
 
         {/* Additional Info */}
