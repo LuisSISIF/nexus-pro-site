@@ -1,5 +1,5 @@
 import React from 'react';
-import { Phone, Calendar } from 'lucide-react';
+import { Phone, Calendar, Zap } from 'lucide-react';
 
 const Header = () => {
   return (
@@ -21,11 +21,13 @@ const Header = () => {
           {/* Contact and CTA */}
           <div className="flex items-center space-x-6">
             <a 
-              href="tel:+553233111870" 
-              className="hidden sm:flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors"
+              href="https://wa.me/5535998615203"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:flex items-center space-x-2 text-gray-600 hover:text-green-600 transition-colors"
             >
-              <Phone className="w-4 h-4" />
-              <span className="font-medium">(32) 3311-1870</span>
+              <Zap className="w-4 h-4" />
+              <span className="font-medium">(35) 99861-5203</span>
             </a>
             <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2">
               <Calendar className="w-4 h-4" />

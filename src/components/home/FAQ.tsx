@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, Phone, Zap } from 'lucide-react';
 
 const FAQ = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
@@ -12,7 +12,7 @@ const FAQ = () => {
     },
     {
       question: "Como agendar uma demonstração?",
-      answer: "Clique no botão 'Agendar Demonstração' no topo da página ou entre em contato pelo telefone (32) 3311-1870. Nossa equipe irá marcar um horário conveniente para você."
+      answer: "Clique no botão 'Agendar Demonstração' no topo da página ou entre em contato pelo telefone (35) 99861-5203. Nossa equipe irá marcar um horário conveniente para você."
     },
     {
       question: "Quais são as formas de pagamento aceitas?",
@@ -96,14 +96,20 @@ const FAQ = () => {
             Nossa equipe está pronta para ajudar você a tomar a melhor decisão
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
-              Falar com Especialista
-            </button>
             <a 
-              href="tel:+553233111870"
-              className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+              href="https://wa.me/5535998615203"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2">
+              <Zap className="w-5 h-5" />
+              <span>WhatsApp: (35) 99861-5203</span>
+            </a>
+            <a 
+              href="tel:+5535998615203"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
             >
-              Ligar Agora: (32) 3311-1870
+              <Phone className="w-5 h-5" />
+               <span>Ligar Agora</span>
             </a>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Phone, Mail, MapPin, Facebook, Instagram, Linkedin } from 'lucide-react';
+import { Phone, Mail, MapPin, Facebook, Instagram, Linkedin, Zap } from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -30,11 +30,15 @@ const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <Phone className="w-5 h-5 text-blue-400" />
-                <span className="text-gray-300">(32) 3311-1870</span>
+                <span className="text-gray-300">(35) 99861-5203</span>
+              </div>
+               <div className="flex items-center space-x-3">
+                <Zap className="w-5 h-5 text-blue-400" />
+                <a href="https://wa.me/5535998615203" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white">WhatsApp</a>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="w-5 h-5 text-blue-400" />
-                <span className="text-gray-300">contato@andromedas.com.br</span>
+                <span className="text-gray-300">andromedasolutions2025@hotmail.com</span>
               </div>
               <div className="flex items-center space-x-3">
                 <MapPin className="w-5 h-5 text-blue-400" />
