@@ -38,7 +38,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="w-5 h-5 text-blue-400" />
-                <span className="text-gray-300 truncate">andromedasolutions2025@hotmail.com</span>
+                <a href="mailto:andromedasolutions2025@hotmail.com" className="text-gray-300 truncate hover:text-white transition-colors">andromedasolutions2025@hotmail.com</a>
               </div>
               <div className="flex items-center space-x-3">
                 <MapPin className="w-5 h-5 text-blue-400" />
