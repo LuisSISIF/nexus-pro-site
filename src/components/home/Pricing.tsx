@@ -13,6 +13,7 @@ const Pricing = () => {
         "Controle de Crédito Simples",
         "Relatórios Básicos (vendas, caixa)",
         "Acesso a tutoriais",
+        "Suporte via E-mail",
         "Controle de Acesso (❌)",
         "Gestão de Filiais (❌)",
         "Marca personalizada (❌)",
@@ -32,6 +33,7 @@ const Pricing = () => {
         "Controle de Acesso com permissões básicas",
         "Treinamento incluso",
         "Integração com E-commerce",
+        "Suporte via WhatsApp e E-mail",
         "Gestão de Filiais (❌)",
         "Marca personalizada (❌)",
       ],
@@ -51,6 +53,7 @@ const Pricing = () => {
         "Marca personalizada (opcional)",
         "Integração com E-commerce",
         "Treinamento incluso",
+        "Suporte Prioritário + remoto",
       ],
       popular: false
     }
