@@ -4,6 +4,7 @@ import Footer from '@/components/home/Footer';
 import Header from '@/components/home/Header';
 import Hero from '@/components/home/Hero';
 import Pricing from '@/components/home/Pricing';
+import Support from '@/components/home/Support';
 import Testimonials from '@/components/home/Testimonials';
 import React from 'react';
 
@@ -17,6 +18,7 @@ function App() {
       <Features />
       <Testimonials />
       <Pricing />
+      <Support />
       <FAQ />
       <Footer />
       

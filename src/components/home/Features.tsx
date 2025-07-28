@@ -1,5 +1,5 @@
 import React from 'react';
-import { Package, ShoppingCart, Tag, BarChart3, Cloud, Zap } from 'lucide-react';
+import { Package, ShoppingCart, Users, BarChart3, Cloud, Zap } from 'lucide-react';
 
 const Features = () => {
   const features = [
@@ -16,9 +16,9 @@ const Features = () => {
       color: "bg-green-500"
     },
     {
-      icon: Tag,
-      title: "Geração de Etiquetas",
-      description: "Imprima etiquetas personalizadas com códigos de barras de forma rápida e fácil",
+      icon: Users,
+      title: "Gerenciamento de Clientes",
+      description: "Gestão completa de clientes e controle de créditos (fiado)",
       color: "bg-purple-500"
     },
     {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Phone, Mail, MapPin, Instagram } from 'lucide-react';
 import Image from 'next/image';
-import LogoImg from '@/images/logo.png';
+
 
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg
@@ -23,10 +23,10 @@ const Footer = () => {
         <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <Image src={LogoImg} alt="Andromeda Solutions Logo" width={32} height={32} className="h-8 w-auto" />
+            <a href="/" className="flex items-center space-x-2">
+              <Image src="/logo.png" alt="Andromeda Solutions Logo" width={32} height={32} className="h-8 w-auto" />
               <span className="text-xl font-bold">Andromeda Solutions</span>
-            </div>
+            </a>
             <p className="text-gray-300 leading-relaxed">
               Transformando a gestão de estoque e vendas com tecnologia inovadora e suporte excepcional.
             </p>
@@ -67,7 +67,8 @@ const Footer = () => {
               <a href="/#features" className="block text-gray-300 hover:text-white transition-colors">Funcionalidades</a>
               <a href="/#pricing" className="block text-gray-300 hover:text-white transition-colors">Preços</a>
               <a href="/#testimonials" className="block text-gray-300 hover:text-white transition-colors">Depoimentos</a>
-              <a href="/#faq" className="block text-gray-300 hover:text-white transition-colors">Suporte</a>
+              <a href="/#support" className="block text-gray-300 hover:text-white transition-colors">Suporte</a>
+              <a href="/#faq" className="block text-gray-300 hover:text-white transition-colors">FAQ</a>
             </div>
           </div>
 

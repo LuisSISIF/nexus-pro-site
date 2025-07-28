@@ -59,7 +59,7 @@ const FAQ = () => {
   };
 
   return (
-    <section id="faq" className="py-20 bg-gray-50 dark:bg-gray-800">
+    <section id="faq" className="py-20 bg-white dark:bg-gray-900">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-4 mb-16">
           <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
@@ -99,33 +99,6 @@ const FAQ = () => {
               )}
             </div>
           ))}
-        </div>
-
-        {/* Contact CTA */}
-        <div className="mt-16 text-center bg-white dark:bg-gray-700 rounded-xl p-8 shadow-sm">
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-            Ainda tem dúvidas?
-          </h3>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">
-            Nossa equipe está pronta para ajudar você a tomar a melhor decisão
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a 
-              href="https://wa.me/5535998615203"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2">
-              <WhatsAppIcon className="w-5 h-5" />
-              <span>WhatsApp: (35) 99861-5203</span>
-            </a>
-            <a 
-              href="tel:+5535998615203"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
-            >
-              <Phone className="w-5 h-5" />
-               <span>Ligar Agora</span>
-            </a>
-          </div>
         </div>
       </div>
     </section>
