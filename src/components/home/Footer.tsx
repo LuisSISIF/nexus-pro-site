@@ -51,10 +51,10 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Links Rápidos</h3>
             <div className="space-y-2">
-              <a href="#features" className="block text-gray-300 hover:text-white transition-colors">Funcionalidades</a>
-              <a href="#pricing" className="block text-gray-300 hover:text-white transition-colors">Preços</a>
-              <a href="#testimonials" className="block text-gray-300 hover:text-white transition-colors">Depoimentos</a>
-              <a href="#faq" className="block text-gray-300 hover:text-white transition-colors">Suporte</a>
+              <a href="/#features" className="block text-gray-300 hover:text-white transition-colors">Funcionalidades</a>
+              <a href="/#pricing" className="block text-gray-300 hover:text-white transition-colors">Preços</a>
+              <a href="/#testimonials" className="block text-gray-300 hover:text-white transition-colors">Depoimentos</a>
+              <a href="/#faq" className="block text-gray-300 hover:text-white transition-colors">Suporte</a>
             </div>
           </div>
 
@@ -62,9 +62,9 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Legal</h3>
             <div className="space-y-2">
-              <a href="#" className="block text-gray-300 hover:text-white transition-colors">Política de Privacidade</a>
-              <a href="#" className="block text-gray-300 hover:text-white transition-colors">Termos de Uso</a>
-              <a href="#" className="block text-gray-300 hover:text-white transition-colors">LGPD</a>
+              <a href="/privacy-policy" className="block text-gray-300 hover:text-white transition-colors">Política de Privacidade</a>
+              <a href="/terms-of-use" className="block text-gray-300 hover:text-white transition-colors">Termos de Uso</a>
+              <a href="/lgpd" className="block text-gray-300 hover:text-white transition-colors">LGPD</a>
               <a href="#" className="block text-gray-300 hover:text-white transition-colors">Cookies</a>
             </div>
           </div>
