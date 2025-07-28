@@ -18,7 +18,7 @@ const Features = () => {
     {
       icon: Users,
       title: "Gerenciamento de Clientes",
-      description: "Gestão completa de clientes e controle de créditos (fiado)",
+      description: "Gestão completa de clientes e controle de créditos",
       color: "bg-purple-500"
     },
     {

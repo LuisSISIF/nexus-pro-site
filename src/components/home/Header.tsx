@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Phone, Calendar, Zap, Menu, X } from 'lucide-react';
 import { ThemeToggleButton } from '../theme-toggle';
 import Image from 'next/image';
-
+import Logo from '@/images/logo.png';
 
 
 const Header = () => {
@@ -24,7 +24,7 @@ const Header = () => {
           <div className="flex items-center">
             <a href="/" className="flex-shrink-0">
               <div className="flex items-center space-x-2">
-                <Image src="/logo.png" alt="Andromeda Solutions Logo" width={40} height={40} className="h-10 w-auto" />
+                <Image src={Logo} alt="Andromeda Solutions Logo" width={40} height={40} className="h-10 w-auto" />
                 <span className="text-xl font-bold text-gray-900 dark:text-white">Andromeda Solutions</span>
               </div>
             </a>
