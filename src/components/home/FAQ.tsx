@@ -26,7 +26,7 @@ const FAQ = () => {
     },
     {
       question: "Como agendar uma demonstração?",
-      answer: "Clique no botão 'Agendar Demonstração' no topo da página ou entre em contato pelo telefone (35) 99861-5203. Nossa equipe irá marcar um horário conveniente para você."
+      answer: "É muito simples! Clique no botão 'Agendar Demonstração' em nossa página inicial ou entre em contato diretamente pelo WhatsApp. Nossa equipe irá marcar um horário conveniente para você."
     },
     {
       question: "Quais são as formas de pagamento aceitas?",
@@ -46,11 +46,11 @@ const FAQ = () => {
     },
     {
       question: "Preciso de treinamento para usar o sistema?",
-      answer: "O NexusPro foi desenvolvido para ser intuitivo, mas oferecemos treinamento gratuito para todos os clientes do plano Profissional. Também temos tutoriais em vídeo e suporte técnico."
+      answer: "O NexusPro foi desenvolvido para ser intuitivo, mas oferecemos treinamento gratuito para todos os clientes do plano Profissional e Empresarial. Também temos tutoriais em vídeo e suporte técnico."
     },
     {
       question: "O sistema integra com meu e-commerce?",
-      answer: "Sim, no plano Profissional oferecemos integração com as principais plataformas de e-commerce do mercado, sincronizando automaticamente produtos e estoque."
+      answer: "Sim, no plano Profissional e Empresarial oferecemos integração com as principais plataformas de e-commerce do mercado, sincronizando automaticamente produtos e estoque."
     }
   ];
 
