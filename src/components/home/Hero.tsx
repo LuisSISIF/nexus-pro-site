@@ -1,5 +1,7 @@
 import React from 'react';
 import { Play, CheckCircle, Calendar } from 'lucide-react';
+import Image from 'next/image';
+import SystemScreenImg from '@/images/telasistema.png';
 
 const Hero = () => {
   return (
@@ -58,11 +60,12 @@ const Hero = () => {
           {/* Dashboard Preview */}
           <div className="relative">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 transform rotate-1 hover:rotate-0 transition-transform duration-300">
-            <img 
-              data-ai-hint="dashboard application"
-              src="https://placehold.co/600x400.png"
+            <Image 
+              src={SystemScreenImg}
               alt="Dashboard do NexusPro" 
               className="rounded-lg shadow-lg"
+              width={600}
+              height={400}
             />
             </div>
           </div>
