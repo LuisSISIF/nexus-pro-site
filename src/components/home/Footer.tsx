@@ -1,5 +1,6 @@
 import React from 'react';
 import { Phone, Mail, MapPin, Instagram } from 'lucide-react';
+import Image from 'next/image';
 
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg
@@ -22,9 +23,7 @@ const Footer = () => {
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">A</span>
-              </div>
+              <Image src="/logo.png" alt="Andromeda Solutions Logo" width={32} height={32} className="h-8 w-auto" />
               <span className="text-xl font-bold">Andromeda Solutions</span>
             </div>
             <p className="text-gray-300 leading-relaxed">
@@ -78,7 +77,7 @@ const Footer = () => {
               <a href="/privacy-policy" className="block text-gray-300 hover:text-white transition-colors">Política de Privacidade</a>
               <a href="/terms-of-use" className="block text-gray-300 hover:text-white transition-colors">Termos de Uso</a>
               <a href="/lgpd" className="block text-gray-300 hover:text-white transition-colors">LGPD</a>
-              <a href="#" className="block text-gray-300 hover:text-white transition-colors">Cookies</a>
+              <a href="/cookies" className="block text-gray-300 hover:text-white transition-colors">Cookies</a>
             </div>
           </div>
         </div>
