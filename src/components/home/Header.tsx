@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { Phone, Calendar, Zap, Menu, X } from 'lucide-react';
 import { ThemeToggleButton } from '../theme-toggle';
 import Image from 'next/image';
-import LogoImg from '@/images/logo.png';
 
 
 const Header = () => {
@@ -24,7 +23,7 @@ const Header = () => {
           <div className="flex items-center">
             <a href="/" className="flex-shrink-0">
               <div className="flex items-center space-x-2">
-                <Image src={LogoImg} alt="Andromeda Solutions Logo" width={40} height={40} className="h-10 w-auto" />
+                <Image src="/logo.png" alt="Andromeda Solutions Logo" width={40} height={40} className="h-10 w-auto" />
                 <span className="text-xl font-bold text-gray-900 dark:text-white">Andromeda Solutions</span>
               </div>
             </a>
@@ -42,10 +41,15 @@ const Header = () => {
           {/* Desktop CTAs */}
           <div className="hidden md:flex items-center space-x-4">
             <ThemeToggleButton />
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2">
+            <a 
+              href="https://wa.me/5535998615203" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
+            >
               <Calendar className="w-4 h-4" />
               <span>Agendar Demonstração</span>
-            </button>
+            </a>
           </div>
 
           {/* Mobile Menu Button */}
@@ -78,10 +82,15 @@ const Header = () => {
           </div>
           <div className="pt-4 pb-3 border-t border-gray-200 dark:border-gray-700">
             <div className="px-5 space-y-4">
-              <button className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2">
+              <a 
+                href="https://wa.me/5535998615203" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+              >
                 <Calendar className="w-4 h-4" />
                 <span>Agendar Demonstração</span>
-              </button>
+              </a>
             </div>
           </div>
         </div>

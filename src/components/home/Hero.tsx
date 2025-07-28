@@ -1,7 +1,6 @@
 import React from 'react';
 import { Play, CheckCircle, Calendar } from 'lucide-react';
 import Image from 'next/image';
-import SystemScreenImg from '@/images/telaSistema.png';
 
 const Hero = () => {
   return (
@@ -38,13 +37,23 @@ const Hero = () => {
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <button className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all transform hover:scale-105 shadow-lg hover:shadow-xl">
+              <a 
+                href="https://wa.me/5535998615203" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center"
+              >
                 Iniciar Teste Grátis de 14 Dias
-              </button>
-              <button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all flex items-center justify-center space-x-2 border-2 border-orange-500">
+              </a>
+              <a 
+                href="https://wa.me/5535998615203" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all flex items-center justify-center space-x-2 border-2 border-orange-500"
+              >
                 <Calendar className="w-5 h-5" />
                 <span>Agendar Demonstração</span>
-              </button>
+              </a>
             </div>
 
             {/* Additional Trust */}
@@ -61,11 +70,12 @@ const Hero = () => {
           <div className="relative">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-4 transform rotate-1 hover:rotate-0 transition-transform duration-300">
             <Image 
-              src={SystemScreenImg}
+              src="/telasistema.png"
               alt="Dashboard do NexusPro" 
               className="rounded-lg shadow-lg w-full"
               width={600}
               height={400}
+              data-ai-hint="dashboard application"
             />
             </div>
           </div>
