@@ -9,10 +9,10 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navLinks = [
-    { href: '#features', label: 'Funcionalidades' },
-    { href: '#testimonials', label: 'Depoimentos' },
-    { href: '#pricing', label: 'Preços' },
-    { href: '#faq', label: 'FAQ' },
+    { href: '/#features', label: 'Funcionalidades' },
+    { href: '/#testimonials', label: 'Depoimentos' },
+    { href: '/#pricing', label: 'Preços' },
+    { href: '/#faq', label: 'FAQ' },
   ];
 
   return (
@@ -21,7 +21,7 @@ const Header = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <a href="#" className="flex-shrink-0">
+            <a href="/" className="flex-shrink-0">
               <div className="flex items-center space-x-2">
                 <Image src={LogoImg} alt="Andromeda Solutions Logo" width={40} height={40} className="h-10 w-auto" />
                 <span className="text-xl font-bold text-gray-900 dark:text-white">Andromeda Solutions</span>
