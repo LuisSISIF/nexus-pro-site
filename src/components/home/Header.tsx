@@ -41,15 +41,6 @@ const Header = () => {
           {/* Desktop CTAs */}
           <div className="hidden md:flex items-center space-x-4">
             <ThemeToggleButton />
-             <a 
-              href="https://wa.me/5535998615203"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-colors"
-            >
-              <Zap className="w-4 h-4" />
-              <span className="font-medium">(35) 99861-5203</span>
-            </a>
             <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2">
               <Calendar className="w-4 h-4" />
               <span>Agendar Demonstração</span>
@@ -90,15 +81,6 @@ const Header = () => {
                 <Calendar className="w-4 h-4" />
                 <span>Agendar Demonstração</span>
               </button>
-              <a 
-                href="https://wa.me/5535998615203"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full flex items-center justify-center space-x-2 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-500 transition-colors bg-green-50 dark:bg-green-900/50 hover:bg-green-100 dark:hover:bg-green-900 px-4 py-2 rounded-lg font-medium"
-              >
-                <Zap className="w-4 h-4" />
-                <span>WhatsApp: (35) 99861-5203</span>
-              </a>
             </div>
           </div>
         </div>
