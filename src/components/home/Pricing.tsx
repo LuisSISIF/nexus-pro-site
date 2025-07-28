@@ -43,19 +43,19 @@ const Pricing = () => {
   ];
 
   return (
-    <section id="pricing" className="py-20 bg-white">
+    <section id="pricing" className="py-20 bg-white dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-4 mb-16">
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
+          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
             Planos que Cabem no Seu Orçamento
           </h2>
-          <p className="text-xl text-gray-600">
+          <p className="text-xl text-gray-600 dark:text-gray-300">
             Escolha o plano ideal para o seu negócio e comece hoje mesmo
           </p>
           
           {/* Annual Discount Banner */}
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 max-w-md mx-auto">
-            <p className="text-green-800 font-medium">
+          <div className="bg-green-50 dark:bg-green-900/50 border border-green-200 dark:border-green-800 rounded-lg p-4 max-w-md mx-auto">
+            <p className="text-green-800 dark:text-green-300 font-medium">
               💰 Economize 10% pagando anualmente
             </p>
           </div>
@@ -65,8 +65,8 @@ const Pricing = () => {
           {plans.map((plan, index) => (
             <div 
               key={index}
-              className={`bg-white rounded-2xl shadow-xl border-2 p-8 relative ${
-                plan.popular ? 'border-blue-500 transform scale-105' : 'border-gray-200'
+              className={`bg-white dark:bg-gray-800 rounded-2xl shadow-xl border-2 p-8 relative ${
+                plan.popular ? 'border-blue-500 transform scale-105' : 'border-gray-200 dark:border-gray-700'
               }`}
             >
               {plan.popular && (
@@ -79,18 +79,18 @@ const Pricing = () => {
               )}
 
               <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
-                <p className="text-gray-600 mb-4">{plan.description}</p>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{plan.name}</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-4">{plan.description}</p>
                 
                 <div className="space-y-2">
                   <div className="flex items-baseline justify-center">
-                    <span className="text-5xl font-bold text-gray-900">R$ {plan.price}</span>
-                    <span className="text-gray-500 ml-2">/mês</span>
+                    <span className="text-5xl font-bold text-gray-900 dark:text-white">R$ {plan.price}</span>
+                    <span className="text-gray-500 dark:text-gray-400 ml-2">/mês</span>
                   </div>
                   
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
                     <span className="line-through">R$ {plan.originalPrice}/ano</span>
-                    <span className="text-green-600 font-semibold ml-2">
+                    <span className="text-green-600 dark:text-green-400 font-semibold ml-2">
                       R$ {plan.yearlyPrice}/ano
                     </span>
                   </div>
@@ -101,7 +101,7 @@ const Pricing = () => {
                 {plan.features.map((feature, featureIndex) => (
                   <div key={featureIndex} className="flex items-start space-x-3">
                     <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700">{feature}</span>
+                    <span className="text-gray-700 dark:text-gray-300">{feature}</span>
                   </div>
                 ))}
               </div>
@@ -110,7 +110,7 @@ const Pricing = () => {
                 className={`w-full py-4 px-6 rounded-lg font-semibold transition-all transform hover:scale-105 ${
                   plan.popular
                     ? 'bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl'
-                    : 'bg-gray-100 hover:bg-gray-200 text-gray-900 border-2 border-gray-200 hover:border-gray-300'
+                    : 'bg-gray-100 hover:bg-gray-200 text-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                 }`}
               >
                 {plan.popular ? 'Iniciar Teste Grátis' : 'Escolher Plano'}
@@ -121,16 +121,16 @@ const Pricing = () => {
 
         {/* Additional Info */}
         <div className="mt-16 text-center space-y-4">
-          <div className="bg-blue-50 rounded-xl p-6 max-w-2xl mx-auto">
-            <h4 className="text-lg font-semibold text-blue-900 mb-2">
+          <div className="bg-blue-50 dark:bg-blue-900/50 rounded-xl p-6 max-w-2xl mx-auto">
+            <h4 className="text-lg font-semibold text-blue-900 dark:text-blue-300 mb-2">
               🎁 Oferta Especial de Lançamento
             </h4>
-            <p className="text-blue-800">
+            <p className="text-blue-800 dark:text-blue-200">
               Teste grátis por 14 dias + Desconto de 10% no primeiro ano para novos clientes
             </p>
           </div>
           
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-500 dark:text-gray-400 text-sm">
             Todos os planos incluem atualizações gratuitas • Sem taxa de setup • Cancele quando quiser
           </p>
         </div>

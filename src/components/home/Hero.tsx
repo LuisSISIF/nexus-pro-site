@@ -3,23 +3,23 @@ import { Play, CheckCircle, Calendar } from 'lucide-react';
 
 const Hero = () => {
   return (
-    <section className="bg-gradient-to-br from-blue-50 to-indigo-100 pt-16 pb-20">
+    <section className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-900 pt-16 pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Content */}
           <div className="space-y-8">
             <div className="space-y-4">
-              <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
-                Controle Total de <span className="text-blue-600">Estoque e Vendas</span>, 
+              <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white leading-tight">
+                Controle Total de <span className="text-blue-600 dark:text-blue-400">Estoque e Vendas</span>, 
                 Simples e Eficiente
               </h1>
-              <p className="text-xl text-gray-600 leading-relaxed">
+              <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
                 Sistema que automatiza estoque, gerencia vendas em tempo real e imprime etiquetas com facilidade
               </p>
             </div>
 
             {/* Trust Elements */}
-            <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500">
+            <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500 dark:text-gray-400">
               <div className="flex items-center space-x-2">
                 <CheckCircle className="w-4 h-4 text-green-500" />
                 <span>Windows 10 ou superior</span>
@@ -46,18 +46,18 @@ const Hero = () => {
             </div>
 
             {/* Additional Trust */}
-            <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-              <p className="text-sm text-gray-600 text-center">
-                <span className="font-semibold text-green-600">14 dias grátis</span> • 
-                <span className="font-semibold"> Sem compromisso</span> • 
-                <span className="font-semibold"> Suporte incluído</span>
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-700">
+              <p className="text-sm text-gray-600 dark:text-gray-300 text-center">
+                <span className="font-semibold text-green-600 dark:text-green-400">14 dias grátis</span> • 
+                <span className="font-semibold dark:text-white"> Sem compromisso</span> • 
+                <span className="font-semibold dark:text-white"> Suporte incluído</span>
               </p>
             </div>
           </div>
 
           {/* Dashboard Preview */}
           <div className="relative">
-            <div className="bg-white rounded-2xl shadow-2xl p-6 transform rotate-1 hover:rotate-0 transition-transform duration-300">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 transform rotate-1 hover:rotate-0 transition-transform duration-300">
             <img 
               data-ai-hint="dashboard application"
               src="https://placehold.co/600x400.png"

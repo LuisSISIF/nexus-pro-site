@@ -45,13 +45,13 @@ const FAQ = () => {
   };
 
   return (
-    <section id="faq" className="py-20 bg-gray-50">
+    <section id="faq" className="py-20 bg-gray-50 dark:bg-gray-800">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-4 mb-16">
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
+          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
             Perguntas Frequentes
           </h2>
-          <p className="text-xl text-gray-600">
+          <p className="text-xl text-gray-600 dark:text-gray-300">
             Tire suas dúvidas sobre o NexusPro
           </p>
         </div>
@@ -60,25 +60,25 @@ const FAQ = () => {
           {faqs.map((faq, index) => (
             <div 
               key={index}
-              className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+              className="bg-white dark:bg-gray-700 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 overflow-hidden"
             >
               <button
                 onClick={() => toggleFAQ(index)}
-                className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+                className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
               >
-                <h3 className="text-lg font-semibold text-gray-900 pr-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white pr-4">
                   {faq.question}
                 </h3>
                 {openIndex === index ? (
-                  <ChevronUp className="w-5 h-5 text-gray-500 flex-shrink-0" />
+                  <ChevronUp className="w-5 h-5 text-gray-500 dark:text-gray-400 flex-shrink-0" />
                 ) : (
-                  <ChevronDown className="w-5 h-5 text-gray-500 flex-shrink-0" />
+                  <ChevronDown className="w-5 h-5 text-gray-500 dark:text-gray-400 flex-shrink-0" />
                 )}
               </button>
               
               {openIndex === index && (
                 <div className="px-6 pb-4">
-                  <p className="text-gray-700 leading-relaxed">
+                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                     {faq.answer}
                   </p>
                 </div>
@@ -88,11 +88,11 @@ const FAQ = () => {
         </div>
 
         {/* Contact CTA */}
-        <div className="mt-16 text-center bg-white rounded-xl p-8 shadow-sm">
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">
+        <div className="mt-16 text-center bg-white dark:bg-gray-700 rounded-xl p-8 shadow-sm">
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
             Ainda tem dúvidas?
           </h3>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
             Nossa equipe está pronta para ajudar você a tomar a melhor decisão
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
