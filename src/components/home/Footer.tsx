@@ -1,7 +1,6 @@
 import React from 'react';
 import { Phone, Mail, MapPin, Instagram } from 'lucide-react';
 import Image from 'next/image';
-import LogoImg from '@/images/logo.png';
 
 
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -25,7 +24,7 @@ const Footer = () => {
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <Image src={LogoImg} alt="Andromeda Solutions Logo" width={32} height={32} className="h-8 w-auto" />
+              <Image src="/logo.png" alt="Andromeda Solutions Logo" width={32} height={32} className="h-8 w-auto" />
               <span className="text-xl font-bold">Andromeda Solutions</span>
             </div>
             <p className="text-gray-300 leading-relaxed">
@@ -91,7 +90,7 @@ const Footer = () => {
               Comece a Transformar o Controle de Estoque e Vendas da Sua Empresa!
             </h3>
             <p className="text-blue-100 mb-6">
-              Junte-se a mais de 500 empresas que já escolheram o NexusPro
+              Seja um dos primeiros a inovar com a solução que vai revolucionar o mercado.
             </p>
             <button className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all transform hover:scale-105 shadow-lg">
               Iniciar Teste Grátis Agora
