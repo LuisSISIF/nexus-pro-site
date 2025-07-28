@@ -58,48 +58,12 @@ const Hero = () => {
           {/* Dashboard Preview */}
           <div className="relative">
             <div className="bg-white rounded-2xl shadow-2xl p-6 transform rotate-1 hover:rotate-0 transition-transform duration-300">
-              <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg p-6 text-white">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold">Dashboard NexusPro</h3>
-                    <div className="flex space-x-1">
-                      <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-                      <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                      <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="bg-white/20 rounded-lg p-3">
-                      <p className="text-sm opacity-90">Vendas Hoje</p>
-                      <p className="text-2xl font-bold">R$ 24.750</p>
-                    </div>
-                    <div className="bg-white/20 rounded-lg p-3">
-                      <p className="text-sm opacity-90">Produtos</p>
-                      <p className="text-2xl font-bold">1.247</p>
-                    </div>
-                    <div className="bg-white/20 rounded-lg p-3">
-                      <p className="text-sm opacity-90">Estoque Baixo</p>
-                      <p className="text-2xl font-bold">12</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="bg-white/20 rounded p-2">
-                      <div className="flex justify-between text-sm">
-                        <span>Produto A</span>
-                        <span>Em estoque: 45</span>
-                      </div>
-                    </div>
-                    <div className="bg-white/20 rounded p-2">
-                      <div className="flex justify-between text-sm">
-                        <span>Produto B</span>
-                        <span className="text-yellow-300">Estoque baixo: 3</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <img 
+              data-ai-hint="dashboard application"
+              src="https://placehold.co/600x400.png"
+              alt="Dashboard do NexusPro" 
+              className="rounded-lg shadow-lg"
+            />
             </div>
           </div>
         </div>
