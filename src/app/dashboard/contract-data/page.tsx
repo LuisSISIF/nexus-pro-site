@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { getContractData, ContractData } from '@/actions/contract-actions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { Briefcase, Calendar, Users, Building, AlertCircle } from 'lucide-react';
+import { Briefcase, Calendar, Users, Building, AlertCircle, CalendarClock } from 'lucide-react';
 
 const DataRow = ({ label, value, icon }: { label: string; value: React.ReactNode; icon?: React.ReactNode }) => (
   <div className="flex justify-between items-center py-3 border-b border-gray-200 dark:border-gray-700">
@@ -127,6 +127,13 @@ const ContractDataPage = () => {
             value={`${data.qtdLojas} / ${data.limiteLojas}`}
             icon={<Building className="w-4 h-4 text-primary" />} 
           />
+          {!isTestPlan && data.diaVencimento && (
+             <DataRow 
+                label="Dia do Vencimento" 
+                value={`Todo dia ${data.diaVencimento}`}
+                icon={<CalendarClock className="w-4 h-4 text-primary" />} 
+             />
+          )}
         </div>
       );
     }
