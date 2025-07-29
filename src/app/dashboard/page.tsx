@@ -1,6 +1,6 @@
 
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, 'useEffect', useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Building, DollarSign, Package, Users } from 'lucide-react';
 import {
@@ -14,7 +14,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { getTotalClients, getNewClientsThisMonth, getProductStats } from '@/actions/dashboard-actions';
+import { getTotalClients, getNewClientsThisMonth, getProductStats, getMonthlySales } from '@/actions/dashboard-actions';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const DashboardPage = () => {
@@ -22,6 +22,7 @@ const DashboardPage = () => {
     const [newClientsCount, setNewClientsCount] = useState<number | null>(null);
     const [totalProducts, setTotalProducts] = useState<number | null>(null);
     const [activeProductsCount, setActiveProductsCount] = useState<number | null>(null);
+    const [monthlySales, setMonthlySales] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -34,16 +35,18 @@ const DashboardPage = () => {
             }
 
             try {
-                const [clientsResult, newClientsResult, productStatsResult] = await Promise.all([
+                const [clientsResult, newClientsResult, productStatsResult, monthlySalesResult] = await Promise.all([
                     getTotalClients(Number(companyId)),
                     getNewClientsThisMonth(Number(companyId)),
                     getProductStats(Number(companyId)),
+                    getMonthlySales(Number(companyId)),
                 ]);
                 
                 setTotalClients(clientsResult.total);
                 setNewClientsCount(newClientsResult.total);
                 setTotalProducts(productStatsResult.total);
                 setActiveProductsCount(productStatsResult.totalActive);
+                setMonthlySales(monthlySalesResult.total);
 
             } catch (error) {
                 console.error("Failed to fetch dashboard data", error);
@@ -73,7 +76,7 @@ const DashboardPage = () => {
         { product: 'Produto D', sales: 62 },
         { product: 'Produto E', sales: 51 },
     ];
-    const monthlySales = 25450.50;
+
     const branches = [
         { name: 'Loja Matriz', status: 'Ativa', users: 15 },
         { name: 'Filial Centro', status: 'Ativa', users: 8 },
@@ -134,8 +137,17 @@ const DashboardPage = () => {
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">{monthlySales.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</div>
-                 <p className="text-xs text-muted-foreground">Faturamento no mês atual</p>
+                 {loading ? (
+                    <>
+                        <Skeleton className="h-8 w-1/2" />
+                        <Skeleton className="h-4 w-1/3 mt-2" />
+                    </>
+                ) : (
+                    <>
+                        <div className="text-2xl font-bold">{(monthlySales ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</div>
+                        <p className="text-xs text-muted-foreground">Faturamento no mês atual</p>
+                    </>
+                )}
             </CardContent>
         </Card>
       </div>

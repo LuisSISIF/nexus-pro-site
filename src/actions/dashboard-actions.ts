@@ -100,3 +100,37 @@ export async function getProductStats(companyId: number): Promise<{ total: numbe
         await connection.end();
     }
 }
+
+/**
+ * Busca o faturamento total do mês atual para uma empresa específica.
+ * @param companyId O ID da empresa.
+ * @returns Uma promessa que resolve para um objeto com o total das vendas.
+ */
+export async function getMonthlySales(companyId: number): Promise<{ total: number }> {
+    if (!companyId) {
+        throw new Error("ID da empresa não fornecido.");
+    }
+
+    const connection = await db();
+
+    try {
+        const query = `
+            SELECT SUM(valorFinal) as total 
+            FROM relatoriovenda 
+            WHERE idempresa = ? 
+            AND MONTH(dataVenda) = MONTH(CURDATE()) 
+            AND YEAR(dataVenda) = YEAR(CURDATE())
+        `;
+        const [rows] = await connection.execute(query, [companyId]);
+
+        const totalSales = (rows as any[])[0]?.total || 0;
+
+        return { total: Number(totalSales) };
+
+    } catch (error) {
+        console.error('Error fetching monthly sales:', error);
+        throw new Error('Ocorreu um erro no servidor ao buscar as vendas do mês.');
+    } finally {
+        await connection.end();
+    }
+}
