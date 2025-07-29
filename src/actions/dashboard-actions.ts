@@ -46,10 +46,10 @@ export async function getDashboardData(companyId: number): Promise<{ success: bo
     try {
         await connection.beginTransaction();
 
-        const [kpis] = await getKpis(connection, companyId);
-        const [topProducts] = await getTopProducts(connection, companyId);
-        const [newClientsData] = await getNewClientsData(connection, companyId);
-        const [branches] = await getBranches(connection, companyId);
+        const kpis = await getKpis(connection, companyId);
+        const topProducts = await getTopProducts(connection, companyId);
+        const newClientsData = await getNewClientsData(connection, companyId);
+        const branches = await getBranches(connection, companyId);
 
         await connection.commit();
         
@@ -63,18 +63,18 @@ export async function getDashboardData(companyId: number): Promise<{ success: bo
         return { success: true, message: 'Dados do dashboard carregados.', data: dashboardData };
 
     } catch (error) {
-        await connection.rollback();
+        if (connection) await connection.rollback();
         console.error('Dashboard Data Error:', error);
         return { success: false, message: 'Ocorreu um erro no servidor ao buscar os dados do dashboard.' };
     } finally {
-        await connection.end();
+        if (connection) await connection.end();
     }
 }
 
 
 // --- Helper Functions for Data Fetching ---
 
-async function getKpis(connection: any, companyId: number): Promise<[KpiData, any]> {
+async function getKpis(connection: any, companyId: number): Promise<KpiData> {
     const query = `
         SELECT
             (SELECT COUNT(id) FROM clientes WHERE idempresa = ?) as totalClients,
@@ -83,14 +83,14 @@ async function getKpis(connection: any, companyId: number): Promise<[KpiData, an
     `;
     const [rows] = await connection.execute(query, [companyId, companyId, companyId]);
     const data = (rows as any[])[0];
-    return [{
+    return {
         totalClients: Number(data.totalClients) || 0,
         monthlySales: Number(data.monthlySales) || 0,
         totalProducts: Number(data.totalProducts) || 0,
-    }, null];
+    };
 }
 
-async function getTopProducts(connection: any, companyId: number): Promise<[TopProduct[], any]> {
+async function getTopProducts(connection: any, companyId: number): Promise<TopProduct[]> {
     const query = `
         SELECT 
             v.produtoVendido as product, 
@@ -103,10 +103,10 @@ async function getTopProducts(connection: any, companyId: number): Promise<[TopP
         LIMIT 5;
     `;
     const [rows] = await connection.execute(query, [companyId]);
-    return [rows as TopProduct[], null];
+    return rows as TopProduct[];
 }
 
-async function getNewClientsData(connection: any, companyId: number): Promise<[NewClientsData[], any]> {
+async function getNewClientsData(connection: any, companyId: number): Promise<NewClientsData[]> {
      const query = `
         SELECT 
             DATE_FORMAT(dataCadastro, '%b') as month,
@@ -134,11 +134,11 @@ async function getNewClientsData(connection: any, companyId: number): Promise<[N
         });
     }
 
-    return [result, null];
+    return result;
 }
 
 
-async function getBranches(connection: any, companyId: number): Promise<[Branch[], any]> {
+async function getBranches(connection: any, companyId: number): Promise<Branch[]> {
     const query = `
         SELECT 
             l.nomeLoja as name,
@@ -148,5 +148,5 @@ async function getBranches(connection: any, companyId: number): Promise<[Branch[
         WHERE l.idempresa = ?;
     `;
      const [rows] = await connection.execute(query, [companyId]);
-     return [rows as Branch[], null]
+     return rows as Branch[]
 }
