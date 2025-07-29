@@ -216,7 +216,7 @@ export async function getTopCustomers(companyId: number): Promise<{ nome: string
         const query = `
             SELECT nome, comprasRealizadas
             FROM clientes
-            WHERE idempresa = ?
+            WHERE idempresa = ? AND comprasRealizadas > 0
             ORDER BY comprasRealizadas DESC
             LIMIT 5
         `;
