@@ -46,22 +46,6 @@ export default function DashboardLayout({
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-            <SidebarMenuItem>
-               <SidebarMenuButton asChild>
-                <Link href="/dashboard/tutorials">
-                  <Video />
-                  Tutoriais do Sistema
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-             <SidebarMenuItem>
-               <SidebarMenuButton asChild>
-                <Link href="/dashboard/installer">
-                  <Download />
-                  Download do Instalador
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
              <SidebarMenuItem>
                <SidebarMenuButton asChild>
                 <Link href="/dashboard/user-data">
@@ -75,6 +59,22 @@ export default function DashboardLayout({
                 <Link href="/dashboard/contract-data">
                   <FileText />
                   Dados Contratuais
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+               <SidebarMenuButton asChild>
+                <Link href="/dashboard/tutorials">
+                  <Video />
+                  Tutoriais do Sistema
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+             <SidebarMenuItem>
+               <SidebarMenuButton asChild>
+                <Link href="/dashboard/installer">
+                  <Download />
+                  Download do Instalador
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
