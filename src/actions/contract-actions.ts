@@ -9,6 +9,7 @@ export interface ContractData {
     periodoTesteInicio: string | null;
     periodoTesteFim: string | null;
     qtdFunc: number;
+    qtdLojas: number;
     nomePlano: string;
     limiteUsuarios: number;
     limiteLojas: number;
@@ -30,6 +31,7 @@ export async function getContractData(companyId: number): Promise<{ success: boo
             e.periodoTesteInicio,
             e.periodoTesteFim,
             e.qtdFunc,
+            e.qtdLojas,
             p.nomePlano,
             p.limiteUsuarios,
             p.limiteLojas

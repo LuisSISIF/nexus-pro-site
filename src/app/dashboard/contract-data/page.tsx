@@ -122,7 +122,7 @@ const ContractDataPage = () => {
           />
            <DataRow 
             label="Lojas/Filiais" 
-            value={`1 / ${data.limiteLojas}`}
+            value={`${data.qtdLojas} / ${data.limiteLojas}`}
             icon={<Building className="w-4 h-4 text-primary" />} 
           />
         </div>
