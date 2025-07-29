@@ -84,26 +84,8 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Final CTA */}
-        <div className="mt-16 pt-8 border-t border-gray-800">
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 text-center">
-            <h3 className="text-2xl font-bold mb-4">
-              Comece a Transformar o Controle de Estoque e Vendas da Sua Empresa!
-            </h3>
-            <p className="text-blue-100 mb-6">
-              Seja um dos primeiros a inovar com a solução que vai revolucionar o mercado.
-            </p>
-            <Link
-              href="/signup"
-              className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all transform hover:scale-105 shadow-lg inline-block"
-            >
-              Iniciar Teste Grátis Agora
-            </Link>
-          </div>
-        </div>
-
         {/* Copyright */}
-        <div className="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400">
+        <div className="mt-16 pt-8 border-t border-gray-800 text-center text-gray-400">
           <p>© 2025 Andromeda Solutions. Todos os direitos reservados.</p>
         </div>
       </div>
