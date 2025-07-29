@@ -5,7 +5,6 @@ import { ThemeToggleButton } from '../theme-toggle';
 import Image from 'next/image';
 import Link from 'next/link';
 
-
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
