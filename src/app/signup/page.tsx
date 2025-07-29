@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React, { useState } from 'react';
@@ -17,7 +16,6 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import InputMask from 'react-input-mask';
 import { isValidCPF, isValidCNPJ, isValidRG } from '@/lib/validators';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
@@ -29,7 +27,7 @@ const step1Schema = z.object({
   gender: z.enum(["male", "female", "other"]),
   login: z.string().min(3, "Login deve ter pelo menos 3 caracteres"),
   password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
-  phone: z.string().min(14, "Telefone inválido"),
+  phone: z.string().min(10, "Telefone inválido"),
   email: z.string().email("E-mail inválido"),
 });
 
@@ -47,11 +45,11 @@ const step2Schema = z.object({
   neighborhood: z.string().min(3, "Bairro é obrigatório"),
   city: z.string().min(3, "Cidade é obrigatória"),
   state: z.string().length(2, "UF deve ter 2 caracteres"),
-  cep: z.string().min(9, "CEP inválido"),
+  cep: z.string().min(8, "CEP inválido"),
   ownerName: z.string().min(3, "Nome do proprietário é obrigatório"),
   commercialEmail: z.string().email("E-mail comercial inválido"),
   website: z.string().optional(),
-  commercialPhone: z.string().min(14, "Telefone comercial inválido"),
+  commercialPhone: z.string().min(10, "Telefone comercial inválido"),
   instagram: z.string().optional(),
 });
 
@@ -66,9 +64,7 @@ const Step1 = ({ nextStep, form }: { nextStep: () => void, form: any }) => {
           )} />
           <FormField control={form.control} name="cpf" render={({ field }) => (
             <FormItem><FormLabel>CPF</FormLabel><FormControl>
-              <InputMask mask="999.999.999-99" {...field}>
-                {(inputProps: any) => <Input {...inputProps} placeholder="000.000.000-00" />}
-              </InputMask>
+              <Input placeholder="000.000.000-00" {...field} />
             </FormControl><FormMessage /></FormItem>
           )} />
         </div>
@@ -98,9 +94,7 @@ const Step1 = ({ nextStep, form }: { nextStep: () => void, form: any }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField control={form.control} name="phone" render={({ field }) => (
             <FormItem><FormLabel>Telefone</FormLabel><FormControl>
-              <InputMask mask="(99) 99999-9999" {...field}>
-                {(inputProps: any) => <Input {...inputProps} placeholder="(00) 90000-0000" />}
-              </InputMask>
+              <Input placeholder="(00) 90000-0000" {...field} />
             </FormControl><FormMessage /></FormItem>
           )} />
           <FormField control={form.control} name="email" render={({ field }) => (
@@ -125,9 +119,7 @@ const Step2 = ({ prevStep, form, onSubmit }: { prevStep: () => void, form: any, 
         )} />
         <FormField control={form.control} name="cnpj" render={({ field }) => (
             <FormItem><FormLabel>CNPJ</FormLabel><FormControl>
-              <InputMask mask="99.999.999/9999-99" {...field}>
-                {(inputProps: any) => <Input {...inputProps} placeholder="00.000.000/0001-00" />}
-              </InputMask>
+              <Input placeholder="00.000.000/0001-00" {...field} />
             </FormControl><FormMessage /></FormItem>
         )} />
       </div>
@@ -196,9 +188,7 @@ const Step2 = ({ prevStep, form, onSubmit }: { prevStep: () => void, form: any, 
        <div className="space-y-2">
          <FormField control={form.control} name="cep" render={({ field }) => (
             <FormItem><FormLabel>CEP</FormLabel><FormControl>
-              <InputMask mask="99999-999" {...field}>
-                {(inputProps: any) => <Input {...inputProps} placeholder="00000-000" />}
-              </InputMask>
+              <Input placeholder="00000-000" {...field} />
             </FormControl><FormMessage /></FormItem>
         )} />
        </div>
@@ -217,10 +207,8 @@ const Step2 = ({ prevStep, form, onSubmit }: { prevStep: () => void, form: any, 
             )} />
             <FormField control={form.control} name="commercialPhone" render={({ field }) => (
                 <FormItem><FormLabel>Telefone</FormLabel><FormControl>
-                  <InputMask mask="(99) 9999-9999" {...field}>
-                    {(inputProps: any) => <Input {...inputProps} type="tel" placeholder="(00) 0000-0000" />}
-                  </InputMask>
-                </FormControl><FormMessage /></FormItem>
+                  <Input type="tel" placeholder="(00) 0000-0000" {...field} />
+                </FormControl><FormMessage /></FormMessage>
             )} />
             <FormField control={form.control} name="instagram" render={({ field }) => (
                 <FormItem><FormLabel>Instagram (opcional)</FormLabel><FormControl><Input placeholder="@seuusuario" {...field} /></FormControl><FormMessage /></FormItem>
