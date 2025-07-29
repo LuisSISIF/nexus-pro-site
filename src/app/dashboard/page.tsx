@@ -1,6 +1,6 @@
 
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Building, DollarSign, Package, Users } from 'lucide-react';
 import {
@@ -14,10 +14,37 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { getTotalClients } from '@/actions/dashboard-actions';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const DashboardPage = () => {
+    const [totalClients, setTotalClients] = useState<number | null>(null);
+    const [loadingClients, setLoadingClients] = useState(true);
 
-    const totalClients = 573;
+    useEffect(() => {
+        const fetchTotalClients = async () => {
+            const companyId = localStorage.getItem('companyId');
+            if (!companyId) {
+                setLoadingClients(false);
+                // Maybe set an error state here in the future
+                return;
+            }
+
+            try {
+                const result = await getTotalClients(Number(companyId));
+                setTotalClients(result.total);
+            } catch (error) {
+                console.error(error);
+                 // Maybe set an error state here in the future
+            } finally {
+                setLoadingClients(false);
+            }
+        };
+
+        fetchTotalClients();
+    }, []);
+
+
     const newClientsData = [
         { month: 'Jan', newClients: 12 },
         { month: 'Fev', newClients: 25 },
@@ -57,7 +84,11 @@ const DashboardPage = () => {
                 <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">{totalClients}</div>
+                {loadingClients ? (
+                    <Skeleton className="h-8 w-1/2" />
+                ) : (
+                    <div className="text-2xl font-bold">{totalClients ?? 'N/A'}</div>
+                )}
                 <p className="text-xs text-muted-foreground">{newClientsData[newClientsData.length -1]?.newClients || 0} novos clientes este mês</p>
             </CardContent>
         </Card>
