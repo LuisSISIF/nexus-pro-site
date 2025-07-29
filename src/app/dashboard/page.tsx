@@ -94,14 +94,6 @@ const DashboardPage = () => {
         { month: 'Jun', newClients: 45 },
     ];
    
-    const topProducts = [
-        { product: 'Produto A', sales: 120 },
-        { product: 'Produto B', sales: 98 },
-        { product: 'Produto C', sales: 86 },
-        { product: 'Produto D', sales: 74 },
-        { product: 'Produto E', sales: 65 },
-    ];
-
     const branches = [
         { name: 'Loja Matriz', status: 'Ativa', users: 15 },
         { name: 'Filial Centro', status: 'Ativa', users: 8 },
@@ -208,24 +200,7 @@ const DashboardPage = () => {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <Card className="col-span-1">
-                <CardHeader>
-                    <CardTitle>Ranking de Produtos Mais Vendidos</CardTitle>
-                    <CardDescription>Top 5 produtos no último mês.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                     <ChartContainer config={{sales: { label: "Vendas", color: "hsl(var(--primary))"}}} className="h-[250px] w-full">
-                        <RechartsBarChart data={topProducts} accessibilityLayer>
-                           <XAxis dataKey="product" tickLine={false} axisLine={false} fontSize={12} />
-                           <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                           <Tooltip cursor={{fill: 'hsl(var(--muted))'}} content={<ChartTooltipContent />} />
-                           <Bar dataKey="sales" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                        </RechartsBarChart>
-                    </ChartContainer>
-                </CardContent>
-            </Card>
-
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
             <Card className="col-span-1">
                  <CardHeader>
                     <CardTitle>Evolução de Novos Clientes</CardTitle>
