@@ -32,7 +32,7 @@ export default function DashboardLayout({
       <Sidebar>
         <SidebarHeader>
            <div className="flex flex-col items-center gap-2">
-                <Image src="https://placehold.co/128x128.png" alt="Andromeda Solutions Logo" width={120} height={120} data-ai-hint="logo" />
+                <Image src="https://placehold.co/160x160.png" alt="Andromeda Solutions Logo" width={160} height={160} data-ai-hint="logo" />
                 <span className="text-lg font-bold text-sidebar-foreground">NexusPro</span>
               </div>
         </SidebarHeader>
