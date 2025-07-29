@@ -1,7 +1,7 @@
 import React from 'react';
 import { Play, CheckCircle, Calendar } from 'lucide-react';
 import Image from 'next/image';
-import TelaSistema from '@/images/telaSistema.png';
+import Link from 'next/link';
 
 const Hero = () => {
   return (
@@ -38,14 +38,12 @@ const Hero = () => {
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <a 
-                href="https://wa.me/5535998615203" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <Link
+                href="/signup"
                 className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center"
               >
                 Iniciar Teste Grátis de 14 Dias
-              </a>
+              </Link>
               <a 
                 href="https://wa.me/5535998615203" 
                 target="_blank" 
@@ -71,7 +69,7 @@ const Hero = () => {
           <div className="relative">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-4 transform rotate-1 hover:rotate-0 transition-transform duration-300">
             <Image 
-              src={TelaSistema}
+              src="/telasistema.png"
               alt="Dashboard do NexusPro" 
               className="rounded-lg shadow-lg w-full"
               width={600}
