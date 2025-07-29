@@ -1,9 +1,9 @@
 'use client'
 import React, { useState } from 'react';
-import { Phone, Calendar, Zap, Menu, X } from 'lucide-react';
+import { Phone, Calendar, Zap, Menu, X, User } from 'lucide-react';
 import { ThemeToggleButton } from '../theme-toggle';
 import Image from 'next/image';
-import Logo from '@/images/logo.png';
+import Link from 'next/link';
 
 
 const Header = () => {
@@ -22,12 +22,12 @@ const Header = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <a href="/" className="flex-shrink-0">
+            <Link href="/" className="flex-shrink-0">
               <div className="flex items-center space-x-2">
-                <Image src={Logo} alt="Andromeda Solutions Logo" width={40} height={40} className="h-10 w-auto" />
+                <Image src="/logo.png" alt="Andromeda Solutions Logo" width={40} height={40} className="h-10 w-auto" />
                 <span className="text-xl font-bold text-gray-900 dark:text-white">Andromeda Solutions</span>
               </div>
-            </a>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
@@ -41,6 +41,10 @@ const Header = () => {
           
           {/* Desktop CTAs */}
           <div className="hidden md:flex items-center space-x-4">
+             <Link href="/login" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
+                <User className="w-4 h-4" />
+                Área do Cliente
+            </Link>
             <ThemeToggleButton />
           </div>
 
@@ -71,6 +75,10 @@ const Header = () => {
                 {link.label}
               </a>
             ))}
+             <div className="border-t border-gray-200 dark:border-gray-700 my-2"></div>
+             <Link href="/login" onClick={() => setIsMenuOpen(false)} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700">
+                Área do Cliente
+              </Link>
           </div>
         </div>
       )}
