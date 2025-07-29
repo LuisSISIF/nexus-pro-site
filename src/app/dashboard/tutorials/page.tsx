@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Download, FileZip, MousePointerClick, CheckSquare } from 'lucide-react';
+import { Download, FileArchive, MousePointerClick, CheckSquare } from 'lucide-react';
 
 const Step = ({ icon, title, description }: { icon: React.ElementType, title: string, description: string }) => {
   const Icon = icon;
@@ -55,7 +55,7 @@ const TutorialsPage = () => {
             <h3 className="font-semibold text-xl mb-6 text-center">Como Instalar</h3>
             <div className="space-y-8 max-w-2xl mx-auto">
               <Step
-                icon={FileZip}
+                icon={FileArchive}
                 title="Passo 1: Descompacte o Arquivo"
                 description="O arquivo que você baixou estará no formato .zip. Clique com o botão direito sobre ele e selecione a opção 'Extrair Tudo' ou 'Descompactar aqui' para acessar os arquivos de instalação."
               />
