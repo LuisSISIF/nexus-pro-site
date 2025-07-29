@@ -2,7 +2,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Building, DollarSign, Package, Users } from 'lucide-react';
+import { Building, DollarSign, Package, Users, BarChart, CreditCard, Landmark, CircleDollarSign, QrCode } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -12,10 +12,16 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from '@/components/ui/badge';
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
+import { BarChart as RechartsBarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { getTotalClients, getNewClientsThisMonth, getProductStats, getMonthlySales } from '@/actions/dashboard-actions';
+import { getTotalClients, getNewClientsThisMonth, getProductStats, getMonthlySales, getPaymentMethodRanking } from '@/actions/dashboard-actions';
 import { Skeleton } from '@/components/ui/skeleton';
+
+type PaymentMethodRank = {
+    name: string;
+    count: number;
+};
+
 
 const DashboardPage = () => {
     const [totalClients, setTotalClients] = useState<number | null>(null);
@@ -23,10 +29,13 @@ const DashboardPage = () => {
     const [totalProducts, setTotalProducts] = useState<number | null>(null);
     const [activeProductsCount, setActiveProductsCount] = useState<number | null>(null);
     const [monthlySales, setMonthlySales] = useState<number | null>(null);
+    const [paymentRanking, setPaymentRanking] = useState<PaymentMethodRank[] | null>(null);
     const [loading, setLoading] = useState(true);
+    
 
     useEffect(() => {
         const fetchDashboardData = async () => {
+            setLoading(true);
             const companyId = localStorage.getItem('companyId');
             if (!companyId) {
                 setLoading(false);
@@ -35,11 +44,18 @@ const DashboardPage = () => {
             }
 
             try {
-                const [clientsResult, newClientsResult, productStatsResult, monthlySalesResult] = await Promise.all([
+                const [
+                    clientsResult, 
+                    newClientsResult, 
+                    productStatsResult, 
+                    monthlySalesResult,
+                    paymentRankingResult
+                ] = await Promise.all([
                     getTotalClients(Number(companyId)),
                     getNewClientsThisMonth(Number(companyId)),
                     getProductStats(Number(companyId)),
                     getMonthlySales(Number(companyId)),
+                    getPaymentMethodRanking(Number(companyId)),
                 ]);
                 
                 setTotalClients(clientsResult.total);
@@ -47,6 +63,7 @@ const DashboardPage = () => {
                 setTotalProducts(productStatsResult.total);
                 setActiveProductsCount(productStatsResult.totalActive);
                 setMonthlySales(monthlySalesResult.total);
+                setPaymentRanking(paymentRankingResult);
 
             } catch (error) {
                 console.error("Failed to fetch dashboard data", error);
@@ -58,6 +75,16 @@ const DashboardPage = () => {
 
         fetchDashboardData();
     }, []);
+
+     const getPaymentMethodIcon = (method: string) => {
+        const normalizedMethod = method.toLowerCase();
+        if (normalizedMethod.includes('dinheiro')) return <CircleDollarSign className="h-5 w-5 text-green-500" />;
+        if (normalizedMethod.includes('crédito') || normalizedMethod.includes('credito')) return <CreditCard className="h-5 w-5 text-blue-500" />;
+        if (normalizedMethod.includes('débito') || normalizedMethod.includes('debito')) return <CreditCard className="h-5 w-5 text-red-500" />;
+        if (normalizedMethod.includes('pix')) return <QrCode className="h-5 w-5 text-cyan-500" />;
+        if (normalizedMethod.includes('crediário') || normalizedMethod.includes('crediario')) return <Landmark className="h-5 w-5 text-purple-500" />;
+        return <DollarSign className="h-5 w-5 text-gray-400" />;
+    };
 
 
     const newClientsData = [
@@ -92,7 +119,7 @@ const DashboardPage = () => {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total de Clientes</CardTitle>
@@ -150,6 +177,37 @@ const DashboardPage = () => {
                 )}
             </CardContent>
         </Card>
+        <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Ranking de Pagamentos (Mês)</CardTitle>
+                <BarChart className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+                {loading ? (
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-5/6" />
+                        <Skeleton className="h-4 w-4/6" />
+                    </div>
+                ) : (
+                    <ul className="space-y-2 text-sm">
+                        {paymentRanking && paymentRanking.length > 0 ? (
+                             paymentRanking.slice(0, 3).map((method, index) => (
+                                <li key={index} className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        {getPaymentMethodIcon(method.name)}
+                                        <span className="capitalize">{method.name}</span>
+                                    </div>
+                                    <span className="font-semibold">{method.count}</span>
+                                </li>
+                            ))
+                        ) : (
+                            <p className="text-xs text-muted-foreground">Nenhum dado de pagamento no mês.</p>
+                        )}
+                    </ul>
+                )}
+            </CardContent>
+        </Card>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -160,12 +218,12 @@ const DashboardPage = () => {
                 </CardHeader>
                 <CardContent>
                      <ChartContainer config={{sales: { label: "Vendas", color: "hsl(var(--primary))"}}} className="h-[250px] w-full">
-                        <BarChart data={topProducts} accessibilityLayer>
+                        <RechartsBarChart data={topProducts} accessibilityLayer>
                            <XAxis dataKey="product" tickLine={false} axisLine={false} fontSize={12} />
                            <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
                            <Tooltip cursor={{fill: 'hsl(var(--muted))'}} content={<ChartTooltipContent />} />
                            <Bar dataKey="sales" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                        </BarChart>
+                        </RechartsBarChart>
                     </ChartContainer>
                 </CardContent>
             </Card>
@@ -177,12 +235,12 @@ const DashboardPage = () => {
                 </CardHeader>
                 <CardContent>
                     <ChartContainer config={{newClients: { label: "Novos Clientes", color: "hsl(var(--primary))"}}} className="h-[250px] w-full">
-                         <BarChart data={newClientsData} accessibilityLayer>
+                         <RechartsBarChart data={newClientsData} accessibilityLayer>
                            <XAxis dataKey="month" tickLine={false} axisLine={false} fontSize={12} />
                            <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
                            <Tooltip cursor={{fill: 'hsl(var(--muted))'}} content={<ChartTooltipContent />} />
                            <Bar dataKey="newClients" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                        </BarChart>
+                        </RechartsBarChart>
                     </ChartContainer>
                 </CardContent>
             </Card>

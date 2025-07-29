@@ -89,8 +89,8 @@ export async function getProductStats(companyId: number): Promise<{ total: numbe
         const stats = (rows as any[])[0];
         
         return {
-            total: Number(stats.total) || 0,
-            totalActive: Number(stats.totalActive) || 0,
+            total: Number(stats?.total) || 0,
+            totalActive: Number(stats?.totalActive) || 0,
         };
 
     } catch (error) {
@@ -130,6 +130,56 @@ export async function getMonthlySales(companyId: number): Promise<{ total: numbe
     } catch (error) {
         console.error('Error fetching monthly sales:', error);
         throw new Error('Ocorreu um erro no servidor ao buscar as vendas do mês.');
+    } finally {
+        await connection.end();
+    }
+}
+
+/**
+ * Busca o ranking de métodos de pagamento do mês atual.
+ * @param companyId O ID da empresa.
+ * @returns Uma promessa que resolve para um array com o ranking.
+ */
+export async function getPaymentMethodRanking(companyId: number): Promise<{ name: string; count: number }[]> {
+    if (!companyId) {
+        throw new Error("ID da empresa não fornecido.");
+    }
+
+    const connection = await db();
+
+    try {
+        const query = `
+            SELECT formaPagamento 
+            FROM relatoriovenda 
+            WHERE idempresa = ? 
+            AND MONTH(dataVenda) = MONTH(CURDATE()) 
+            AND YEAR(dataVenda) = YEAR(CURDATE())
+            AND formaPagamento IS NOT NULL AND formaPagamento != ''
+        `;
+        const [rows] = await connection.execute(query, [companyId]);
+
+        const paymentMethods = rows as { formaPagamento: string }[];
+        const methodCounts: { [key: string]: number } = {};
+
+        paymentMethods.forEach(row => {
+            const methods = row.formaPagamento.split('-').filter(m => m);
+            methods.forEach(method => {
+                const normalizedMethod = method.trim().toLowerCase();
+                 if (normalizedMethod) {
+                    methodCounts[normalizedMethod] = (methodCounts[normalizedMethod] || 0) + 1;
+                }
+            });
+        });
+        
+        const rankedMethods = Object.entries(methodCounts)
+            .map(([name, count]) => ({ name, count }))
+            .sort((a, b) => b.count - a.count);
+
+        return rankedMethods;
+
+    } catch (error) {
+        console.error('Error fetching payment method ranking:', error);
+        throw new Error('Ocorreu um erro no servidor ao buscar o ranking de pagamentos.');
     } finally {
         await connection.end();
     }
