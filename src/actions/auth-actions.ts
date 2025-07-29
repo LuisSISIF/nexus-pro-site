@@ -120,7 +120,7 @@ export async function registerUserAndCompany(data: unknown) {
             taxRegimeInt, // rTribut as INT
             municipalInscription, // inscricaoMunicipal
             0, // maisUser (additional users)
-            0, // catPlano (type of monthly payment)
+            1, // catPlano (type of monthly payment)
             0.00, // valorMensal
             0, // mesesCobrar
         ]
