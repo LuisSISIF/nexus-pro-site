@@ -118,22 +118,23 @@ async function getNewClientsData(connection: any, companyId: number): Promise<Ne
     `;
     const [rows] = await connection.execute(query, [companyId]);
     
-    // Ensure we have data for the last 6 months, even if it's 0
     const monthMap = new Map<string, number>();
     (rows as any[]).forEach(row => monthMap.set(row.month, Number(row.newClients)));
 
     const result: NewClientsData[] = [];
     const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
-    for (let i = 5; i >= 0; i--) {
-        const d = new Date();
-        d.setMonth(d.getMonth() - i);
-        const monthName = monthNames[d.getMonth()];
+    let date = new Date();
+    date.setMonth(date.getMonth() - 5); 
+    
+    for (let i = 0; i < 6; i++) {
+        const monthName = monthNames[date.getMonth()];
         result.push({
             month: monthName,
             newClients: monthMap.get(monthName) || 0,
         });
+        date.setMonth(date.getMonth() + 1);
     }
-
+    
     return result;
 }
 
@@ -143,10 +144,12 @@ async function getBranches(connection: any, companyId: number): Promise<Branch[]
         SELECT 
             l.nomeLoja as name,
             CASE WHEN l.status = 1 THEN 'Ativa' ELSE 'Inativa' END as status,
-            (SELECT COUNT(DISTINCT idFuncionario) FROM vendas WHERE idLoja = l.id) as users
+            COUNT(DISTINCT v.idFuncionario) as users
         FROM lojas l
-        WHERE l.idempresa = ?;
+        LEFT JOIN vendas v ON l.id = v.idLoja
+        WHERE l.idempresa = ?
+        GROUP BY l.id, l.nomeLoja, l.status;
     `;
      const [rows] = await connection.execute(query, [companyId]);
-     return rows as Branch[]
+     return rows as Branch[];
 }

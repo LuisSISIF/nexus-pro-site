@@ -12,7 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from '@/components/ui/badge';
-import { Bar, XAxis, YAxis, Tooltip, Legend, BarChart } from 'recharts';
+import { Bar, XAxis, YAxis, Tooltip, Legend, BarChart, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { getDashboardData, DashboardData } from '@/actions/dashboard-actions';
 import { Skeleton } from '@/components/ui/skeleton';
