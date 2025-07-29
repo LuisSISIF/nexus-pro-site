@@ -2,6 +2,7 @@ import React from 'react';
 import { Play, CheckCircle, Calendar } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import Sistema from '@/images/telaSistema.png';
 
 const Hero = () => {
   return (
@@ -69,7 +70,7 @@ const Hero = () => {
           <div className="relative">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-4 transform rotate-1 hover:rotate-0 transition-transform duration-300">
             <Image 
-              src="https://placehold.co/600x400.png"
+              src={Sistema}
               alt="Dashboard do NexusPro" 
               className="rounded-lg shadow-lg w-full"
               width={600}

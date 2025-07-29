@@ -2,6 +2,7 @@ import React from 'react';
 import { Phone, Mail, MapPin, Instagram } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import Logo from '@/images/logo.png';
 
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg
@@ -24,7 +25,7 @@ const Footer = () => {
           {/* Company Info */}
           <div className="space-y-4">
             <a href="/" className="flex items-center space-x-2">
-              <Image src="https://placehold.co/128x128.png" alt="Andromeda Solutions Logo" width={32} height={32} className="h-8 w-auto" data-ai-hint="logo" />
+              <Image src={Logo} alt="Andromeda Solutions Logo" width={32} height={32} className="h-8 w-auto" data-ai-hint="logo" />
               <span className="text-xl font-bold">Andromeda Solutions</span>
             </a>
             <p className="text-gray-300 leading-relaxed">

@@ -4,6 +4,7 @@ import { Phone, Calendar, Zap, Menu, X, User } from 'lucide-react';
 import { ThemeToggleButton } from '../theme-toggle';
 import Image from 'next/image';
 import Link from 'next/link';
+import Logo from '@/images/logo.png';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -23,7 +24,7 @@ const Header = () => {
           <div className="flex items-center">
             <Link href="/" className="flex-shrink-0">
               <div className="flex items-center space-x-2">
-                <Image src="https://placehold.co/128x128.png" alt="Andromeda Solutions Logo" width={40} height={40} className="h-10 w-auto" data-ai-hint="logo" />
+                <Image src={Logo} alt="Andromeda Solutions Logo" width={40} height={40} className="h-10 w-auto" data-ai-hint="logo" />
                 <span className="text-xl font-bold text-gray-900 dark:text-white">Andromeda Solutions</span>
               </div>
             </Link>
