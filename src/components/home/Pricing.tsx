@@ -45,7 +45,7 @@ const Pricing = () => {
       description: "Redes com filiais",
       icon: Building,
       features: [
-        "Usuários ilimitados",
+        "Até 12 usuários",
         "Controle de Crédito avançado por filial",
         "Relatórios Estratégicos e personalizados",
         "Controle de Acesso avançado + log de ações",
