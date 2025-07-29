@@ -260,8 +260,8 @@ export async function getStores(companyId: number): Promise<{ name: string; stat
 
     for (const store of stores) {
       const usersQuery = `
-            SELECT COUNT(DISTINCT idFuncionario) as userCount 
-            FROM vendas 
+            SELECT COUNT(DISTINCT idfuncionarios) as userCount 
+            FROM relatoriovenda 
             WHERE idempresa = ? AND idLoja = ?
         `;
       const [userRows] = await connection.execute(usersQuery, [companyId, store.id]);
