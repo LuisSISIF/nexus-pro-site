@@ -21,6 +21,7 @@ function getTaxRegimeAsInt(taxRegime: string): number {
     return regimeMap[taxRegime.toLowerCase()] || 0;
 }
 
+
 function sha256Hash(password: string): string {
     const hash = crypto.createHash('sha256');
     hash.update(password);
@@ -139,8 +140,8 @@ export async function registerUserAndCompany(data: unknown) {
             marketSegment,
             taxRegimeInt,
             municipalInscription || null,
-            0,
-            1, 
+            0, // usersAdicionais
+            1, // catPlano
             0.00,
             0,
         ]
@@ -201,6 +202,8 @@ export async function loginUser(data: unknown) {
 
     if ((rows as any[]).length > 0) {
       const user = (rows as any[])[0];
+      // Note: In a real app, you would create a session/JWT here.
+      // We are returning the user object directly for simplicity.
       return { success: true, message: 'Login bem-sucedido!', user };
     } else {
       return { success: false, message: 'E-mail, senha ou permissão inválidos.' };

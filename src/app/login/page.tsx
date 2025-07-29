@@ -19,7 +19,7 @@ import { useToast } from '@/hooks/use-toast';
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Por favor, insira um e-mail válido." }),
-  password: z.string().min(6, { message: "A senha deve ter pelo menos 6 caracteres." }),
+  password: z.string().min(1, { message: "A senha é obrigatória." }),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -41,11 +41,18 @@ const LoginPage = () => {
     setLoading(true);
     try {
       const result = await loginUser(values);
-      if (result.success) {
+      if (result.success && result.user) {
         toast({
           title: "Login bem-sucedido!",
           description: "Redirecionando para o painel...",
         });
+        
+        // Temporary solution: Store companyId in localStorage
+        // A proper session management system should be implemented
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('companyId', result.user.idempresa.toString());
+        }
+
         router.push('/dashboard');
       } else {
         toast({
