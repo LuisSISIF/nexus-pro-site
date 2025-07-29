@@ -64,7 +64,9 @@ const Step1 = ({ nextStep, form }: { nextStep: () => void, form: any }) => {
             <FormItem><FormLabel>Nome Completo</FormLabel><FormControl><Input placeholder="Seu nome completo" {...field} /></FormControl><FormMessage /></FormItem>
           )} />
           <FormField control={form.control} name="cpf" render={({ field }) => (
-            <FormItem><FormLabel>CPF</FormLabel><FormControl><InputMask mask="999.999.999-99" value={field.value} onChange={field.onChange}><Input placeholder="000.000.000-00" /></InputMask></FormControl><FormMessage /></FormItem>
+            <FormItem><FormLabel>CPF</FormLabel><FormControl><InputMask mask="999.999.999-99" value={field.value} onChange={field.onChange}>
+              {(inputProps: any) => <Input {...inputProps} placeholder="000.000.000-00" />}
+            </InputMask></FormControl><FormMessage /></FormItem>
           )} />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -92,7 +94,9 @@ const Step1 = ({ nextStep, form }: { nextStep: () => void, form: any }) => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField control={form.control} name="phone" render={({ field }) => (
-            <FormItem><FormLabel>Telefone</FormLabel><FormControl><InputMask mask="(99) 99999-9999" value={field.value} onChange={field.onChange}><Input placeholder="(00) 90000-0000" /></InputMask></FormControl><FormMessage /></FormItem>
+            <FormItem><FormLabel>Telefone</FormLabel><FormControl><InputMask mask="(99) 99999-9999" value={field.value} onChange={field.onChange}>
+              {(inputProps: any) => <Input {...inputProps} placeholder="(00) 90000-0000" />}
+            </InputMask></FormControl><FormMessage /></FormItem>
           )} />
           <FormField control={form.control} name="email" render={({ field }) => (
             <FormItem><FormLabel>E-mail</FormLabel><FormControl><Input type="email" placeholder="seu-email@exemplo.com" {...field} /></FormControl><FormMessage /></FormItem>
@@ -115,7 +119,9 @@ const Step2 = ({ prevStep, form, onSubmit }: { prevStep: () => void, form: any, 
             <FormItem><FormLabel>Nome Fantasia</FormLabel><FormControl><Input placeholder="Nome do seu negócio" {...field} /></FormControl><FormMessage /></FormItem>
         )} />
         <FormField control={form.control} name="cnpj" render={({ field }) => (
-            <FormItem><FormLabel>CNPJ</FormLabel><FormControl><InputMask mask="99.999.999/9999-99" value={field.value} onChange={field.onChange}><Input placeholder="00.000.000/0001-00" /></InputMask></FormControl><FormMessage /></FormItem>
+            <FormItem><FormLabel>CNPJ</FormLabel><FormControl><InputMask mask="99.999.999/9999-99" value={field.value} onChange={field.onChange}>
+              {(inputProps: any) => <Input {...inputProps} placeholder="00.000.000/0001-00" />}
+            </InputMask></FormControl><FormMessage /></FormItem>
         )} />
       </div>
        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -182,7 +188,9 @@ const Step2 = ({ prevStep, form, onSubmit }: { prevStep: () => void, form: any, 
       </div>
        <div className="space-y-2">
          <FormField control={form.control} name="cep" render={({ field }) => (
-            <FormItem><FormLabel>CEP</FormLabel><FormControl><InputMask mask="99999-999" value={field.value} onChange={field.onChange}><Input placeholder="00000-000" /></InputMask></FormControl><FormMessage /></FormItem>
+            <FormItem><FormLabel>CEP</FormLabel><FormControl><InputMask mask="99999-999" value={field.value} onChange={field.onChange}>
+              {(inputProps: any) => <Input {...inputProps} placeholder="00000-000" />}
+            </InputMask></FormControl><FormMessage /></FormItem>
         )} />
        </div>
        <p className="font-medium text-gray-800 dark:text-gray-200 border-t pt-4">Contato da Empresa</p>
@@ -199,7 +207,9 @@ const Step2 = ({ prevStep, form, onSubmit }: { prevStep: () => void, form: any, 
                 <FormItem><FormLabel>Site (opcional)</FormLabel><FormControl><Input placeholder="www.suaempresa.com" {...field} /></FormControl><FormMessage /></FormItem>
             )} />
             <FormField control={form.control} name="commercialPhone" render={({ field }) => (
-                <FormItem><FormLabel>Telefone</FormLabel><FormControl><InputMask mask="(99) 9999-9999" value={field.value} onChange={field.onChange}><Input type="tel" placeholder="(00) 0000-0000" /></InputMask></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Telefone</FormLabel><FormControl><InputMask mask="(99) 9999-9999" value={field.value} onChange={field.onChange}>
+                  {(inputProps: any) => <Input {...inputProps} type="tel" placeholder="(00) 0000-0000" />}
+                </InputMask></FormControl><FormMessage /></FormItem>
             )} />
             <FormField control={form.control} name="instagram" render={({ field }) => (
                 <FormItem><FormLabel>Instagram (opcional)</FormLabel><FormControl><Input placeholder="@seuusuario" {...field} /></FormControl><FormMessage /></FormItem>
