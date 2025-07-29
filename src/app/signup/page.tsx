@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -28,10 +28,15 @@ const step1Schema = z.object({
   dob: z.string().refine((val) => !isNaN(Date.parse(val)), "Data de nascimento inválida"),
   gender: z.enum(["male", "female", "other"]),
   login: z.string().min(3, "Login deve ter pelo menos 3 caracteres"),
-  password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
+  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
+  confirmPassword: z.string().min(6, "A confirmação de senha é obrigatória"),
   phone: z.string().min(10, "Telefone inválido"),
   email: z.string().email("E-mail inválido"),
+}).refine(data => data.password === data.confirmPassword, {
+  message: "As senhas não coincidem",
+  path: ["confirmPassword"],
 });
+
 
 const step2Schema = z.object({
   fantasyName: z.string().min(2, "Nome fantasia é obrigatório"),
@@ -57,6 +62,9 @@ const step2Schema = z.object({
 
 
 const Step1 = ({ nextStep, form }: { nextStep: () => void, form: any }) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(nextStep)} className="space-y-6 animate-in fade-in-50 duration-500">
@@ -87,16 +95,43 @@ const Step1 = ({ nextStep, form }: { nextStep: () => void, form: any }) => {
           <FormField control={form.control} name="login" render={({ field }) => (
             <FormItem><FormLabel>Login</FormLabel><FormControl><Input placeholder="Escolha um nome de usuário" {...field} /></FormControl><FormMessage /></FormItem>
           )} />
-          <FormField control={form.control} name="password" render={({ field }) => (
-            <FormItem><FormLabel>Senha</FormLabel><FormControl><Input type="password" placeholder="Crie uma senha forte" {...field} /></FormControl><FormMessage /></FormItem>
-          )} />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField control={form.control} name="phone" render={({ field }) => (
             <FormItem><FormLabel>Telefone</FormLabel><FormControl>
               <Input placeholder="(00) 90000-0000" {...field} />
             </FormControl><FormMessage /></FormItem>
           )} />
+        </div>
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+           <FormField control={form.control} name="password" render={({ field }) => (
+            <FormItem>
+              <FormLabel>Senha</FormLabel>
+              <FormControl>
+                <div className="relative">
+                  <Input type={showPassword ? "text" : "password"} placeholder="Crie uma senha forte" {...field} />
+                  <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setShowPassword(prev => !prev)}>
+                    {showPassword ? <EyeOff className="h-4 w-4"/> : <Eye className="h-4 w-4"/>}
+                  </Button>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+           <FormField control={form.control} name="confirmPassword" render={({ field }) => (
+             <FormItem>
+              <FormLabel>Confirmar Senha</FormLabel>
+               <FormControl>
+                <div className="relative">
+                  <Input type={showConfirmPassword ? "text" : "password"} placeholder="Repita a senha" {...field} />
+                   <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setShowConfirmPassword(prev => !prev)}>
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4"/> : <Eye className="h-4 w-4"/>}
+                  </Button>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+        </div>
+        <div className="space-y-2">
           <FormField control={form.control} name="email" render={({ field }) => (
             <FormItem><FormLabel>E-mail</FormLabel><FormControl><Input type="email" placeholder="seu-email@exemplo.com" {...field} /></FormControl><FormMessage /></FormItem>
           )} />
@@ -111,6 +146,7 @@ const Step1 = ({ nextStep, form }: { nextStep: () => void, form: any }) => {
 
 const Step2 = ({ prevStep, form, onSubmit }: { prevStep: () => void, form: any, onSubmit: (values: any) => void }) => {
   return (
+    <>
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 animate-in fade-in-50 duration-500">
          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -225,6 +261,7 @@ const Step2 = ({ prevStep, form, onSubmit }: { prevStep: () => void, form: any, 
         </div>
       </form>
       </Form>
+      </>
   );
 };
 
@@ -236,7 +273,7 @@ const SignUpPage = () => {
 
     const formStep1 = useForm({
       resolver: zodResolver(step1Schema),
-      defaultValues: { fullName: "", cpf: "", rg: "", dob: "", gender: "male", login: "", password: "", phone: "", email: "" },
+      defaultValues: { fullName: "", cpf: "", rg: "", dob: "", gender: "male", login: "", password: "", confirmPassword: "", phone: "", email: "" },
     });
 
     const formStep2 = useForm({

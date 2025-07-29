@@ -1,8 +1,9 @@
+
 'use server';
 
 import { z } from 'zod';
 import { db } from '@/lib/db';
-import bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
 
 const registrationSchema = z.object({
   // Step 1 - User
@@ -13,6 +14,7 @@ const registrationSchema = z.object({
   gender: z.string(),
   login: z.string().min(3),
   password: z.string().min(6),
+  confirmPassword: z.string().min(6),
   phone: z.string(),
   email: z.string().email(),
   
@@ -36,6 +38,9 @@ const registrationSchema = z.object({
   website: z.string().optional(),
   commercialPhone: z.string(),
   instagram: z.string().optional(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "As senhas não coincidem",
+  path: ["confirmPassword"], 
 });
 
 function getTaxRegimeAsInt(taxRegime: string): number {
@@ -50,7 +55,13 @@ function getTaxRegimeAsInt(taxRegime: string): number {
         'coop': 8,
         'semfins': 9,
     };
-    return regimeMap[taxRegime.toLowerCase()] || 0; // Default to 0 if not found
+    return regimeMap[taxRegime.toLowerCase()] || 0;
+}
+
+function sha256Hash(password: string): string {
+    const hash = crypto.createHash('sha256');
+    hash.update(password);
+    return hash.digest('hex');
 }
 
 
@@ -90,8 +101,8 @@ export async function registerUserAndCompany(data: unknown) {
         return { success: false, message: 'CNPJ já cadastrado.' };
     }
 
-    // Hash the password before sending to procedure
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Hash the password using SHA-256
+    const hashedPassword = sha256Hash(password);
 
     // 1. Call the procedure to insert the company
     const fullAddress = `${street}, ${number}, ${neighborhood}, ${city} - ${state}, ${cep}`;
@@ -108,17 +119,17 @@ export async function registerUserAndCompany(data: unknown) {
             planId, // plano = 2 (teste)
             fantasyName, // nome_empresa
             cnpj, // cnpj_empresa
-            website, // site
+            website || null, // site
             commercialEmail, // emailComercial
             commercialPhone, // telefone
-            stateInscription, // inscricaoEstadual
+            stateInscription || null, // inscricaoEstadual
             dayOfMonth.toString(), // diaVencimento
-            instagram, // instagram
+            instagram || null, // instagram
             ownerName, // rep
             mainActivity, // atv
             marketSegment, // segmento
             taxRegimeInt, // rTribut as INT
-            municipalInscription, // inscricaoMunicipal
+            municipalInscription || null, // inscricaoMunicipal
             0, // maisUser (additional users)
             1, // catPlano (type of monthly payment)
             0.00, // valorMensal
@@ -151,7 +162,7 @@ export async function registerUserAndCompany(data: unknown) {
 
     await connection.commit();
 
-    return { success: true, message: 'Cadastro realizado com sucesso!', userId: null, companyId: companyId }; // userId from users table is not returned by procedure
+    return { success: true, message: 'Cadastro realizado com sucesso!', userId: null, companyId: companyId }; 
 
   } catch (error) {
     await connection.rollback();
