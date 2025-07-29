@@ -40,9 +40,9 @@ const registrationSchema = z.object({
 
 function getTaxRegimeAsInt(taxRegime: string): number {
     const regimeMap: { [key: string]: number } = {
-        'simples': 1,
+        'real': 1,
         'presumido': 2,
-        'real': 3,
+        'simples': 3,
         'mei': 4,
         'eireli': 5,
         'ltda': 6,
