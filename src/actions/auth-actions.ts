@@ -1,9 +1,34 @@
-
 'use server';
 
 import { z } from 'zod';
 import { db } from '@/lib/db';
 import * as crypto from 'crypto';
+
+// --- Helper Functions ---
+
+function getTaxRegimeAsInt(taxRegime: string): number {
+    const regimeMap: { [key: string]: number } = {
+        'real': 1,
+        'presumido': 2,
+        'simples': 3,
+        'mei': 4,
+        'eireli': 5,
+        'ltda': 6,
+        'sa': 7,
+        'coop': 8,
+        'semfins': 9,
+    };
+    return regimeMap[taxRegime.toLowerCase()] || 0;
+}
+
+function sha256Hash(password: string): string {
+    const hash = crypto.createHash('sha256');
+    hash.update(password);
+    return hash.digest('hex');
+}
+
+
+// --- Schemas ---
 
 const registrationSchema = z.object({
   // Step 1 - User
@@ -43,27 +68,13 @@ const registrationSchema = z.object({
   path: ["confirmPassword"], 
 });
 
-function getTaxRegimeAsInt(taxRegime: string): number {
-    const regimeMap: { [key: string]: number } = {
-        'real': 1,
-        'presumido': 2,
-        'simples': 3,
-        'mei': 4,
-        'eireli': 5,
-        'ltda': 6,
-        'sa': 7,
-        'coop': 8,
-        'semfins': 9,
-    };
-    return regimeMap[taxRegime.toLowerCase()] || 0;
-}
+const loginSchema = z.object({
+  email: z.string().email({ message: "Por favor, insira um e-mail válido." }),
+  password: z.string().min(1, { message: "A senha é obrigatória." }),
+});
 
-function sha256Hash(password: string): string {
-    const hash = crypto.createHash('sha256');
-    hash.update(password);
-    return hash.digest('hex');
-}
 
+// --- Server Actions ---
 
 export async function registerUserAndCompany(data: unknown) {
   const validation = registrationSchema.safeParse(data);
@@ -101,12 +112,10 @@ export async function registerUserAndCompany(data: unknown) {
         return { success: false, message: 'CNPJ já cadastrado.' };
     }
 
-    // Hash the password using SHA-256
     const hashedPassword = sha256Hash(password);
 
-    // 1. Call the procedure to insert the company
     const fullAddress = `${street}, ${number}, ${neighborhood}, ${city} - ${state}, ${cep}`;
-    const planId = 2; // Test plan
+    const planId = 2; 
     const dayOfMonth = new Date().getDate();
     const taxRegimeInt = getTaxRegimeAsInt(taxRegime);
 
@@ -114,49 +123,47 @@ export async function registerUserAndCompany(data: unknown) {
     const [companyResult] = await connection.execute(
         'CALL admFunctionsEmpresas(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [
-            0, // escolha = 0 for INSERT
-            fullAddress, // endereco
-            planId, // plano = 2 (teste)
-            fantasyName, // nome_empresa
-            cnpj, // cnpj_empresa
-            website || null, // site
-            commercialEmail, // emailComercial
-            commercialPhone, // telefone
-            stateInscription || null, // inscricaoEstadual
-            dayOfMonth.toString(), // diaVencimento
-            instagram || null, // instagram
-            ownerName, // rep
-            mainActivity, // atv
-            marketSegment, // segmento
-            taxRegimeInt, // rTribut as INT
-            municipalInscription || null, // inscricaoMunicipal
-            0, // maisUser (additional users)
-            1, // catPlano (type of monthly payment)
-            0.00, // valorMensal
-            0, // mesesCobrar
+            0, 
+            fullAddress, 
+            planId, 
+            fantasyName, 
+            cnpj, 
+            website || null, 
+            commercialEmail, 
+            commercialPhone, 
+            stateInscription || null,
+            dayOfMonth.toString(), 
+            instagram || null, 
+            ownerName, 
+            mainActivity,
+            marketSegment,
+            taxRegimeInt,
+            municipalInscription || null,
+            0,
+            1, 
+            0.00,
+            0,
         ]
     );
     
-    // The procedure returns a result set with the new ID
     const companyId = (companyResult as any)[0][0]['ID'];
 
     if (!companyId) {
         throw new Error('Falha ao criar a empresa. O ID não foi retornado pela procedure.');
     }
 
-    // 2. Call the procedure to insert the admin user and employee
     const [userResult] = await connection.execute(
         'CALL admFunctionsInsertADM(?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [
-            companyId,      // idEmpresa
-            fullName,       // nom_func
-            cpf,            // cpf_func
-            rg,             // rg
-            gender,         // genero
-            phone,          // celular
-            email,          // email
-            login,          // login
-            hashedPassword  // senha
+            companyId,
+            fullName,
+            cpf,
+            rg,
+            gender,
+            phone,
+            email,
+            login,
+            hashedPassword
         ]
     );
 
@@ -167,11 +174,40 @@ export async function registerUserAndCompany(data: unknown) {
   } catch (error) {
     await connection.rollback();
     console.error('Registration Error:', error);
-    // Provide a more specific error message if possible
     if (error instanceof Error && (error as any).sqlMessage) {
        return { success: false, message: `Erro no banco de dados: ${(error as any).sqlMessage}` };
     }
     return { success: false, message: 'Ocorreu um erro no servidor ao tentar realizar o cadastro.' };
+  } finally {
+    await connection.end();
+  }
+}
+
+export async function loginUser(data: unknown) {
+  const validation = loginSchema.safeParse(data);
+
+  if (!validation.success) {
+    return { success: false, message: 'Dados de login inválidos.' };
+  }
+
+  const { email, password } = validation.data;
+  const hashedPassword = sha256Hash(password);
+
+  const connection = await db();
+
+  try {
+    const query = 'SELECT * FROM usuarios WHERE email = ? AND senha = ? AND admUser = 1';
+    const [rows] = await connection.execute(query, [email, hashedPassword]);
+
+    if ((rows as any[]).length > 0) {
+      const user = (rows as any[])[0];
+      return { success: true, message: 'Login bem-sucedido!', user };
+    } else {
+      return { success: false, message: 'E-mail, senha ou permissão inválidos.' };
+    }
+  } catch (error) {
+    console.error('Login Error:', error);
+    return { success: false, message: 'Ocorreu um erro no servidor durante o login.' };
   } finally {
     await connection.end();
   }
