@@ -234,3 +234,55 @@ export async function getTopCustomers(companyId: number): Promise<{ nome: string
         await connection.end();
     }
 }
+
+/**
+ * Busca as lojas (filiais) de uma empresa e a contagem de usuários vinculados.
+ * @param companyId O ID da empresa.
+ * @returns Uma promessa que resolve para uma lista de filiais.
+ */
+export async function getStores(companyId: number): Promise<{ name: string; status: string; users: number }[]> {
+  if (!companyId) {
+    throw new Error("ID da empresa não fornecido.");
+  }
+
+  const connection = await db();
+
+  try {
+    const storesQuery = `
+        SELECT id, nomeLoja, status 
+        FROM lojas 
+        WHERE idempresa = ?
+    `;
+    const [storeRows] = await connection.execute(storesQuery, [companyId]);
+    const stores = storeRows as { id: number; nomeLoja: string; status: number }[];
+
+    const result = [];
+
+    for (const store of stores) {
+      const usersQuery = `
+            SELECT COUNT(DISTINCT idFuncionario) as userCount 
+            FROM vendas 
+            WHERE idempresa = ? AND idLoja = ?
+        `;
+      const [userRows] = await connection.execute(usersQuery, [companyId, store.id]);
+      const userCount = (userRows as any[])[0]?.userCount || 0;
+
+      result.push({
+        name: store.nomeLoja,
+        status: store.status === 1 ? 'Ativa' : 'Inativa',
+        users: Number(userCount),
+      });
+    }
+
+    return result;
+
+  } catch (error) {
+    console.error('Error fetching stores:', error);
+    if (error instanceof Error && (error as any).sqlMessage) {
+       throw new Error(`Erro no banco de dados ao buscar filiais: ${(error as any).sqlMessage}`);
+    }
+    throw new Error('Ocorreu um erro no servidor ao buscar as filiais.');
+  } finally {
+    await connection.end();
+  }
+}

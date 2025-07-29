@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from '@/components/ui/badge';
-import { getTotalClients, getNewClientsThisMonth, getProductStats, getMonthlySales, getPaymentMethodRanking, getTopCustomers } from '@/actions/dashboard-actions';
+import { getTotalClients, getNewClientsThisMonth, getProductStats, getMonthlySales, getPaymentMethodRanking, getTopCustomers, getStores } from '@/actions/dashboard-actions';
 import { Skeleton } from '@/components/ui/skeleton';
 
 type PaymentMethodRank = {
@@ -24,6 +24,12 @@ type TopCustomer = {
     comprasRealizadas: number;
 };
 
+type Store = {
+    name: string;
+    status: string;
+    users: number;
+}
+
 const DashboardPage = () => {
     const [totalClients, setTotalClients] = useState<number | null>(null);
     const [newClientsCount, setNewClientsCount] = useState<number | null>(null);
@@ -32,6 +38,7 @@ const DashboardPage = () => {
     const [monthlySales, setMonthlySales] = useState<number | null>(null);
     const [paymentRanking, setPaymentRanking] = useState<PaymentMethodRank[] | null>(null);
     const [topCustomers, setTopCustomers] = useState<TopCustomer[] | null>(null);
+    const [stores, setStores] = useState<Store[] | null>(null);
     const [loading, setLoading] = useState(true);
     
 
@@ -52,14 +59,16 @@ const DashboardPage = () => {
                     productStatsResult, 
                     monthlySalesResult,
                     paymentRankingResult,
-                    topCustomersResult
+                    topCustomersResult,
+                    storesResult
                 ] = await Promise.all([
                     getTotalClients(Number(companyId)),
                     getNewClientsThisMonth(Number(companyId)),
                     getProductStats(Number(companyId)),
                     getMonthlySales(Number(companyId)),
                     getPaymentMethodRanking(Number(companyId)),
-                    getTopCustomers(Number(companyId))
+                    getTopCustomers(Number(companyId)),
+                    getStores(Number(companyId))
                 ]);
                 
                 setTotalClients(clientsResult.total);
@@ -69,6 +78,7 @@ const DashboardPage = () => {
                 setMonthlySales(monthlySalesResult.total);
                 setPaymentRanking(paymentRankingResult);
                 setTopCustomers(topCustomersResult);
+                setStores(storesResult);
 
             } catch (error) {
                 console.error("Failed to fetch dashboard data", error);
@@ -90,14 +100,6 @@ const DashboardPage = () => {
         if (normalizedMethod.includes('crediário') || normalizedMethod.includes('crediario')) return <Landmark className="h-5 w-5 text-purple-500" />;
         return <DollarSign className="h-5 w-5 text-gray-400" />;
     };
-
-   
-    const branches = [
-        { name: 'Loja Matriz', status: 'Ativa', users: 15 },
-        { name: 'Filial Centro', status: 'Ativa', users: 8 },
-        { name: 'Filial Norte', status: 'Inativa', users: 0 },
-    ];
-
 
   return (
     <div className="flex flex-col gap-6">
@@ -258,17 +260,31 @@ const DashboardPage = () => {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {branches.map(branch => (
-                                <TableRow key={branch.name}>
-                                    <TableCell className="font-medium">{branch.name}</TableCell>
-                                    <TableCell>
-                                        <Badge variant={branch.status === 'Ativa' ? 'default' : 'destructive'}>
-                                            {branch.status}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="text-right">{branch.users}</TableCell>
+                             {loading ? (
+                                Array.from({ length: 3 }).map((_, index) => (
+                                    <TableRow key={index}>
+                                        <TableCell><Skeleton className="h-4 w-2/4" /></TableCell>
+                                        <TableCell><Skeleton className="h-6 w-16" /></TableCell>
+                                        <TableCell className="text-right"><Skeleton className="h-4 w-1/4 float-right" /></TableCell>
+                                    </TableRow>
+                                ))
+                            ) : stores && stores.length > 0 ? (
+                                stores.map(branch => (
+                                    <TableRow key={branch.name}>
+                                        <TableCell className="font-medium">{branch.name}</TableCell>
+                                        <TableCell>
+                                            <Badge variant={branch.status === 'Ativa' ? 'default' : 'destructive'}>
+                                                {branch.status}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell className="text-right">{branch.users}</TableCell>
+                                    </TableRow>
+                                ))
+                             ) : (
+                                <TableRow>
+                                    <TableCell colSpan={3} className="text-center">Nenhuma filial cadastrada.</TableCell>
                                 </TableRow>
-                            ))}
+                            )}
                         </TableBody>
                     </Table>
                 </CardContent>
