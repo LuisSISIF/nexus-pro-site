@@ -38,6 +38,21 @@ const registrationSchema = z.object({
   instagram: z.string().optional(),
 });
 
+function getTaxRegimeAsInt(taxRegime: string): number {
+    const regimeMap: { [key: string]: number } = {
+        'simples': 1,
+        'presumido': 2,
+        'real': 3,
+        'mei': 4,
+        'eireli': 5,
+        'ltda': 6,
+        'sa': 7,
+        'coop': 8,
+        'semfins': 9,
+    };
+    return regimeMap[taxRegime.toLowerCase()] || 0; // Default to 0 if not found
+}
+
 
 export async function registerUserAndCompany(data: unknown) {
   const validation = registrationSchema.safeParse(data);
@@ -82,6 +97,8 @@ export async function registerUserAndCompany(data: unknown) {
     const fullAddress = `${street}, ${number}, ${neighborhood}, ${city} - ${state}, ${cep}`;
     const planId = 2; // Test plan
     const dayOfMonth = new Date().getDate();
+    const taxRegimeInt = getTaxRegimeAsInt(taxRegime);
+
 
     const [companyResult] = await connection.execute(
         'CALL admFunctionsEmpresas(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -100,7 +117,7 @@ export async function registerUserAndCompany(data: unknown) {
             ownerName, // rep
             mainActivity, // atv
             marketSegment, // segmento
-            taxRegime, // rTribut
+            taxRegimeInt, // rTribut as INT
             municipalInscription, // inscricaoMunicipal
             0, // maisUser (additional users)
             0, // catPlano (type of monthly payment)
