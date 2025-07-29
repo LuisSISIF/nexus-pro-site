@@ -14,34 +14,41 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { getTotalClients } from '@/actions/dashboard-actions';
+import { getTotalClients, getNewClientsThisMonth } from '@/actions/dashboard-actions';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const DashboardPage = () => {
     const [totalClients, setTotalClients] = useState<number | null>(null);
-    const [loadingClients, setLoadingClients] = useState(true);
+    const [newClientsCount, setNewClientsCount] = useState<number | null>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchTotalClients = async () => {
+        const fetchDashboardData = async () => {
             const companyId = localStorage.getItem('companyId');
             if (!companyId) {
-                setLoadingClients(false);
+                setLoading(false);
                 // Maybe set an error state here in the future
                 return;
             }
 
             try {
-                const result = await getTotalClients(Number(companyId));
-                setTotalClients(result.total);
+                const [clientsResult, newClientsResult] = await Promise.all([
+                    getTotalClients(Number(companyId)),
+                    getNewClientsThisMonth(Number(companyId))
+                ]);
+                
+                setTotalClients(clientsResult.total);
+                setNewClientsCount(newClientsResult.total);
+
             } catch (error) {
-                console.error(error);
+                console.error("Failed to fetch dashboard data", error);
                  // Maybe set an error state here in the future
             } finally {
-                setLoadingClients(false);
+                setLoading(false);
             }
         };
 
-        fetchTotalClients();
+        fetchDashboardData();
     }, []);
 
 
@@ -84,12 +91,17 @@ const DashboardPage = () => {
                 <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                {loadingClients ? (
-                    <Skeleton className="h-8 w-1/2" />
+                {loading ? (
+                    <>
+                        <Skeleton className="h-8 w-1/2" />
+                        <Skeleton className="h-4 w-1/3 mt-2" />
+                    </>
                 ) : (
-                    <div className="text-2xl font-bold">{totalClients ?? 'N/A'}</div>
+                    <>
+                        <div className="text-2xl font-bold">{totalClients ?? 'N/A'}</div>
+                        <p className="text-xs text-muted-foreground">{newClientsCount ?? 0} novos clientes este mês</p>
+                    </>
                 )}
-                <p className="text-xs text-muted-foreground">{newClientsData[newClientsData.length -1]?.newClients || 0} novos clientes este mês</p>
             </CardContent>
         </Card>
         <Card>
