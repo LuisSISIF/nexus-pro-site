@@ -80,6 +80,8 @@ const ContractDataPage = () => {
 
     if (data) {
       const isTestPlan = data.idPlano === 2;
+      const totalUserLimit = data.limiteUsuarios + (data.usersAdicionais || 0);
+      
       return (
         <div className="space-y-6">
           <DataRow 
@@ -117,7 +119,7 @@ const ContractDataPage = () => {
           
            <DataRow 
             label="Usuários" 
-            value={`${data.qtdFunc} / ${data.limiteUsuarios}`} 
+            value={`${data.qtdFunc} / ${totalUserLimit}`} 
             icon={<Users className="w-4 h-4 text-primary" />} 
           />
            <DataRow 
