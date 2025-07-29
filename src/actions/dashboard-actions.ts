@@ -24,6 +24,9 @@ export async function getTotalClients(companyId: number): Promise<{ total: numbe
 
   } catch (error) {
     console.error('Error fetching total clients:', error);
+    if (error instanceof Error && (error as any).sqlMessage) {
+       throw new Error(`Erro no banco de dados ao buscar clientes: ${(error as any).sqlMessage}`);
+    }
     throw new Error('Ocorreu um erro no servidor ao buscar o total de clientes.');
   } finally {
     await connection.end();
@@ -58,6 +61,9 @@ export async function getNewClientsThisMonth(companyId: number): Promise<{ total
 
     } catch (error) {
         console.error('Error fetching new clients this month:', error);
+        if (error instanceof Error && (error as any).sqlMessage) {
+            throw new Error(`Erro no banco de dados ao buscar novos clientes: ${(error as any).sqlMessage}`);
+        }
         throw new Error('Ocorreu um erro no servidor ao buscar os novos clientes.');
     } finally {
         await connection.end();
@@ -95,6 +101,9 @@ export async function getProductStats(companyId: number): Promise<{ total: numbe
 
     } catch (error) {
         console.error('Error fetching product stats:', error);
+        if (error instanceof Error && (error as any).sqlMessage) {
+            throw new Error(`Erro no banco de dados ao buscar estatísticas de produtos: ${(error as any).sqlMessage}`);
+        }
         throw new Error('Ocorreu um erro no servidor ao buscar as estatísticas de produtos.');
     } finally {
         await connection.end();
@@ -129,6 +138,9 @@ export async function getMonthlySales(companyId: number): Promise<{ total: numbe
 
     } catch (error) {
         console.error('Error fetching monthly sales:', error);
+        if (error instanceof Error && (error as any).sqlMessage) {
+            throw new Error(`Erro no banco de dados ao buscar vendas do mês: ${(error as any).sqlMessage}`);
+        }
         throw new Error('Ocorreu um erro no servidor ao buscar as vendas do mês.');
     } finally {
         await connection.end();
@@ -179,6 +191,9 @@ export async function getPaymentMethodRanking(companyId: number): Promise<{ name
 
     } catch (error) {
         console.error('Error fetching payment method ranking:', error);
+         if (error instanceof Error && (error as any).sqlMessage) {
+            throw new Error(`Erro no banco de dados ao buscar ranking de pagamentos: ${(error as any).sqlMessage}`);
+        }
         throw new Error('Ocorreu um erro no servidor ao buscar o ranking de pagamentos.');
     } finally {
         await connection.end();
@@ -202,7 +217,7 @@ export async function getTopSellingProducts(companyId: number): Promise<{ produc
     const query = `
         SELECT 
             v.produtoVendido AS product,
-            SUM(v.quantidade) AS sales
+            CAST(SUM(v.quantidade) AS DECIMAL(10,2)) AS sales
         FROM vendas v
         JOIN relatoriovenda rv ON v.idVenda = rv.idVenda
         WHERE rv.idempresa = ?
@@ -223,6 +238,9 @@ export async function getTopSellingProducts(companyId: number): Promise<{ produc
 
   } catch (error) {
     console.error('Error fetching top selling products:', error);
+    if (error instanceof Error && (error as any).sqlMessage) {
+        throw new Error(`Erro no banco de dados ao buscar produtos mais vendidos: ${(error as any).sqlMessage}`);
+    }
     throw new Error('Ocorreu um erro no servidor ao buscar os produtos mais vendidos.');
   } finally {
     await connection.end();
