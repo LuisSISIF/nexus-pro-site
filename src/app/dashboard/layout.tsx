@@ -16,7 +16,7 @@ import { Home, User, Video, LogOut, FileText } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { ThemeToggleButton } from "@/components/theme-toggle";
-
+import logoNexus from "@/images/NewLogoNexus.png";
 export const metadata: Metadata = {
   title: "Painel NexusPro",
   description: "Área administrativa do sistema NexusPro.",
@@ -32,7 +32,7 @@ export default function DashboardLayout({
       <Sidebar>
         <SidebarHeader>
            <div className="flex flex-col items-center gap-2">
-                <Image src="https://placehold.co/160x160.png" alt="Andromeda Solutions Logo" width={160} height={160} data-ai-hint="logo" />
+                <Image src={logoNexus} alt="Andromeda Solutions Logo" width={160} height={160} data-ai-hint="logo" />
                 <span className="text-lg font-bold text-sidebar-foreground">NexusPro</span>
               </div>
         </SidebarHeader>
