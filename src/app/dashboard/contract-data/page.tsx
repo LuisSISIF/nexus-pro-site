@@ -145,15 +145,15 @@ const ContractDataPage = () => {
           {!isTestPlan && data.diaVencimento && (
             <>
               <DataRow 
+                label="Situação do Pagamento" 
+                value={getPaymentStatusBadge(data.pagamentoMes)}
+                icon={<CreditCard className="w-4 h-4 text-primary" />} 
+              />
+              <DataRow 
                   label="Dia do Vencimento" 
                   value={`Todo dia ${data.diaVencimento}`}
                   icon={<CalendarClock className="w-4 h-4 text-primary" />} 
               />
-               <DataRow 
-                label="Situação do Pagamento" 
-                value={getPaymentStatusBadge(data.pagamentoMes)}
-                icon={<CreditCard className="w-4 h-4 text-primary" />} 
-             />
             </>
           )}
         </div>
