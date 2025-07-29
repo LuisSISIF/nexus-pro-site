@@ -42,7 +42,7 @@ export default function DashboardLayout({
               <SidebarMenuButton asChild>
                 <Link href="/dashboard">
                   <Home />
-                  Painel
+                  Página inicial
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
