@@ -12,10 +12,11 @@ import {
   SidebarTrigger,
   SidebarInset,
 } from "@/components/ui/sidebar";
-import { Home, User, Video, LogOut, Settings } from "lucide-react";
+import { Home, User, Video, LogOut, FileText } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
+import { ThemeToggleButton } from "@/components/theme-toggle";
+
 
 export const metadata: Metadata = {
   title: "Painel NexusPro",
@@ -62,6 +63,14 @@ export default function DashboardLayout({
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
+            <SidebarMenuItem>
+               <SidebarMenuButton asChild>
+                <Link href="/dashboard/contract-data">
+                  <FileText />
+                  Dados Contratuais
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
@@ -81,10 +90,7 @@ export default function DashboardLayout({
         <header className="flex h-14 items-center gap-4 border-b bg-background px-6">
             <SidebarTrigger className="flex md:hidden" />
             <div className="flex w-full items-center justify-end gap-4">
-                 <Button variant="ghost" size="icon" className="rounded-full">
-                    <Settings className="h-5 w-5" />
-                    <span className="sr-only">Configurações</span>
-                </Button>
+                 <ThemeToggleButton />
             </div>
         </header>
         <main className="flex-1 overflow-auto p-4 md:p-6">
