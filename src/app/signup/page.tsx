@@ -111,120 +111,122 @@ const Step1 = ({ nextStep, form }: { nextStep: () => void, form: any }) => {
 
 const Step2 = ({ prevStep, form, onSubmit }: { prevStep: () => void, form: any, onSubmit: (values: any) => void }) => {
   return (
-    <Form {...form}>
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 animate-in fade-in-50 duration-500">
-       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <FormField control={form.control} name="fantasyName" render={({ field }) => (
-            <FormItem><FormLabel>Nome Fantasia</FormLabel><FormControl><Input placeholder="Nome do seu negócio" {...field} /></FormControl><FormMessage /></FormItem>
-        )} />
-        <FormField control={form.control} name="cnpj" render={({ field }) => (
-            <FormItem><FormLabel>CNPJ</FormLabel><FormControl>
-              <Input placeholder="00.000.000/0001-00" {...field} />
-            </FormControl><FormMessage /></FormItem>
-        )} />
-      </div>
-       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <FormField control={form.control} name="socialReason" render={({ field }) => (
-            <FormItem><FormLabel>Razão Social</FormLabel><FormControl><Input placeholder="Razão social da empresa" {...field} /></FormControl><FormMessage /></FormItem>
-        )} />
-        <FormField control={form.control} name="taxRegime" render={({ field }) => (
-            <FormItem><FormLabel>Regime Tributário</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl><SelectTrigger><SelectValue placeholder="Selecione o regime" /></SelectTrigger></FormControl>
-                <SelectContent>
-                    <SelectItem value="simples">Simples Nacional</SelectItem>
-                    <SelectItem value="presumido">Lucro Presumido</SelectItem>
-                    <SelectItem value="real">Lucro Real</SelectItem>
-                    <SelectItem value="mei">MEI</SelectItem>
-                    <SelectItem value="eireli">EIRELI</SelectItem>
-                    <SelectItem value="ltda">Sociedade Limitada</SelectItem>
-                    <SelectItem value="sa">Sociedade Anônima</SelectItem>
-                    <SelectItem value="coop">Cooperativa</SelectItem>
-                    <SelectItem value="semfins">Entidade sem Fins Lucrativos</SelectItem>
-                </SelectContent>
-            </Select><FormMessage /></FormItem>
-        )} />
-      </div>
-       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <FormField control={form.control} name="stateInscription" render={({ field }) => (
-            <FormItem><FormLabel>Inscrição Estadual (Opcional)</FormLabel><FormControl><Input placeholder="Número da I.E." {...field} /></FormControl><FormMessage /></FormItem>
-        )} />
-        <FormField control={form.control} name="municipalInscription" render={({ field }) => (
-            <FormItem><FormLabel>Inscrição Municipal (Opcional)</FormLabel><FormControl><Input placeholder="Número da I.M." {...field} /></FormControl><FormMessage /></FormItem>
-        )} />
-      </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField control={form.control} name="mainActivity" render={({ field }) => (
-            <FormItem><FormLabel>Atividade Principal</FormLabel><FormControl><Input placeholder="Ex: Comércio varejista" {...field} /></FormControl><FormMessage /></FormItem>
+    <>
+      <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 animate-in fade-in-50 duration-500">
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField control={form.control} name="fantasyName" render={({ field }) => (
+              <FormItem><FormLabel>Nome Fantasia</FormLabel><FormControl><Input placeholder="Nome do seu negócio" {...field} /></FormControl><FormMessage /></FormItem>
           )} />
-          <FormField control={form.control} name="marketSegment" render={({ field }) => (
-            <FormItem><FormLabel>Segmento de Mercado</FormLabel><FormControl><Input placeholder="Ex: Supermercado" {...field} /></FormControl><FormMessage /></FormItem>
+          <FormField control={form.control} name="cnpj" render={({ field }) => (
+              <FormItem><FormLabel>CNPJ</FormLabel><FormControl>
+                <Input placeholder="00.000.000/0001-00" {...field} />
+              </FormControl><FormMessage /></FormItem>
           )} />
         </div>
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField control={form.control} name="socialReason" render={({ field }) => (
+              <FormItem><FormLabel>Razão Social</FormLabel><FormControl><Input placeholder="Razão social da empresa" {...field} /></FormControl><FormMessage /></FormItem>
+          )} />
+          <FormField control={form.control} name="taxRegime" render={({ field }) => (
+              <FormItem><FormLabel>Regime Tributário</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl><SelectTrigger><SelectValue placeholder="Selecione o regime" /></SelectTrigger></FormControl>
+                  <SelectContent>
+                      <SelectItem value="simples">Simples Nacional</SelectItem>
+                      <SelectItem value="presumido">Lucro Presumido</SelectItem>
+                      <SelectItem value="real">Lucro Real</SelectItem>
+                      <SelectItem value="mei">MEI</SelectItem>
+                      <SelectItem value="eireli">EIRELI</SelectItem>
+                      <SelectItem value="ltda">Sociedade Limitada</SelectItem>
+                      <SelectItem value="sa">Sociedade Anônima</SelectItem>
+                      <SelectItem value="coop">Cooperativa</SelectItem>
+                      <SelectItem value="semfins">Entidade sem Fins Lucrativos</SelectItem>
+                  </SelectContent>
+              </Select><FormMessage /></FormItem>
+          )} />
+        </div>
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField control={form.control} name="stateInscription" render={({ field }) => (
+              <FormItem><FormLabel>Inscrição Estadual (Opcional)</FormLabel><FormControl><Input placeholder="Número da I.E." {...field} /></FormControl><FormMessage /></FormItem>
+          )} />
+          <FormField control={form.control} name="municipalInscription" render={({ field }) => (
+              <FormItem><FormLabel>Inscrição Municipal (Opcional)</FormLabel><FormControl><Input placeholder="Número da I.M." {...field} /></FormControl><FormMessage /></FormItem>
+          )} />
+        </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField control={form.control} name="mainActivity" render={({ field }) => (
+              <FormItem><FormLabel>Atividade Principal</FormLabel><FormControl><Input placeholder="Ex: Comércio varejista" {...field} /></FormControl><FormMessage /></FormItem>
+            )} />
+            <FormField control={form.control} name="marketSegment" render={({ field }) => (
+              <FormItem><FormLabel>Segmento de Mercado</FormLabel><FormControl><Input placeholder="Ex: Supermercado" {...field} /></FormControl><FormMessage /></FormItem>
+            )} />
+          </div>
 
-      <p className="font-medium text-gray-800 dark:text-gray-200 border-t pt-4">Endereço da Empresa</p>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="space-y-2 col-span-2">
-          <FormField control={form.control} name="street" render={({ field }) => (
-            <FormItem><FormLabel>Rua</FormLabel><FormControl><Input placeholder="Nome da rua" {...field} /></FormControl><FormMessage /></FormItem>
+        <p className="font-medium text-gray-800 dark:text-gray-200 border-t pt-4">Endereço da Empresa</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="space-y-2 col-span-2">
+            <FormField control={form.control} name="street" render={({ field }) => (
+              <FormItem><FormLabel>Rua</FormLabel><FormControl><Input placeholder="Nome da rua" {...field} /></FormControl><FormMessage /></FormItem>
+            )} />
+          </div>
+          <div className="space-y-2">
+            <FormField control={form.control} name="number" render={({ field }) => (
+              <FormItem><FormLabel>Nº</FormLabel><FormControl><Input placeholder="123" {...field} /></FormControl><FormMessage /></FormItem>
+            )} />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <FormField control={form.control} name="neighborhood" render={({ field }) => (
+              <FormItem><FormLabel>Bairro</FormLabel><FormControl><Input placeholder="Seu bairro" {...field} /></FormControl><FormMessage /></FormItem>
+          )} />
+          <FormField control={form.control} name="city" render={({ field }) => (
+              <FormItem><FormLabel>Cidade</FormLabel><FormControl><Input placeholder="Sua cidade" {...field} /></FormControl><FormMessage /></FormItem>
+          )} />
+          <FormField control={form.control} name="state" render={({ field }) => (
+              <FormItem><FormLabel>Estado</FormLabel><FormControl><Input placeholder="UF" {...field} /></FormControl><FormMessage /></FormItem>
           )} />
         </div>
-        <div className="space-y-2">
-          <FormField control={form.control} name="number" render={({ field }) => (
-            <FormItem><FormLabel>Nº</FormLabel><FormControl><Input placeholder="123" {...field} /></FormControl><FormMessage /></FormItem>
+         <div className="space-y-2">
+           <FormField control={form.control} name="cep" render={({ field }) => (
+              <FormItem><FormLabel>CEP</FormLabel><FormControl>
+                <Input placeholder="00000-000" {...field} />
+              </FormControl><FormMessage /></FormItem>
           )} />
-        </div>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <FormField control={form.control} name="neighborhood" render={({ field }) => (
-            <FormItem><FormLabel>Bairro</FormLabel><FormControl><Input placeholder="Seu bairro" {...field} /></FormControl><FormMessage /></FormItem>
-        )} />
-        <FormField control={form.control} name="city" render={({ field }) => (
-            <FormItem><FormLabel>Cidade</FormLabel><FormControl><Input placeholder="Sua cidade" {...field} /></FormControl><FormMessage /></FormItem>
-        )} />
-        <FormField control={form.control} name="state" render={({ field }) => (
-            <FormItem><FormLabel>Estado</FormLabel><FormControl><Input placeholder="UF" {...field} /></FormControl><FormMessage /></FormItem>
-        )} />
-      </div>
-       <div className="space-y-2">
-         <FormField control={form.control} name="cep" render={({ field }) => (
-            <FormItem><FormLabel>CEP</FormLabel><FormControl>
-              <Input placeholder="00000-000" {...field} />
-            </FormControl><FormMessage /></FormItem>
-        )} />
-       </div>
-       <p className="font-medium text-gray-800 dark:text-gray-200 border-t pt-4">Contato da Empresa</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField control={form.control} name="ownerName" render={({ field }) => (
-                <FormItem><FormLabel>Nome do Proprietário/Representante Legal</FormLabel><FormControl><Input placeholder="Nome completo" {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <FormField control={form.control} name="commercialEmail" render={({ field }) => (
-                <FormItem><FormLabel>E-mail Comercial</FormLabel><FormControl><Input type="email" placeholder="contato@suaempresa.com" {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-        </div>
-         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <FormField control={form.control} name="website" render={({ field }) => (
-                <FormItem><FormLabel>Site (opcional)</FormLabel><FormControl><Input placeholder="www.suaempresa.com" {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <FormField control={form.control} name="commercialPhone" render={({ field }) => (
-                <FormItem><FormLabel>Telefone</FormLabel><FormControl>
-                  <Input type="tel" placeholder="(00) 0000-0000" {...field} />
-                </FormControl><FormMessage /></FormMessage>
-            )} />
-            <FormField control={form.control} name="instagram" render={({ field }) => (
-                <FormItem><FormLabel>Instagram (opcional)</FormLabel><FormControl><Input placeholder="@seuusuario" {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-        </div>
+         </div>
+         <p className="font-medium text-gray-800 dark:text-gray-200 border-t pt-4">Contato da Empresa</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField control={form.control} name="ownerName" render={({ field }) => (
+                  <FormItem><FormLabel>Nome do Proprietário/Representante Legal</FormLabel><FormControl><Input placeholder="Nome completo" {...field} /></FormControl><FormMessage /></FormItem>
+              )} />
+              <FormField control={form.control} name="commercialEmail" render={({ field }) => (
+                  <FormItem><FormLabel>E-mail Comercial</FormLabel><FormControl><Input type="email" placeholder="contato@suaempresa.com" {...field} /></FormControl><FormMessage /></FormItem>
+              )} />
+          </div>
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <FormField control={form.control} name="website" render={({ field }) => (
+                  <FormItem><FormLabel>Site (opcional)</FormLabel><FormControl><Input placeholder="www.suaempresa.com" {...field} /></FormControl><FormMessage /></FormItem>
+              )} />
+              <FormField control={form.control} name="commercialPhone" render={({ field }) => (
+                  <FormItem><FormLabel>Telefone</FormLabel><FormControl>
+                    <Input type="tel" placeholder="(00) 0000-0000" {...field} />
+                  </FormControl><FormMessage /></FormItem>
+              )} />
+              <FormField control={form.control} name="instagram" render={({ field }) => (
+                  <FormItem><FormLabel>Instagram (opcional)</FormLabel><FormControl><Input placeholder="@seuusuario" {...field} /></FormControl><FormMessage /></FormItem>
+              )} />
+          </div>
 
-      <div className="flex justify-between gap-4">
-        <Button onClick={prevStep} type="button" variant="outline" className="w-1/3 text-lg py-6">
-          <ArrowLeft className="mr-2 h-5 w-5" /> Voltar
-        </Button>
-        <Button type="submit" className="w-2/3 text-lg py-6">
-          Finalizar Cadastro <Check className="ml-2 h-5 w-5" />
-        </Button>
-      </div>
-    </form>
-    </Form>
+        <div className="flex justify-between gap-4">
+          <Button onClick={prevStep} type="button" variant="outline" className="w-1/3 text-lg py-6">
+            <ArrowLeft className="mr-2 h-5 w-5" /> Voltar
+          </Button>
+          <Button type="submit" className="w-2/3 text-lg py-6">
+            Finalizar Cadastro <Check className="ml-2 h-5 w-5" />
+          </Button>
+        </div>
+      </form>
+      </Form>
+    </>
   );
 };
 
