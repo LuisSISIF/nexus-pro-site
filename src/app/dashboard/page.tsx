@@ -1,8 +1,8 @@
 
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Building, DollarSign, Package, UserX, Users } from 'lucide-react';
+import { Building, DollarSign, Package, Users, AlertCircle } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -12,44 +12,92 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from '@/components/ui/badge';
-import { ResponsiveContainer, Bar, XAxis, YAxis, Tooltip, Legend, BarChart } from 'recharts';
+import { Bar, XAxis, YAxis, Tooltip, Legend, BarChart } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { getDashboardData, DashboardData } from '@/actions/dashboard-actions';
+import { Skeleton } from '@/components/ui/skeleton';
 
-
-const salesData = [
-  { month: 'Jan', sales: 4000 },
-  { month: 'Fev', sales: 3000 },
-  { month: 'Mar', sales: 5000 },
-  { month: 'Abr', sales: 4500 },
-  { month: 'Mai', sales: 6000 },
-  { month: 'Jun', sales: 5500 },
-];
-
-const newClientsData = [
-    { month: 'Jan', newClients: 20 },
-    { month: 'Fev', newClients: 35 },
-    { month: 'Mar', newClients: 40 },
-    { month: 'Abr', newClients: 55 },
-    { month: 'Mai', newClients: 60 },
-    { month: 'Jun', newClients: 75 },
-];
-
-
-const topProducts = [
-    { product: 'Produto A', sales: 120 },
-    { product: 'Produto B', sales: 98 },
-    { product: 'Produto C', sales: 86 },
-    { product: 'Produto D', sales: 74 },
-    { product: 'Produto E', sales: 62 },
-]
-
-const branches = [
-    { name: 'Loja Matriz', status: 'Ativa', users: 5 },
-    { name: 'Filial Centro', status: 'Ativa', users: 3 },
-    { name: 'Filial Bairro', status: 'Inativa', users: 0 },
-]
 
 const DashboardPage = () => {
+    const [data, setData] = useState<DashboardData | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const companyId = localStorage.getItem('companyId');
+            if (!companyId) {
+                setError("ID da empresa não encontrado. Faça o login novamente.");
+                setLoading(false);
+                return;
+            }
+
+            try {
+                const result = await getDashboardData(Number(companyId));
+                if (result.success && result.data) {
+                    setData(result.data);
+                } else {
+                    setError(result.message);
+                }
+            } catch (err) {
+                setError("Ocorreu um erro ao buscar os dados do dashboard.");
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="flex flex-col gap-6">
+                <div className="space-y-1.5">
+                    <Skeleton className="h-8 w-1/2" />
+                    <Skeleton className="h-5 w-1/3" />
+                </div>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {[...Array(3)].map((_, i) => (
+                        <Card key={i}>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <Skeleton className="h-5 w-2/3" />
+                                <Skeleton className="h-4 w-4" />
+                            </CardHeader>
+                            <CardContent>
+                                <Skeleton className="h-7 w-1/2 mb-2" />
+                                <Skeleton className="h-4 w-full" />
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+                 <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                    <Card><CardContent className="p-6"><Skeleton className="h-[250px] w-full" /></CardContent></Card>
+                    <Card><CardContent className="p-6"><Skeleton className="h-[250px] w-full" /></CardContent></Card>
+                </div>
+                 <Card><CardHeader><Skeleton className="h-6 w-1/4 mb-2" /><Skeleton className="h-4 w-2/5" /></CardHeader><CardContent><Skeleton className="h-32 w-full" /></CardContent></Card>
+            </div>
+        );
+    }
+    
+    if (error) {
+        return (
+             <div className="flex flex-col items-center justify-center text-center text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-6 rounded-lg">
+                <AlertCircle className="w-12 h-12 mb-4" />
+                <h3 className="text-xl font-semibold">Ocorreu um Erro</h3>
+                <p>{error}</p>
+            </div>
+        )
+    }
+
+    if (!data) {
+        return <p>Nenhum dado encontrado.</p>;
+    }
+
+
+    const { totalClients, newClientsData, totalProducts, topProducts, monthlySales, branches } = data;
+
+
   return (
     <div className="flex flex-col gap-6">
        <div className="space-y-1.5">
@@ -58,25 +106,15 @@ const DashboardPage = () => {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total de Clientes</CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">1,254</div>
-                <p className="text-xs text-muted-foreground">+20.1% do último mês</p>
-            </CardContent>
-        </Card>
-         <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Clientes Inadimplentes</CardTitle>
-                <UserX className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold text-destructive">87</div>
-                 <p className="text-xs text-muted-foreground">Valor total: R$ 15.230,00</p>
+                <div className="text-2xl font-bold">{totalClients}</div>
+                <p className="text-xs text-muted-foreground">{newClientsData[newClientsData.length -1]?.newClients || 0} novos clientes este mês</p>
             </CardContent>
         </Card>
         <Card>
@@ -85,8 +123,8 @@ const DashboardPage = () => {
                 <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">5,320</div>
-                <p className="text-xs text-muted-foreground">Em 150 categorias</p>
+                <div className="text-2xl font-bold">{totalProducts}</div>
+                <p className="text-xs text-muted-foreground">Cadastrados no sistema</p>
             </CardContent>
         </Card>
          <Card>
@@ -95,8 +133,8 @@ const DashboardPage = () => {
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">R$ 45.231,89</div>
-                 <p className="text-xs text-muted-foreground">+12% em relação ao mês anterior</p>
+                <div className="text-2xl font-bold">{monthlySales.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</div>
+                 <p className="text-xs text-muted-foreground">Faturamento no mês atual</p>
             </CardContent>
         </Card>
       </div>
