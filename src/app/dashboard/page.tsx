@@ -14,12 +14,14 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { getTotalClients, getNewClientsThisMonth } from '@/actions/dashboard-actions';
+import { getTotalClients, getNewClientsThisMonth, getProductStats } from '@/actions/dashboard-actions';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const DashboardPage = () => {
     const [totalClients, setTotalClients] = useState<number | null>(null);
     const [newClientsCount, setNewClientsCount] = useState<number | null>(null);
+    const [totalProducts, setTotalProducts] = useState<number | null>(null);
+    const [activeProductsCount, setActiveProductsCount] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -32,13 +34,16 @@ const DashboardPage = () => {
             }
 
             try {
-                const [clientsResult, newClientsResult] = await Promise.all([
+                const [clientsResult, newClientsResult, productStatsResult] = await Promise.all([
                     getTotalClients(Number(companyId)),
-                    getNewClientsThisMonth(Number(companyId))
+                    getNewClientsThisMonth(Number(companyId)),
+                    getProductStats(Number(companyId)),
                 ]);
                 
                 setTotalClients(clientsResult.total);
                 setNewClientsCount(newClientsResult.total);
+                setTotalProducts(productStatsResult.total);
+                setActiveProductsCount(productStatsResult.totalActive);
 
             } catch (error) {
                 console.error("Failed to fetch dashboard data", error);
@@ -60,7 +65,7 @@ const DashboardPage = () => {
         { month: 'Mai', newClients: 22 },
         { month: 'Jun', newClients: 45 },
     ];
-    const totalProducts = 1250;
+   
     const topProducts = [
         { product: 'Produto A', sales: 120 },
         { product: 'Produto B', sales: 98 },
@@ -110,8 +115,17 @@ const DashboardPage = () => {
                 <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">{totalProducts}</div>
-                <p className="text-xs text-muted-foreground">Cadastrados no sistema</p>
+                 {loading ? (
+                    <>
+                        <Skeleton className="h-8 w-1/2" />
+                        <Skeleton className="h-4 w-1/3 mt-2" />
+                    </>
+                ) : (
+                    <>
+                        <div className="text-2xl font-bold">{totalProducts ?? 'N/A'}</div>
+                        <p className="text-xs text-muted-foreground">{activeProductsCount ?? 0} produtos ativos</p>
+                    </>
+                )}
             </CardContent>
         </Card>
          <Card>
