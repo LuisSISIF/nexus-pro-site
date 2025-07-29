@@ -18,6 +18,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { isValidCPF, isValidCNPJ, isValidRG } from '@/lib/validators';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { registerUserAndCompany } from '@/actions/auth-actions';
+import { useToast } from '@/hooks/use-toast';
 
 const step1Schema = z.object({
   fullName: z.string().min(3, "Nome completo é obrigatório"),
@@ -63,9 +65,7 @@ const Step1 = ({ nextStep, form }: { nextStep: () => void, form: any }) => {
             <FormItem><FormLabel>Nome Completo</FormLabel><FormControl><Input placeholder="Seu nome completo" {...field} /></FormControl><FormMessage /></FormItem>
           )} />
           <FormField control={form.control} name="cpf" render={({ field }) => (
-            <FormItem><FormLabel>CPF</FormLabel><FormControl>
-              <Input placeholder="000.000.000-00" {...field} />
-            </FormControl><FormMessage /></FormItem>
+            <FormItem><FormLabel>CPF</FormLabel><FormControl><Input placeholder="000.000.000-00" {...field} /></FormControl><FormMessage /></FormItem>
           )} />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -111,8 +111,7 @@ const Step1 = ({ nextStep, form }: { nextStep: () => void, form: any }) => {
 
 const Step2 = ({ prevStep, form, onSubmit }: { prevStep: () => void, form: any, onSubmit: (values: any) => void }) => {
   return (
-    <>
-      <Form {...form}>
+    <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 animate-in fade-in-50 duration-500">
          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField control={form.control} name="fantasyName" render={({ field }) => (
@@ -226,7 +225,6 @@ const Step2 = ({ prevStep, form, onSubmit }: { prevStep: () => void, form: any, 
         </div>
       </form>
       </Form>
-    </>
   );
 };
 
@@ -234,6 +232,7 @@ const Step2 = ({ prevStep, form, onSubmit }: { prevStep: () => void, form: any, 
 const SignUpPage = () => {
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({});
+    const { toast } = useToast();
 
     const formStep1 = useForm({
       resolver: zodResolver(step1Schema),
@@ -252,10 +251,31 @@ const SignUpPage = () => {
     
     const prevStep = () => setStep(s => Math.max(s - 1, 1));
     
-    const onSubmit = (values: any) => {
+    const onSubmit = async (values: any) => {
         const finalData = {...formData, ...values};
-        console.log("Formulário enviado:", finalData);
-        // Aqui você enviaria os dados para o servidor
+        
+        try {
+            const result = await registerUserAndCompany(finalData);
+            if (result.success) {
+                toast({
+                    title: "Cadastro realizado com sucesso!",
+                    description: "Seu conta foi criada e você já pode fazer o login.",
+                });
+                // TODO: Redirect to login page or dashboard
+            } else {
+                toast({
+                    variant: "destructive",
+                    title: "Erro no cadastro",
+                    description: result.message,
+                });
+            }
+        } catch (error) {
+            toast({
+                variant: "destructive",
+                title: "Erro inesperado",
+                description: "Ocorreu um erro ao processar seu cadastro. Tente novamente.",
+            });
+        }
     }
 
     const progress = (step / 2) * 100;
