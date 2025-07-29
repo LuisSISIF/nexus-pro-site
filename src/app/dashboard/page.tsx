@@ -2,7 +2,7 @@
 'use client';
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BarChart, BarChart3, Building, CreditCard, DollarSign, LineChart, Package, TrendingUp, UserCheck, UserX, Users } from 'lucide-react';
+import { Building, DollarSign, Package, UserX, Users } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -12,7 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from '@/components/ui/badge';
-import { ResponsiveContainer, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+import { ResponsiveContainer, Bar, XAxis, YAxis, Tooltip, Legend, BarChart } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 
 
