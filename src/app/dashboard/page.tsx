@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Building, DollarSign, Package, Users, BarChart, CreditCard, Landmark, CircleDollarSign, QrCode } from 'lucide-react';
+import { Building, DollarSign, Package, Users, BarChart, CreditCard, Landmark, CircleDollarSign, QrCode, Trophy } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -11,14 +11,17 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from '@/components/ui/badge';
-import { Bar, ResponsiveContainer, XAxis, YAxis, Tooltip, BarChart as RechartsBarChart } from 'recharts';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { getTotalClients, getNewClientsThisMonth, getProductStats, getMonthlySales, getPaymentMethodRanking } from '@/actions/dashboard-actions';
+import { getTotalClients, getNewClientsThisMonth, getProductStats, getMonthlySales, getPaymentMethodRanking, getTopCustomers } from '@/actions/dashboard-actions';
 import { Skeleton } from '@/components/ui/skeleton';
 
 type PaymentMethodRank = {
     name: string;
     count: number;
+};
+
+type TopCustomer = {
+    nome: string;
+    comprasRealizadas: number;
 };
 
 const DashboardPage = () => {
@@ -28,6 +31,7 @@ const DashboardPage = () => {
     const [activeProductsCount, setActiveProductsCount] = useState<number | null>(null);
     const [monthlySales, setMonthlySales] = useState<number | null>(null);
     const [paymentRanking, setPaymentRanking] = useState<PaymentMethodRank[] | null>(null);
+    const [topCustomers, setTopCustomers] = useState<TopCustomer[] | null>(null);
     const [loading, setLoading] = useState(true);
     
 
@@ -47,13 +51,15 @@ const DashboardPage = () => {
                     newClientsResult, 
                     productStatsResult, 
                     monthlySalesResult,
-                    paymentRankingResult
+                    paymentRankingResult,
+                    topCustomersResult
                 ] = await Promise.all([
                     getTotalClients(Number(companyId)),
                     getNewClientsThisMonth(Number(companyId)),
                     getProductStats(Number(companyId)),
                     getMonthlySales(Number(companyId)),
-                    getPaymentMethodRanking(Number(companyId))
+                    getPaymentMethodRanking(Number(companyId)),
+                    getTopCustomers(Number(companyId))
                 ]);
                 
                 setTotalClients(clientsResult.total);
@@ -62,6 +68,7 @@ const DashboardPage = () => {
                 setActiveProductsCount(productStatsResult.totalActive);
                 setMonthlySales(monthlySalesResult.total);
                 setPaymentRanking(paymentRankingResult);
+                setTopCustomers(topCustomersResult);
 
             } catch (error) {
                 console.error("Failed to fetch dashboard data", error);
@@ -84,15 +91,6 @@ const DashboardPage = () => {
         return <DollarSign className="h-5 w-5 text-gray-400" />;
     };
 
-
-    const newClientsData = [
-        { month: 'Jan', newClients: 12 },
-        { month: 'Fev', newClients: 25 },
-        { month: 'Mar', newClients: 18 },
-        { month: 'Abr', newClients: 32 },
-        { month: 'Mai', newClients: 22 },
-        { month: 'Jun', newClients: 45 },
-    ];
    
     const branches = [
         { name: 'Loja Matriz', status: 'Ativa', users: 15 },
@@ -200,59 +198,82 @@ const DashboardPage = () => {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-1">
-            <Card className="col-span-1">
-                 <CardHeader>
-                    <CardTitle>Evolução de Novos Clientes</CardTitle>
-                    <CardDescription>Novos clientes cadastrados por mês.</CardDescription>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Trophy className="h-5 w-5 text-yellow-500" />
+                        Ranking de Clientes (Top 5)
+                    </CardTitle>
+                    <CardDescription>Clientes que mais compraram na sua loja.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <ChartContainer config={{newClients: { label: "Novos Clientes", color: "hsl(var(--primary))"}}} className="h-[250px] w-full">
-                         <RechartsBarChart data={newClientsData} accessibilityLayer>
-                           <XAxis dataKey="month" tickLine={false} axisLine={false} fontSize={12} />
-                           <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                           <Tooltip cursor={{fill: 'hsl(var(--muted))'}} content={<ChartTooltipContent />} />
-                           <Bar dataKey="newClients" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                        </RechartsBarChart>
-                    </ChartContainer>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Cliente</TableHead>
+                                <TableHead className="text-right">Compras</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {loading ? (
+                                Array.from({ length: 5 }).map((_, index) => (
+                                    <TableRow key={index}>
+                                        <TableCell><Skeleton className="h-4 w-3/4" /></TableCell>
+                                        <TableCell className="text-right"><Skeleton className="h-4 w-1/4 float-right" /></TableCell>
+                                    </TableRow>
+                                ))
+                            ) : topCustomers && topCustomers.length > 0 ? (
+                                topCustomers.map((customer, index) => (
+                                    <TableRow key={index}>
+                                        <TableCell className="font-medium">{customer.nome}</TableCell>
+                                        <TableCell className="text-right">{customer.comprasRealizadas}</TableCell>
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={2} className="text-center">Nenhum cliente no ranking ainda.</TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Building className="h-5 w-5" />
+                        Filiais Cadastradas
+                    </CardTitle>
+                    <CardDescription>Visão geral das suas lojas e status.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                            <TableHead>Nome da Loja</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead className="text-right">Usuários Vinculados</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {branches.map(branch => (
+                                <TableRow key={branch.name}>
+                                    <TableCell className="font-medium">{branch.name}</TableCell>
+                                    <TableCell>
+                                        <Badge variant={branch.status === 'Ativa' ? 'default' : 'destructive'}>
+                                            {branch.status}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-right">{branch.users}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
                 </CardContent>
             </Card>
       </div>
-      
-       <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <Building className="h-5 w-5" />
-                    Filiais Cadastradas
-                </CardTitle>
-                <CardDescription>Visão geral das suas lojas e status.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                        <TableHead>Nome da Loja</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Usuários Vinculados</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {branches.map(branch => (
-                             <TableRow key={branch.name}>
-                                <TableCell className="font-medium">{branch.name}</TableCell>
-                                <TableCell>
-                                    <Badge variant={branch.status === 'Ativa' ? 'default' : 'destructive'}>
-                                        {branch.status}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell className="text-right">{branch.users}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </CardContent>
-        </Card>
-
     </div>
   );
 };

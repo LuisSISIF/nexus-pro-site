@@ -199,3 +199,38 @@ export async function getPaymentMethodRanking(companyId: number): Promise<{ name
         await connection.end();
     }
 }
+
+/**
+ * Busca os 5 melhores clientes com base no número de compras realizadas.
+ * @param companyId O ID da empresa.
+ * @returns Uma promessa que resolve para uma lista dos melhores clientes.
+ */
+export async function getTopCustomers(companyId: number): Promise<{ nome: string; comprasRealizadas: number }[]> {
+    if (!companyId) {
+        throw new Error("ID da empresa não fornecido.");
+    }
+
+    const connection = await db();
+
+    try {
+        const query = `
+            SELECT nome, comprasRealizadas
+            FROM clientes
+            WHERE idempresa = ?
+            ORDER BY comprasRealizadas DESC
+            LIMIT 5
+        `;
+        const [rows] = await connection.execute(query, [companyId]);
+
+        return rows as { nome: string; comprasRealizadas: number }[];
+
+    } catch (error) {
+        console.error('Error fetching top customers:', error);
+        if (error instanceof Error && (error as any).sqlMessage) {
+           throw new Error(`Erro no banco de dados ao buscar top clientes: ${(error as any).sqlMessage}`);
+        }
+        throw new Error('Ocorreu um erro no servidor ao buscar os melhores clientes.');
+    } finally {
+        await connection.end();
+    }
+}
