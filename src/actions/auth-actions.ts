@@ -5,7 +5,7 @@ import { db } from '@/lib/db';
 import bcrypt from 'bcrypt';
 
 const registrationSchema = z.object({
-  // Step 1
+  // Step 1 - User
   fullName: z.string().min(3),
   cpf: z.string(),
   rg: z.string(),
@@ -16,7 +16,7 @@ const registrationSchema = z.object({
   phone: z.string(),
   email: z.string().email(),
   
-  // Step 2
+  // Step 2 - Company
   fantasyName: z.string().min(2),
   cnpj: z.string(),
   socialReason: z.string().min(3),
@@ -48,7 +48,9 @@ export async function registerUserAndCompany(data: unknown) {
   }
   
   const { 
+      // User data
       login, password, fullName, email, cpf, rg, dob, gender, phone,
+      // Company data
       fantasyName, cnpj, socialReason, taxRegime, stateInscription,
       municipalInscription, mainActivity, marketSegment, street, number,
       neighborhood, city, state, cep, ownerName, commercialEmail, website,
@@ -61,54 +63,86 @@ export async function registerUserAndCompany(data: unknown) {
     await connection.beginTransaction();
 
     // Check if user or company already exists
-    const [existingUser] = await connection.execute('SELECT id FROM users WHERE login = ? OR email = ? OR cpf = ?', [login, email, cpf]);
+    const [existingUser] = await connection.execute('SELECT idusuarios FROM usuarios WHERE login = ? OR email = ?', [login, email]);
     if ((existingUser as any[]).length > 0) {
       await connection.rollback();
-      return { success: false, message: 'Usuário, e-mail ou CPF já cadastrado.' };
+      return { success: false, message: 'Login ou e-mail de usuário já cadastrado.' };
     }
 
-    const [existingCompany] = await connection.execute('SELECT id FROM companies WHERE cnpj = ?', [cnpj]);
+    const [existingCompany] = await connection.execute('SELECT idempresa FROM empresa WHERE cnpj_empresa = ?', [cnpj]);
     if ((existingCompany as any[]).length > 0) {
         await connection.rollback();
         return { success: false, message: 'CNPJ já cadastrado.' };
     }
 
-    // Hash the password
+    // Hash the password before sending to procedure
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Insert into companies table
-    const [companyResult] = await connection.execute(
-        `INSERT INTO companies (fantasy_name, cnpj, social_reason, tax_regime, state_inscription, municipal_inscription, main_activity, market_segment, street, number, neighborhood, city, state, cep, owner_name, commercial_email, website, commercial_phone, instagram) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [fantasyName, cnpj, socialReason, taxRegime, stateInscription, municipalInscription, mainActivity, marketSegment, street, number, neighborhood, city, state, cep, ownerName, commercialEmail, website, commercialPhone, instagram]
-    );
+    // 1. Call the procedure to insert the company
+    const fullAddress = `${street}, ${number}, ${neighborhood}, ${city} - ${state}, ${cep}`;
+    const planId = 2; // Test plan
+    const dayOfMonth = new Date().getDate();
 
-    const companyId = (companyResult as any).insertId;
+    const [companyResult] = await connection.execute(
+        'CALL admFunctionsEmpresas(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [
+            0, // escolha = 0 for INSERT
+            fullAddress, // endereco
+            planId, // plano = 2 (teste)
+            fantasyName, // nome_empresa
+            cnpj, // cnpj_empresa
+            website, // site
+            commercialEmail, // emailComercial
+            commercialPhone, // telefone
+            stateInscription, // inscricaoEstadual
+            dayOfMonth.toString(), // diaVencimento
+            instagram, // instagram
+            ownerName, // rep
+            mainActivity, // atv
+            marketSegment, // segmento
+            taxRegime, // rTribut
+            municipalInscription, // inscricaoMunicipal
+            0, // maisUser (additional users)
+            0, // catPlano (type of monthly payment)
+            0.00, // valorMensal
+            0, // mesesCobrar
+        ]
+    );
+    
+    // The procedure returns a result set with the new ID
+    const companyId = (companyResult as any)[0][0]['ID'];
 
     if (!companyId) {
-        throw new Error('Falha ao criar a empresa.');
+        throw new Error('Falha ao criar a empresa. O ID não foi retornado pela procedure.');
     }
 
-    // Insert into users table
+    // 2. Call the procedure to insert the admin user and employee
     const [userResult] = await connection.execute(
-        `INSERT INTO users (company_id, full_name, email, login, password, cpf, rg, dob, gender, phone, role) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [companyId, fullName, email, login, hashedPassword, cpf, rg, dob, gender, phone, 'admin']
+        'CALL admFunctionsInsertADM(?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [
+            companyId,      // idEmpresa
+            fullName,       // nom_func
+            cpf,            // cpf_func
+            rg,             // rg
+            gender,         // genero
+            phone,          // celular
+            email,          // email
+            login,          // login
+            hashedPassword  // senha
+        ]
     );
-
-    const userId = (userResult as any).insertId;
-
-     if (!userId) {
-        throw new Error('Falha ao criar o usuário.');
-    }
 
     await connection.commit();
 
-    return { success: true, message: 'Cadastro realizado com sucesso!', userId, companyId };
+    return { success: true, message: 'Cadastro realizado com sucesso!', userId: null, companyId: companyId }; // userId from users table is not returned by procedure
 
   } catch (error) {
     await connection.rollback();
     console.error('Registration Error:', error);
+    // Provide a more specific error message if possible
+    if (error instanceof Error && (error as any).sqlMessage) {
+       return { success: false, message: `Erro no banco de dados: ${(error as any).sqlMessage}` };
+    }
     return { success: false, message: 'Ocorreu um erro no servidor ao tentar realizar o cadastro.' };
   } finally {
     await connection.end();
