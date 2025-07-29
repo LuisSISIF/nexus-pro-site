@@ -84,7 +84,7 @@ export async function registerUserAndCompany(data: unknown) {
     const dayOfMonth = new Date().getDate();
 
     const [companyResult] = await connection.execute(
-        'CALL admFunctionsEmpresas(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        'CALL admFunctionsEmpresas(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [
             0, // escolha = 0 for INSERT
             fullAddress, // endereco
