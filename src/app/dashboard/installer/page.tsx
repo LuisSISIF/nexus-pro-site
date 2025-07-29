@@ -30,34 +30,20 @@ const InstallerPage = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-3">
             <Download className="w-6 h-6" />
-            Download do Instalador NexusPro
+            Instalação do NexusPro
           </CardTitle>
           <CardDescription>
             Siga os passos abaixo para instalar o sistema em seu computador com Windows.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-8">
-          <div className="bg-primary/5 p-6 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div>
-              <h3 className="font-bold text-xl text-primary">Instalador NexusPro</h3>
-              <p className="text-muted-foreground">Clique no botão para baixar a versão mais recente.</p>
-            </div>
-            <Button size="lg" asChild>
-                {/* O link de download real deve ser inserido aqui */}
-                <a href="#" download="InstaladorNexusPro.zip">
-                    <Download className="mr-2" />
-                    Baixar Instalador
-                </a>
-            </Button>
-          </div>
-          
           <div>
             <h3 className="font-semibold text-xl mb-6 text-center">Como Instalar</h3>
             <div className="space-y-8 max-w-2xl mx-auto">
               <Step
                 icon={FileArchive}
                 title="Passo 1: Descompacte o Arquivo"
-                description="O arquivo que você baixou estará no formato .zip. Clique com o botão direito sobre ele e selecione a opção 'Extrair Tudo' ou 'Descompactar aqui' para acessar os arquivos de instalação."
+                description="O arquivo que você baixará estará no formato .zip. Clique com o botão direito sobre ele e selecione a opção 'Extrair Tudo' ou 'Descompactar aqui' para acessar os arquivos de instalação."
               />
                <Step
                 icon={MousePointerClick}
@@ -70,6 +56,20 @@ const InstallerPage = () => {
                 description="Uma vez que o instalador for executado, basta seguir as instruções na tela. Em poucos cliques, o NexusPro estará pronto para ser usado no seu computador."
               />
             </div>
+          </div>
+          
+           <div className="bg-primary/5 p-6 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <h3 className="font-bold text-xl text-primary">Download do Instalador</h3>
+              <p className="text-muted-foreground">Após ler as instruções, clique no botão para baixar.</p>
+            </div>
+            <Button size="lg" asChild>
+                {/* O link de download real deve ser inserido aqui */}
+                <a href="#" download="InstaladorNexusPro.zip">
+                    <Download className="mr-2" />
+                    Baixar Instalador
+                </a>
+            </Button>
           </div>
         </CardContent>
       </Card>
