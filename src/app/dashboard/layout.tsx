@@ -16,7 +16,6 @@ import { Home, User, Video, LogOut, FileText } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { ThemeToggleButton } from "@/components/theme-toggle";
-import logoNexus from "@/images/NewLogoNexus.png"
 
 export const metadata: Metadata = {
   title: "Painel NexusPro",
@@ -33,7 +32,7 @@ export default function DashboardLayout({
       <Sidebar>
         <SidebarHeader>
            <div className="flex flex-col items-center gap-2">
-                <Image src={logoNexus} alt="Andromeda Solutions Logo" width={80} height={80} data-ai-hint="logo" />
+                <Image src="https://placehold.co/128x128.png" alt="Andromeda Solutions Logo" width={120} height={120} data-ai-hint="logo" />
                 <span className="text-lg font-bold text-sidebar-foreground">NexusPro</span>
               </div>
         </SidebarHeader>
