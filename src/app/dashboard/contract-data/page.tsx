@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { getContractData, ContractData } from '@/actions/contract-actions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { Briefcase, Calendar, Users, Building, AlertCircle, CalendarClock } from 'lucide-react';
+import { Briefcase, Calendar, Users, Building, AlertCircle, CalendarClock, CreditCard } from 'lucide-react';
 
 const DataRow = ({ label, value, icon }: { label: string; value: React.ReactNode; icon?: React.ReactNode }) => (
   <div className="flex justify-between items-center py-3 border-b border-gray-200 dark:border-gray-700">
@@ -82,6 +82,21 @@ const ContractDataPage = () => {
       const isTestPlan = data.idPlano === 2;
       const totalUserLimit = data.limiteUsuarios + (data.usersAdicionais || 0);
       
+      const getPaymentStatusBadge = (status: string | null) => {
+        if (!status) return null;
+        
+        switch (status.toLowerCase()) {
+          case 'pago':
+            return <Badge className="bg-green-500 text-white">{status}</Badge>;
+          case 'à vencer':
+            return <Badge variant="secondary" className="bg-yellow-400 text-black">{status}</Badge>;
+           case 'em atraso':
+             return <Badge variant="destructive">{status}</Badge>;
+          default:
+            return <Badge variant="outline">{status}</Badge>;
+        }
+      };
+      
       return (
         <div className="space-y-6">
           <DataRow 
@@ -128,11 +143,18 @@ const ContractDataPage = () => {
             icon={<Building className="w-4 h-4 text-primary" />} 
           />
           {!isTestPlan && data.diaVencimento && (
-             <DataRow 
-                label="Dia do Vencimento" 
-                value={`Todo dia ${data.diaVencimento}`}
-                icon={<CalendarClock className="w-4 h-4 text-primary" />} 
+            <>
+              <DataRow 
+                  label="Dia do Vencimento" 
+                  value={`Todo dia ${data.diaVencimento}`}
+                  icon={<CalendarClock className="w-4 h-4 text-primary" />} 
+              />
+               <DataRow 
+                label="Situação do Pagamento" 
+                value={getPaymentStatusBadge(data.pagamentoMes)}
+                icon={<CreditCard className="w-4 h-4 text-primary" />} 
              />
+            </>
           )}
         </div>
       );

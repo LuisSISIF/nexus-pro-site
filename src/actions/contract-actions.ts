@@ -15,6 +15,7 @@ export interface ContractData {
     limiteLojas: number;
     usersAdicionais: number;
     diaVencimento: number;
+    pagamentoMes: string | null;
 }
 
 export async function getContractData(companyId: number): Promise<{ success: boolean; message: string; data?: ContractData }> {
@@ -36,6 +37,7 @@ export async function getContractData(companyId: number): Promise<{ success: boo
             e.qtdLojas,
             e.usersAdicionais,
             e.diaVencimento,
+            e.pagamentoMes,
             p.nomePlano,
             p.limiteUsuarios,
             p.limiteLojas
