@@ -184,3 +184,47 @@ export async function getPaymentMethodRanking(companyId: number): Promise<{ name
         await connection.end();
     }
 }
+
+
+/**
+ * Busca o ranking dos produtos mais vendidos no mês atual.
+ * @param companyId O ID da empresa.
+ * @returns Uma promessa que resolve para um array com o ranking.
+ */
+export async function getTopSellingProducts(companyId: number): Promise<{ product: string; sales: number }[]> {
+  if (!companyId) {
+    throw new Error("ID da empresa não fornecido.");
+  }
+
+  const connection = await db();
+
+  try {
+    const query = `
+        SELECT 
+            v.produtoVendido AS product,
+            SUM(v.quantidade) AS sales
+        FROM vendas v
+        JOIN relatoriovenda rv ON v.idVenda = rv.idVenda
+        WHERE rv.idempresa = ?
+        AND MONTH(rv.dataVenda) = MONTH(CURDATE())
+        AND YEAR(rv.dataVenda) = YEAR(CURDATE())
+        GROUP BY v.produtoVendido
+        ORDER BY sales DESC
+        LIMIT 5;
+    `;
+    const [rows] = await connection.execute(query, [companyId]);
+
+    const products = rows as { product: string; sales: number }[];
+    
+    return products.map(p => ({
+        product: p.product,
+        sales: Number(p.sales)
+    }));
+
+  } catch (error) {
+    console.error('Error fetching top selling products:', error);
+    throw new Error('Ocorreu um erro no servidor ao buscar os produtos mais vendidos.');
+  } finally {
+    await connection.end();
+  }
+}

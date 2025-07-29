@@ -12,15 +12,20 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from '@/components/ui/badge';
-import { BarChart as RechartsBarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
+import { Bar, ResponsiveContainer, XAxis, YAxis, Tooltip, BarChart as RechartsBarChart } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { getTotalClients, getNewClientsThisMonth, getProductStats, getMonthlySales, getPaymentMethodRanking } from '@/actions/dashboard-actions';
+import { getTotalClients, getNewClientsThisMonth, getProductStats, getMonthlySales, getPaymentMethodRanking, getTopSellingProducts } from '@/actions/dashboard-actions';
 import { Skeleton } from '@/components/ui/skeleton';
 
 type PaymentMethodRank = {
     name: string;
     count: number;
 };
+
+type TopProduct = {
+    product: string;
+    sales: number;
+}
 
 
 const DashboardPage = () => {
@@ -30,6 +35,7 @@ const DashboardPage = () => {
     const [activeProductsCount, setActiveProductsCount] = useState<number | null>(null);
     const [monthlySales, setMonthlySales] = useState<number | null>(null);
     const [paymentRanking, setPaymentRanking] = useState<PaymentMethodRank[] | null>(null);
+    const [topProducts, setTopProducts] = useState<TopProduct[] | null>(null);
     const [loading, setLoading] = useState(true);
     
 
@@ -49,13 +55,15 @@ const DashboardPage = () => {
                     newClientsResult, 
                     productStatsResult, 
                     monthlySalesResult,
-                    paymentRankingResult
+                    paymentRankingResult,
+                    topProductsResult,
                 ] = await Promise.all([
                     getTotalClients(Number(companyId)),
                     getNewClientsThisMonth(Number(companyId)),
                     getProductStats(Number(companyId)),
                     getMonthlySales(Number(companyId)),
                     getPaymentMethodRanking(Number(companyId)),
+                    getTopSellingProducts(Number(companyId)),
                 ]);
                 
                 setTotalClients(clientsResult.total);
@@ -64,6 +72,7 @@ const DashboardPage = () => {
                 setActiveProductsCount(productStatsResult.totalActive);
                 setMonthlySales(monthlySalesResult.total);
                 setPaymentRanking(paymentRankingResult);
+                setTopProducts(topProductsResult);
 
             } catch (error) {
                 console.error("Failed to fetch dashboard data", error);
@@ -96,14 +105,6 @@ const DashboardPage = () => {
         { month: 'Jun', newClients: 45 },
     ];
    
-    const topProducts = [
-        { product: 'Produto A', sales: 120 },
-        { product: 'Produto B', sales: 98 },
-        { product: 'Produto C', sales: 75 },
-        { product: 'Produto D', sales: 62 },
-        { product: 'Produto E', sales: 51 },
-    ];
-
     const branches = [
         { name: 'Loja Matriz', status: 'Ativa', users: 15 },
         { name: 'Filial Centro', status: 'Ativa', users: 8 },
@@ -218,7 +219,7 @@ const DashboardPage = () => {
                 </CardHeader>
                 <CardContent>
                      <ChartContainer config={{sales: { label: "Vendas", color: "hsl(var(--primary))"}}} className="h-[250px] w-full">
-                        <RechartsBarChart data={topProducts} accessibilityLayer>
+                        <RechartsBarChart data={topProducts || []} accessibilityLayer>
                            <XAxis dataKey="product" tickLine={false} axisLine={false} fontSize={12} />
                            <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
                            <Tooltip cursor={{fill: 'hsl(var(--muted))'}} content={<ChartTooltipContent />} />
