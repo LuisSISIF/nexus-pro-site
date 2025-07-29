@@ -204,7 +204,7 @@ export async function getTopSellingProducts(companyId: number): Promise<{ produc
             v.produtoVendido AS product,
             SUM(v.quantidade) AS sales
         FROM vendas v
-        JOIN relatoriovenda rv ON v.idVenda = rv.idVenda
+        JOIN relatoriovenda rv ON v.idVenda = rv.idVenda AND v.idLoja = rv.idLoja
         WHERE rv.idempresa = ?
         AND MONTH(rv.dataVenda) = MONTH(CURDATE())
         AND YEAR(rv.dataVenda) = YEAR(CURDATE())
