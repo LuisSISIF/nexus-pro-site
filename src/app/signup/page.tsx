@@ -66,7 +66,7 @@ const Step1 = ({ nextStep, form }: { nextStep: () => void, form: any }) => {
           <FormField control={form.control} name="cpf" render={({ field }) => (
             <FormItem><FormLabel>CPF</FormLabel><FormControl>
               <InputMask mask="999.999.999-99" value={field.value} onChange={field.onChange}>
-                {(inputProps: any) => <Input {...inputProps} ref={field.ref} placeholder="000.000.000-00" />}
+                {(inputProps: any) => <Input {...inputProps} placeholder="000.000.000-00" />}
               </InputMask>
             </FormControl><FormMessage /></FormItem>
           )} />
@@ -98,7 +98,7 @@ const Step1 = ({ nextStep, form }: { nextStep: () => void, form: any }) => {
           <FormField control={form.control} name="phone" render={({ field }) => (
             <FormItem><FormLabel>Telefone</FormLabel><FormControl>
               <InputMask mask="(99) 99999-9999" value={field.value} onChange={field.onChange}>
-                {(inputProps: any) => <Input {...inputProps} ref={field.ref} placeholder="(00) 90000-0000" />}
+                {(inputProps: any) => <Input {...inputProps} placeholder="(00) 90000-0000" />}
               </InputMask>
             </FormControl><FormMessage /></FormItem>
           )} />
@@ -125,7 +125,7 @@ const Step2 = ({ prevStep, form, onSubmit }: { prevStep: () => void, form: any, 
         <FormField control={form.control} name="cnpj" render={({ field }) => (
             <FormItem><FormLabel>CNPJ</FormLabel><FormControl>
               <InputMask mask="99.999.999/9999-99" value={field.value} onChange={field.onChange}>
-                {(inputProps: any) => <Input {...inputProps} ref={field.ref} placeholder="00.000.000/0001-00" />}
+                {(inputProps: any) => <Input {...inputProps} placeholder="00.000.000/0001-00" />}
               </InputMask>
             </FormControl><FormMessage /></FormItem>
         )} />
@@ -196,7 +196,7 @@ const Step2 = ({ prevStep, form, onSubmit }: { prevStep: () => void, form: any, 
          <FormField control={form.control} name="cep" render={({ field }) => (
             <FormItem><FormLabel>CEP</FormLabel><FormControl>
               <InputMask mask="99999-999" value={field.value} onChange={field.onChange}>
-                {(inputProps: any) => <Input {...inputProps} ref={field.ref} placeholder="00000-000" />}
+                {(inputProps: any) => <Input {...inputProps} placeholder="00000-000" />}
               </InputMask>
             </FormControl><FormMessage /></FormItem>
         )} />
@@ -217,7 +217,7 @@ const Step2 = ({ prevStep, form, onSubmit }: { prevStep: () => void, form: any, 
             <FormField control={form.control} name="commercialPhone" render={({ field }) => (
                 <FormItem><FormLabel>Telefone</FormLabel><FormControl>
                   <InputMask mask="(99) 9999-9999" value={field.value} onChange={field.onChange}>
-                    {(inputProps: any) => <Input {...inputProps} ref={field.ref} type="tel" placeholder="(00) 0000-0000" />}
+                    {(inputProps: any) => <Input {...inputProps} type="tel" placeholder="(00) 0000-0000" />}
                   </InputMask>
                 </FormControl><FormMessage /></FormItem>
             )} />
