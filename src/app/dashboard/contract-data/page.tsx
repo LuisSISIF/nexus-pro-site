@@ -3,9 +3,12 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { getContractData, ContractData } from '@/actions/contract-actions';
+import { createAsaasPaymentLink } from '@/actions/asaas-actions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { Briefcase, Calendar, Users, Building, AlertCircle, CalendarClock, CreditCard } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Briefcase, Calendar, Users, Building, AlertCircle, CalendarClock, CreditCard, Loader2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const DataRow = ({ label, value, icon }: { label: string; value: React.ReactNode; icon?: React.ReactNode }) => (
   <div className="flex justify-between items-center py-3 border-b border-gray-200 dark:border-gray-700">
@@ -20,12 +23,12 @@ const DataRow = ({ label, value, icon }: { label: string; value: React.ReactNode
 const ContractDataPage = () => {
   const [data, setData] = useState<ContractData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [paymentLoading, setPaymentLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchContractData = async () => {
-      // Temporary solution: get companyId from localStorage.
-      // In a real app, this should come from a secure session.
       const companyId = localStorage.getItem('companyId');
 
       if (!companyId) {
@@ -51,6 +54,41 @@ const ContractDataPage = () => {
 
     fetchContractData();
   }, []);
+
+  const handlePayment = async () => {
+    if (!data?.idempresa) {
+        toast({
+            variant: "destructive",
+            title: "Erro",
+            description: "Não foi possível identificar a empresa para o pagamento."
+        });
+        return;
+    }
+    
+    setPaymentLoading(true);
+
+    try {
+        const result = await createAsaasPaymentLink(data.idempresa);
+        if(result.success && result.paymentUrl) {
+            window.open(result.paymentUrl, '_blank');
+        } else {
+             toast({
+                variant: "destructive",
+                title: "Erro ao gerar cobrança",
+                description: result.message || "Não foi possível criar o link de pagamento."
+            });
+        }
+    } catch (error) {
+         toast({
+            variant: "destructive",
+            title: "Erro inesperado",
+            description: "Ocorreu um erro ao tentar gerar o link de pagamento."
+        });
+    } finally {
+        setPaymentLoading(false);
+    }
+  };
+
 
   const renderContent = () => {
     if (loading) {
@@ -98,65 +136,82 @@ const ContractDataPage = () => {
       };
       
       return (
-        <div className="space-y-6">
-          <DataRow 
-            label="Empresa" 
-            value={data.nome_empresa} 
-            icon={<Briefcase className="w-4 h-4 text-primary" />} 
-          />
-          <DataRow 
-            label="Plano Atual" 
-            value={
-              <Badge variant={isTestPlan ? "secondary" : "default"}>
-                {data.nomePlano}
-              </Badge>
-            } 
-            icon={<Calendar className="w-4 h-4 text-primary" />} 
-          />
+        <>
+            <div className="space-y-6">
+            <DataRow 
+                label="Empresa" 
+                value={data.nome_empresa} 
+                icon={<Briefcase className="w-4 h-4 text-primary" />} 
+            />
+            <DataRow 
+                label="Plano Atual" 
+                value={
+                <Badge variant={isTestPlan ? "secondary" : "default"}>
+                    {data.nomePlano}
+                </Badge>
+                } 
+                icon={<Calendar className="w-4 h-4 text-primary" />} 
+            />
 
-          {isTestPlan && data.periodoTesteInicio && data.periodoTesteFim && (
-             <Card className="bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800">
-                <CardHeader>
-                    <CardTitle className="text-md text-blue-800 dark:text-blue-300">Período de Teste</CardTitle>
-                </CardHeader>
-                <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                   <div>
-                        <p className="font-semibold">Início:</p>
-                        <p>{new Date(data.periodoTesteInicio).toLocaleDateString('pt-BR')}</p>
-                   </div>
+            {isTestPlan && data.periodoTesteInicio && data.periodoTesteFim && (
+                <Card className="bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800">
+                    <CardHeader>
+                        <CardTitle className="text-md text-blue-800 dark:text-blue-300">Período de Teste</CardTitle>
+                    </CardHeader>
+                    <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                     <div>
-                        <p className="font-semibold">Fim:</p>
-                        <p>{new Date(data.periodoTesteFim).toLocaleDateString('pt-BR')}</p>
-                   </div>
-                </CardContent>
-             </Card>
-          )}
-          
-           <DataRow 
-            label="Usuários" 
-            value={`${data.qtdFunc} / ${totalUserLimit}`} 
-            icon={<Users className="w-4 h-4 text-primary" />} 
-          />
-           <DataRow 
-            label="Lojas/Filiais" 
-            value={`${data.qtdLojas} / ${data.limiteLojas}`}
-            icon={<Building className="w-4 h-4 text-primary" />} 
-          />
-          {!isTestPlan && data.diaVencimento && (
-            <>
-              <DataRow 
-                label="Situação do Pagamento" 
-                value={getPaymentStatusBadge(data.pagamentoMes)}
-                icon={<CreditCard className="w-4 h-4 text-primary" />} 
-              />
-              <DataRow 
-                  label="Dia do Vencimento" 
-                  value={`Todo dia ${data.diaVencimento}`}
-                  icon={<CalendarClock className="w-4 h-4 text-primary" />} 
-              />
-            </>
-          )}
-        </div>
+                            <p className="font-semibold">Início:</p>
+                            <p>{new Date(data.periodoTesteInicio).toLocaleDateString('pt-BR')}</p>
+                    </div>
+                        <div>
+                            <p className="font-semibold">Fim:</p>
+                            <p>{new Date(data.periodoTesteFim).toLocaleDateString('pt-BR')}</p>
+                    </div>
+                    </CardContent>
+                </Card>
+            )}
+            
+            <DataRow 
+                label="Usuários" 
+                value={`${data.qtdFunc} / ${totalUserLimit}`} 
+                icon={<Users className="w-4 h-4 text-primary" />} 
+            />
+            <DataRow 
+                label="Lojas/Filiais" 
+                value={`${data.qtdLojas} / ${data.limiteLojas}`}
+                icon={<Building className="w-4 h-4 text-primary" />} 
+            />
+            {!isTestPlan && data.diaVencimento && (
+                <>
+                <DataRow 
+                    label="Situação do Pagamento" 
+                    value={getPaymentStatusBadge(data.pagamentoMes)}
+                    icon={<CreditCard className="w-4 h-4 text-primary" />} 
+                />
+                <DataRow 
+                    label="Dia do Vencimento" 
+                    value={`Todo dia ${data.diaVencimento}`}
+                    icon={<CalendarClock className="w-4 h-4 text-primary" />} 
+                />
+                </>
+            )}
+            </div>
+            
+            {!isTestPlan && data.pagamentoMes?.toLowerCase() !== 'pago' && (
+                 <div className="mt-8 pt-6 border-t">
+                    <Button onClick={handlePayment} disabled={paymentLoading} className="w-full sm:w-auto">
+                       {paymentLoading ? (
+                           <>
+                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                           Gerando...
+                           </>
+                       ) : (
+                           "Efetuar Pagamento da Mensalidade"
+                       )}
+                    </Button>
+                </div>
+            )}
+        </>
       );
     }
     
@@ -173,7 +228,7 @@ const ContractDataPage = () => {
         <CardHeader>
           <CardTitle>Seu Plano</CardTitle>
           <CardDescription>
-            Detalhes sobre o plano contratado e limites de uso.
+            Detalhes sobre o plano contratado, limites de uso e pagamento.
           </CardDescription>
         </CardHeader>
         <CardContent>
