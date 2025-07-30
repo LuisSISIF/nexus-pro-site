@@ -115,7 +115,7 @@ const SignUpPage = () => {
                   <AlertCircle className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
                   <AlertTitle className="text-yellow-800 dark:text-yellow-300">Atenção</AlertTitle>
                   <AlertDescription className="text-yellow-700 dark:text-yellow-300">
-                    O plano de teste gratuito possui funcionalidades que podem ser limitadas ou indisponíveis.
+                    O plano de teste possui funcionalidades que podem ser limitadas ou estar indisponíveis no plano gratuito.
                   </AlertDescription>
                 </Alert>
 
