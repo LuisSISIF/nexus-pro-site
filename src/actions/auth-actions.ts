@@ -3,24 +3,9 @@
 import { z } from 'zod';
 import { db } from '@/lib/db';
 import * as crypto from 'crypto';
+import { isValidCPF } from '@/lib/validators';
 
 // --- Helper Functions ---
-
-function getTaxRegimeAsInt(taxRegime: string): number {
-    const regimeMap: { [key: string]: number } = {
-        'real': 1,
-        'presumido': 2,
-        'simples': 3,
-        'mei': 4,
-        'eireli': 5,
-        'ltda': 6,
-        'sa': 7,
-        'coop': 8,
-        'semfins': 9,
-    };
-    return regimeMap[taxRegime.toLowerCase()] || 0;
-}
-
 
 function sha256Hash(password: string): string {
     const hash = crypto.createHash('sha256');
@@ -32,38 +17,22 @@ function sha256Hash(password: string): string {
 // --- Schemas ---
 
 const registrationSchema = z.object({
-  // Step 1 - User
-  fullName: z.string().min(3),
-  cpf: z.string(),
-  rg: z.string(),
-  dob: z.string(),
-  gender: z.string(),
-  login: z.string().min(3),
-  password: z.string().min(6),
+  // User
+  fullName: z.string().min(3, "Nome completo é obrigatório"),
+  cpf: z.string().refine(isValidCPF, "CPF inválido"),
+  gender: z.enum(["male", "female", "other"], { required_error: "Gênero é obrigatório"}),
+  login: z.string().min(3, "Login deve ter pelo menos 3 caracteres"),
+  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
   confirmPassword: z.string().min(6),
-  phone: z.string(),
-  email: z.string().email(),
+  phone: z.string().min(10, "Telefone inválido"),
+  email: z.string().email("E-mail inválido"),
   
-  // Step 2 - Company
-  fantasyName: z.string().min(2),
-  cnpj: z.string(),
-  socialReason: z.string().min(3),
-  taxRegime: z.string(),
-  stateInscription: z.string().optional(),
-  municipalInscription: z.string().optional(),
-  mainActivity: z.string().min(3),
-  marketSegment: z.string().min(3),
-  street: z.string().min(3),
-  number: z.string().min(1),
-  neighborhood: z.string().min(3),
-  city: z.string().min(3),
-  state: z.string().length(2),
-  cep: z.string().min(8),
-  ownerName: z.string().min(3),
-  commercialEmail: z.string().email(),
-  website: z.string().optional(),
-  commercialPhone: z.string(),
-  instagram: z.string().optional(),
+  // Company
+  companyName: z.string().min(2, "Nome da empresa é obrigatório"),
+  companyAddress: z.string().min(10, "Endereço completo é obrigatório"),
+  legalRepresentative: z.string().min(3, "Representante legal é obrigatório"),
+  mainActivity: z.string().min(3, "Atividade principal é obrigatória"),
+
 }).refine((data) => data.password === data.confirmPassword, {
   message: "As senhas não coincidem",
   path: ["confirmPassword"], 
@@ -82,98 +51,53 @@ export async function registerUserAndCompany(data: unknown) {
 
   if (!validation.success) {
     console.error('Validation Error:', validation.error.flatten().fieldErrors);
-    return { success: false, message: 'Dados de cadastro inválidos.' };
+    const firstError = Object.values(validation.error.flatten().fieldErrors)[0]?.[0];
+    return { success: false, message: firstError || 'Dados de cadastro inválidos. Verifique os campos.' };
   }
   
   const { 
       // User data
-      login, password, fullName, email, cpf, rg, dob, gender, phone,
+      login, password, fullName, email, cpf, gender, phone,
       // Company data
-      fantasyName, cnpj, socialReason, taxRegime, stateInscription,
-      municipalInscription, mainActivity, marketSegment, street, number,
-      neighborhood, city, state, cep, ownerName, commercialEmail, website,
-      commercialPhone, instagram
+      companyName, companyAddress, legalRepresentative, mainActivity
   } = validation.data;
   
   let connection;
   try {
     connection = await db();
-    await connection.beginTransaction();
 
     // Check if user or company already exists
     const [existingUser] = await connection.execute('SELECT idusuarios FROM usuarios WHERE login = ? OR email = ?', [login, email]);
     if ((existingUser as any[]).length > 0) {
-      await connection.rollback();
       return { success: false, message: 'Login ou e-mail de usuário já cadastrado.' };
-    }
-
-    const [existingCompany] = await connection.execute('SELECT idempresa FROM empresa WHERE cnpj_empresa = ?', [cnpj]);
-    if ((existingCompany as any[]).length > 0) {
-        await connection.rollback();
-        return { success: false, message: 'CNPJ já cadastrado.' };
     }
 
     const hashedPassword = sha256Hash(password);
 
-    const fullAddress = `${street}, ${number}, ${neighborhood}, ${city} - ${state}, ${cep}`;
-    const planId = 2; 
-    const dayOfMonth = new Date().getDate();
-    const taxRegimeInt = getTaxRegimeAsInt(taxRegime);
-
-
-    const [companyResult] = await connection.execute(
-        'CALL admFunctionsEmpresas(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    // Call the new unified stored procedure
+    // PROCEDURE `admFunctionsCadastraTeste` (nome_empresa, endereco, rep, atv, login, senha, email, nomeUser, contato, cpf, genero)
+    const [result] = await connection.execute(
+        'CALL admFunctionsCadastraTeste(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [
-            0, 
-            fullAddress, 
-            planId, 
-            fantasyName, 
-            cnpj, 
-            website || null, 
-            commercialEmail, 
-            commercialPhone, 
-            stateInscription || null,
-            dayOfMonth.toString(), 
-            instagram || null, 
-            ownerName, 
+            companyName,
+            companyAddress,
+            legalRepresentative,
             mainActivity,
-            marketSegment,
-            taxRegimeInt,
-            municipalInscription || null,
-            0, // usersAdicionais
-            1, // catPlano
-            0.00,
-            0,
+            login,
+            hashedPassword,
+            email,
+            fullName, // nomeUser
+            phone,    // contato
+            cpf,
+            gender
         ]
     );
     
-    const companyId = (companyResult as any)[0][0]['ID'];
-
-    if (!companyId) {
-        throw new Error('Falha ao criar a empresa. O ID não foi retornado pela procedure.');
-    }
-
-    const [userResult] = await connection.execute(
-        'CALL admFunctionsInsertADM(?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [
-            companyId,
-            fullName,
-            cpf,
-            rg,
-            gender,
-            phone,
-            email,
-            login,
-            hashedPassword
-        ]
-    );
-
-    await connection.commit();
-
-    return { success: true, message: 'Cadastro realizado com sucesso!', userId: null, companyId: companyId }; 
+    // Assuming the procedure returns some indication of success.
+    // Adjust based on actual procedure return value if necessary.
+    return { success: true, message: 'Cadastro realizado com sucesso!' }; 
 
   } catch (error) {
-    if (connection) await connection.rollback();
     console.error('Registration Error:', error);
     // Specific check for connection errors
     if (error instanceof Error && 'code' in error && (error as any).code.includes('CONN')) {
@@ -217,6 +141,9 @@ export async function loginUser(data: unknown) {
     // Specific check for connection errors
     if (error instanceof Error && 'code' in error && (error as any).code.includes('CONN')) {
        return { success: false, message: 'Não foi possível conectar ao banco de dados. Verifique as credenciais no ambiente de produção.' };
+    }
+     if (error instanceof Error && (error as any).sqlMessage) {
+       return { success: false, message: `Erro no banco de dados: ${(error as any).sqlMessage}` };
     }
     return { success: false, message: 'Ocorreu um erro no servidor durante o login.' };
   } finally {
