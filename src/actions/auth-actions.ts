@@ -1,3 +1,4 @@
+
 'use server';
 
 import { z } from 'zod';
@@ -79,17 +80,17 @@ export async function registerUserAndCompany(data: unknown) {
     const [result] = await connection.execute(
         'CALL admFunctionsCadastraTeste(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [
-            companyName,
-            companyAddress,
-            legalRepresentative,
-            mainActivity,
-            login,
-            hashedPassword,
-            email,
-            fullName, // nomeUser
-            phone,    // contato
-            cpf,
-            gender
+            companyName,         // nome_empresa
+            companyAddress,      // endereco
+            legalRepresentative, // rep
+            mainActivity,        // atv
+            login,               // login
+            hashedPassword,      // senha
+            email,               // email
+            fullName,            // nomeUser
+            phone,               // contato
+            cpf,                 // cpf
+            gender               // genero
         ]
     );
     
