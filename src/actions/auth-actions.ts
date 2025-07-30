@@ -175,6 +175,10 @@ export async function registerUserAndCompany(data: unknown) {
   } catch (error) {
     if (connection) await connection.rollback();
     console.error('Registration Error:', error);
+    // Specific check for connection errors
+    if (error instanceof Error && 'code' in error && (error as any).code.includes('CONN')) {
+      return { success: false, message: 'Não foi possível conectar ao banco de dados. Verifique as credenciais no ambiente de produção.' };
+    }
     if (error instanceof Error && (error as any).sqlMessage) {
        return { success: false, message: `Erro no banco de dados: ${(error as any).sqlMessage}` };
     }
@@ -210,8 +214,9 @@ export async function loginUser(data: unknown) {
     }
   } catch (error) {
     console.error('Login Error:', error);
+    // Specific check for connection errors
     if (error instanceof Error && 'code' in error && (error as any).code.includes('CONN')) {
-       return { success: false, message: 'Não foi possível conectar ao banco de dados. Verifique as credenciais.' };
+       return { success: false, message: 'Não foi possível conectar ao banco de dados. Verifique as credenciais no ambiente de produção.' };
     }
     return { success: false, message: 'Ocorreu um erro no servidor durante o login.' };
   } finally {
