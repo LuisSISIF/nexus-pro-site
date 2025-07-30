@@ -95,9 +95,9 @@ export async function registerUserAndCompany(data: unknown) {
       commercialPhone, instagram
   } = validation.data;
   
-  const connection = await db();
-
+  let connection;
   try {
+    connection = await db();
     await connection.beginTransaction();
 
     // Check if user or company already exists
@@ -173,14 +173,14 @@ export async function registerUserAndCompany(data: unknown) {
     return { success: true, message: 'Cadastro realizado com sucesso!', userId: null, companyId: companyId }; 
 
   } catch (error) {
-    await connection.rollback();
+    if (connection) await connection.rollback();
     console.error('Registration Error:', error);
     if (error instanceof Error && (error as any).sqlMessage) {
        return { success: false, message: `Erro no banco de dados: ${(error as any).sqlMessage}` };
     }
     return { success: false, message: 'Ocorreu um erro no servidor ao tentar realizar o cadastro.' };
   } finally {
-    await connection.end();
+    if (connection) await connection.end();
   }
 }
 
@@ -194,9 +194,9 @@ export async function loginUser(data: unknown) {
   const { email, password } = validation.data;
   const hashedPassword = sha256Hash(password);
 
-  const connection = await db();
-
+  let connection;
   try {
+    connection = await db();
     const query = 'SELECT * FROM usuarios WHERE email = ? AND senha = ? AND admUser = 1';
     const [rows] = await connection.execute(query, [email, hashedPassword]);
 
@@ -210,8 +210,11 @@ export async function loginUser(data: unknown) {
     }
   } catch (error) {
     console.error('Login Error:', error);
+    if (error instanceof Error && 'code' in error && (error as any).code.includes('CONN')) {
+       return { success: false, message: 'Não foi possível conectar ao banco de dados. Verifique as credenciais.' };
+    }
     return { success: false, message: 'Ocorreu um erro no servidor durante o login.' };
   } finally {
-    await connection.end();
+    if (connection) await connection.end();
   }
 }
