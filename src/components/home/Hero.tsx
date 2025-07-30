@@ -52,8 +52,8 @@ const Hero = () => {
                 rel="noopener noreferrer" 
                 className="bg-transparent hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-8 py-4 rounded-lg text-lg font-semibold transition-all flex items-center justify-center space-x-2 border-2 border-blue-600 dark:border-blue-400"
               >
-                <Video className="w-5 h-5" />
-                <span>Ver uma Demonstração</span>
+                <Calendar className="w-5 h-5" />
+                <span>Agendar uma Demonstração</span>
               </a>
             </div>
             
