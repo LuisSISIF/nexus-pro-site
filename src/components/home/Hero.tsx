@@ -17,7 +17,7 @@ const Hero = () => {
                 Simples e Eficiente
               </h1>
               <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
-                Sistema que automatiza estoque, gerencia vendas em tempo real e imprime etiquetas com facilidade
+                Sistema que automatiza estoque, gerencia vendas e clientes em tempo real com facilidade
               </p>
             </div>
 
