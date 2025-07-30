@@ -64,7 +64,7 @@ const InstallerPage = () => {
               <p className="text-muted-foreground">Após ler as instruções, clique no botão para baixar.</p>
             </div>
             <Button size="lg" asChild>
-                <a href="/InstaladorNexusPro.zip" download="InstaladorNexusPro.zip">
+                <a href="https://download.andromedasolutions.com.br/instaladorSistema/InstaladorNexusPro.zip" download="InstaladorNexusPro.zip">
                     <Download className="mr-2" />
                     Baixar Instalador
                 </a>
