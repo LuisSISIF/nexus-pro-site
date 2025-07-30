@@ -76,7 +76,7 @@ const SignUpPage = () => {
             if (result.success) {
                 toast({
                     title: "Cadastro realizado com sucesso!",
-                    description: "Seu conta foi criada e você já pode fazer o login.",
+                    description: "Sua conta foi criada e você já pode fazer o login.",
                 });
                 // TODO: Redirect to login page or dashboard
             } else {
