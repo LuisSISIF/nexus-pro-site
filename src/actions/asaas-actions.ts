@@ -33,10 +33,10 @@ async function createAsaasCustomer(companyData: any, userData: any) {
         },
         body: JSON.stringify({
             name: companyData.nome_empresa,
-            cpfCnpj: userData.cpf, // Assumindo que o CPF/CNPJ da empresa é o do usuário admin
+            cpfCnpj: userData.cpf,
             email: userData.email,
-            phone: userData.phone,
-            address: companyData.companyAddress,
+            phone: userData.contato,
+            address: companyData.endereco,
             // Adicionar outros campos conforme necessário
         }),
     });
@@ -46,8 +46,9 @@ async function createAsaasCustomer(companyData: any, userData: any) {
 // Função para buscar o cliente ASAAS no banco de dados local ou criá-lo
 async function getOrCreateAsaasCustomer(companyId: number, connection: any) {
     // 1. Verificar se o asaas_customer_id já existe na tabela `empresa`
-    let [companyRows] = await connection.execute('SELECT asaas_customer_id FROM empresa WHERE idempresa = ?', [companyId]);
-    let asaasCustomerId = (companyRows as any[])[0]?.asaas_customer_id;
+    let [companyRows] = await connection.execute('SELECT asaas_customer_id, nome_empresa, endereco FROM empresa WHERE idempresa = ?', [companyId]);
+    let companyResult = (companyRows as any[])[0];
+    let asaasCustomerId = companyResult?.asaas_customer_id;
 
     if (asaasCustomerId) {
         return asaasCustomerId;
@@ -57,15 +58,13 @@ async function getOrCreateAsaasCustomer(companyId: number, connection: any) {
     const [userDataRows] = await connection.execute('SELECT nome, email, cpf, contato FROM usuarios WHERE idempresa = ? AND admUser = 1 LIMIT 1', [companyId]);
     const userData = (userDataRows as any[])[0];
 
-    const [companyDataRows] = await connection.execute('SELECT nome_empresa, endereco FROM empresa WHERE idempresa = ?', [companyId]);
-    const companyData = (companyDataRows as any[])[0];
 
-    if (!userData || !companyData) {
+    if (!userData || !companyResult) {
         throw new Error('Dados do usuário ou da empresa não encontrados para criar cliente no ASAAS.');
     }
     
     // 3. Criar cliente no ASAAS
-    const asaasCustomer: AsaasCustomer | AsaasErrorResponse = await createAsaasCustomer(companyData, userData);
+    const asaasCustomer: AsaasCustomer | AsaasErrorResponse = await createAsaasCustomer(companyResult, userData);
 
     if ('errors' in asaasCustomer) {
         console.error("Erro ao criar cliente ASAAS:", asaasCustomer.errors);
@@ -91,8 +90,9 @@ export async function createAsaasPaymentLink(companyId: number): Promise<{ succe
         return { success: false, message: 'Credenciais do ASAAS não configuradas no servidor.' };
     }
     
-    const connection = await db();
+    let connection;
     try {
+        connection = await db();
         // 1. Obter dados do contrato para saber o valor a ser cobrado
         const contractInfo = await getContractData(companyId);
         if (!contractInfo.success || !contractInfo.data) {
