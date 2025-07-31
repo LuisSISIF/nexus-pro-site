@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
@@ -88,6 +89,11 @@ const UserDataPage = () => {
             return;
         }
 
+        if (userData.login.length < 6) {
+             toast({ variant: 'destructive', title: 'Erro de Validação', description: 'O login deve ter pelo menos 6 caracteres.' });
+            return;
+        }
+        
         if (password !== confirmPassword) {
             toast({ variant: 'destructive', title: 'Erro de Validação', description: 'As senhas não coincidem.' });
             return;
@@ -107,8 +113,8 @@ const UserDataPage = () => {
                 celular: userData.celular,
                 login: userData.login,
                 email: userData.email,
-                senha: password || undefined,
-                confirmarSenha: confirmPassword || undefined,
+                senha: password || '',
+                confirmarSenha: confirmPassword || '',
             });
 
             if (result.success) {

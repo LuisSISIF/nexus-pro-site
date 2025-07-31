@@ -1,3 +1,4 @@
+
 'use server';
 
 import { db } from '@/lib/db';
@@ -27,9 +28,9 @@ const UpdateUserSchema = z.object({
     companyId: z.number(),
     nome: z.string().min(3, "O nome é obrigatório."),
     celular: z.string().min(10, "O celular é obrigatório."),
-    login: z.string().min(3, "O login é obrigatório."),
+    login: z.string().min(6, "O login deve ter pelo menos 6 caracteres."),
     email: z.string().email("O e-mail é inválido."),
-    senha: z.string().optional(),
+    senha: z.string().min(6, "A senha deve ter pelo menos 6 caracteres.").optional().or(z.literal('')),
     confirmarSenha: z.string().optional(),
 }).refine(data => data.senha === data.confirmarSenha, {
     message: "As senhas não coincidem.",
@@ -79,11 +80,6 @@ export async function updateUserData(data: unknown): Promise<{ success: boolean;
     }
     
     const { userId, companyId, nome, celular, login, email, senha } = validation.data;
-
-    // Se a senha foi fornecida, mas é muito curta (e não vazia)
-    if (senha && senha.length < 6) {
-        return { success: false, message: "A nova senha deve ter pelo menos 6 caracteres." };
-    }
 
     let connection;
     try {
