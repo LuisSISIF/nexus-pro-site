@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { getContractData, ContractData } from '@/actions/contract-actions';
-import { checkAsaasCustomerExistsByCPF_CNPJ } from '@/actions/asaas-actions';
+import { checkPendingSubscription } from '@/actions/asaas-actions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -69,17 +69,18 @@ const ContractDataPage = () => {
     setPaymentLoading(true);
 
     try {
-        const result = await checkAsaasCustomerExistsByCPF_CNPJ(data.idempresa);
+        const result = await checkPendingSubscription(data.idempresa);
         if(result.success) {
             toast({
                 title: "Verificação Concluída",
                 description: `CNPJ: ${result.cnpj}. ${result.message}`,
+                variant: result.hasPending ? "destructive" : "default",
             });
         } else {
              toast({
                 variant: "destructive",
                 title: "Erro na verificação",
-                description: `CNPJ: ${result.cnpj || 'Não encontrado'}. ${result.message || "Não foi possível verificar o cliente no Asaas."}`
+                description: `CNPJ: ${result.cnpj || 'Não encontrado'}. ${result.message || "Não foi possível verificar a assinatura no Asaas."}`
             });
         }
     } catch (error) {

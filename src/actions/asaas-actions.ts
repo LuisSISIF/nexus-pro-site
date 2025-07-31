@@ -45,6 +45,21 @@ async function createAsaasCustomer(companyData: any, userData: any) {
     return response.json();
 }
 
+async function getAsaasCustomerByCnpj(cnpj: string): Promise<AsaasCustomer | null> {
+    const response = await fetch(`${ASAAS_API_URL}/customers?cpfCnpj=${cnpj}`, {
+        method: 'GET',
+        headers: {
+            'access_token': ASAAS_API_KEY!,
+        },
+    });
+    const data = await response.json();
+    if (data.totalCount > 0) {
+        return data.data[0];
+    }
+    return null;
+}
+
+
 // Função para buscar o cliente ASAAS no banco de dados local ou criá-lo
 async function getOrCreateAsaasCustomer(companyId: number, connection: any) {
     // 1. Verificar se o asaas_customer_id já existe na tabela `empresa`
@@ -89,14 +104,71 @@ async function getOrCreateAsaasCustomer(companyId: number, connection: any) {
 
 // --- Funções Exportadas ---
 
+export async function checkPendingSubscription(companyId: number): Promise<{ success: boolean; message: string; hasPending: boolean, cnpj?: string }> {
+    if (!companyId) {
+        return { success: false, message: 'ID da empresa não fornecido.', hasPending: false };
+    }
+    if (!ASAAS_API_KEY || !ASAAS_API_URL) {
+        return { success: false, message: 'Credenciais do ASAAS não configuradas no servidor.', hasPending: false };
+    }
+
+    let connection;
+    try {
+        connection = await db();
+
+        const [companyDataRows] = await connection.execute('SELECT cnpj_empresa, asaas_customer_id FROM empresa WHERE idempresa = ?', [companyId]);
+        const companyData = (companyDataRows as any[])[0];
+
+        if (!companyData || !companyData.cnpj_empresa) {
+            return { success: false, message: 'CNPJ da empresa não encontrado.', hasPending: false };
+        }
+
+        const cnpj = companyData.cnpj_empresa;
+        let customer = await getAsaasCustomerByCnpj(cnpj);
+
+        if (!customer) {
+            return { success: true, message: "Cliente não encontrado no Asaas.", hasPending: false, cnpj };
+        }
+
+        const customerId = customer.id;
+
+        const response = await fetch(`${ASAAS_API_URL}/subscriptions?customer=${customerId}&status=PENDING`, {
+            method: 'GET',
+            headers: {
+                'access_token': ASAAS_API_KEY!,
+            },
+        });
+        
+        const data = await response.json();
+
+        if (!response.ok) {
+            const errorMsg = data.errors?.[0]?.description || 'Erro ao consultar assinaturas no Asaas';
+            console.error("Erro ao consultar assinaturas:", data.errors);
+            return { success: false, message: `ASAAS: ${errorMsg}`, hasPending: false };
+        }
+
+        const hasPending = data.totalCount > 0;
+        const message = hasPending 
+            ? "Status: Assinatura com pagamento pendente encontrada."
+            : "Status: Nenhuma assinatura pendente encontrada.";
+
+        return { success: true, message, hasPending, cnpj };
+
+    } catch (error) {
+        console.error('ASAAS Check Subscription Error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Ocorreu um erro desconhecido.';
+        return { success: false, message: errorMessage, hasPending: false };
+    } finally {
+        if (connection) await connection.end();
+    }
+}
+
 
 export async function checkAsaasCustomerExistsByCPF_CNPJ(companyId: number): Promise<{ success: boolean; message: string; exists: boolean, cnpj?: string }> {
      if (!companyId) {
         return { success: false, message: 'ID da empresa não fornecido.', exists: false };
     }
     if (!ASAAS_API_KEY || !ASAAS_API_URL) {
-        console.log("KEY: ", ASAAS_API_KEY)
-        console.log("api: ", ASAAS_API_URL)
         return { success: false, message: 'Credenciais do ASAAS não configuradas no servidor.', exists: false };
     }
 
@@ -150,8 +222,6 @@ export async function createAsaasPaymentLink(companyId: number): Promise<{ succe
         return { success: false, message: 'ID da empresa não fornecido.' };
     }
     if (!ASAAS_API_KEY || !ASAAS_API_URL) {
-        console.log("KEY: ", ASAAS_API_KEY)
-        console.log("api: ", ASAAS_API_URL)
         return { success: false, message: 'Credenciais do ASAAS não configuradas no servidor.' };
     }
     
