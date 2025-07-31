@@ -122,8 +122,7 @@ const ChangePlanPage = () => {
                 title: "Plano Alterado!",
                 description: result.message,
             });
-            // Recarrega a página para refletir a mudança
-            window.location.reload(); 
+            router.push('/dashboard/contract-data');
         } else {
              toast({
                 variant: "destructive",
@@ -134,7 +133,7 @@ const ChangePlanPage = () => {
             if (result.message.includes('Você só pode alterar seu plano a cada 30 dias')) {
                 setTimeout(() => {
                     router.push('/dashboard/contract-data');
-                }, 3000); // Adiciona um pequeno delay para o usuário ler o toast
+                }, 3000); 
             }
         }
         
