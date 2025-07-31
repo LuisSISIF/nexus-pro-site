@@ -83,15 +83,15 @@ const ContractDataPage = () => {
     const getPlanBadgeStyle = (planId: number): string => {
         switch (planId) {
             case 1: // Alpha Tester
-                return "bg-black text-yellow-400 border-yellow-500 shadow-lg";
+                return "bg-black text-white border-amber-400";
             case 2: // Teste Grátis
                 return "bg-green-600 text-white border-green-700";
             case 3: // Essencial
-                return "bg-gray-200 text-gray-800 border-gray-300";
+                return "bg-gray-500 text-white border-gray-600";
             case 4: // Profissional
-                return "bg-blue-600 text-white";
+                return "bg-green-700 text-white border-green-800";
             case 5: // Empresarial
-                return "bg-yellow-400 text-black";
+                return "bg-blue-800 text-white border-blue-900";
             default:
                 return "bg-gray-200 text-gray-800";
         }
@@ -101,15 +101,15 @@ const ContractDataPage = () => {
         if (!planId) return "shadow-lg";
         switch (planId) {
             case 1: // Alpha Tester
-                return "shadow-xl bg-black text-yellow-300 border-yellow-700";
+                return "shadow-xl bg-[#1A1A1A] text-white border-amber-500";
             case 2: // Teste Grátis
-                 return "shadow-lg bg-white text-gray-800"; // Fundo branco com detalhes verdes
+                 return "shadow-lg bg-[#F3F4F6] text-gray-800";
             case 3: // Essencial
-                 return "shadow-lg bg-[#F5F6FA] text-gray-800";
+                 return "shadow-lg bg-[#374151] text-white";
             case 4: // Profissional
-                 return "shadow-lg bg-blue-600 text-white";
+                 return "shadow-lg bg-[#065F46] text-white";
             case 5: // Empresarial
-                 return "shadow-lg bg-yellow-400 text-black";
+                 return "shadow-lg bg-[#1E3A8A] text-white";
             default:
                 return "shadow-lg";
         }
@@ -119,14 +119,16 @@ const ContractDataPage = () => {
         if (!planId) return "text-primary";
         switch (planId) {
             case 1: // Alpha Tester
-                return "text-yellow-400";
+                return "text-amber-400";
             case 2: // Teste Grátis
-                 return "text-green-500";
+                 return "text-green-600";
+            case 3: // Essencial
+                return "text-gray-400";
             case 4: // Profissional
-                return "text-blue-100";
+                return "text-green-400";
             case 5: // Empresarial
-                return "text-black";
-            default: // Essencial e outros
+                return "text-amber-500";
+            default:
                 return "text-primary";
         }
     }
@@ -295,9 +297,11 @@ const ContractDataPage = () => {
          <CardHeader>
            <CardTitle>Seu Plano</CardTitle>
            <CardDescription className={cn({
-                'text-yellow-400/80': data?.idPlano === 1,
-                'text-white/80': data?.idPlano === 4,
-                'text-black/80': data?.idPlano === 5,
+                'text-amber-400/80': data?.idPlano === 1,
+                'text-gray-600': data?.idPlano === 2,
+                'text-gray-300': data?.idPlano === 3,
+                'text-green-300': data?.idPlano === 4,
+                'text-blue-300': data?.idPlano === 5,
             })}>
               Detalhes sobre o plano contratado, limites de uso e pagamento.
            </CardDescription>
@@ -311,6 +315,3 @@ const ContractDataPage = () => {
 };
 
 export default ContractDataPage;
-
-    
-    
