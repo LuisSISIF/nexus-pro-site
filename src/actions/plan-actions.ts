@@ -37,18 +37,39 @@ export async function updateCompanyPlan(companyId: number, newPlanId: number, ne
         connection = await db();
         await connection.beginTransaction();
 
-        // 1. Buscar dados da empresa, incluindo o idAsaas
-        const [companyRows] = await connection.execute('SELECT idempresa, idAsaas FROM empresa WHERE idempresa = ?', [companyId]);
+        // 1. Buscar dados da empresa, incluindo o idAsaas e a data da última alteração
+        const [companyRows] = await connection.execute(
+            'SELECT idempresa, idAsaas, ultimaAlteracaoPlano FROM empresa WHERE idempresa = ?', 
+            [companyId]
+        );
         const company = (companyRows as any[])[0];
 
         if (!company) {
             await connection.rollback();
             return { success: false, message: 'Empresa não encontrada.' };
         }
+        
+        // 2. Verificar a regra de 30 dias para alteração
+        if (company.ultimaAlteracaoPlano) {
+            const lastChangeDate = new Date(company.ultimaAlteracaoPlano);
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-        // 2. Atualizar o plano no banco de dados local
+            if (lastChangeDate > thirtyDaysAgo) {
+                await connection.rollback();
+                const nextAvailableDate = new Date(lastChangeDate);
+                nextAvailableDate.setDate(nextAvailableDate.getDate() + 30);
+                return { 
+                    success: false, 
+                    message: `Você só pode alterar seu plano a cada 30 dias. Próxima alteração disponível em: ${nextAvailableDate.toLocaleDateString('pt-BR')}.` 
+                };
+            }
+        }
+
+
+        // 3. Atualizar o plano no banco de dados local
         const [updateResult] = await connection.execute(
-            'UPDATE empresa SET idPlano = ? WHERE idempresa = ?',
+            'UPDATE empresa SET idPlano = ?, ultimaAlteracaoPlano = NOW() WHERE idempresa = ?',
             [newPlanId, companyId]
         );
 
@@ -57,7 +78,7 @@ export async function updateCompanyPlan(companyId: number, newPlanId: number, ne
             return { success: false, message: 'Nenhuma alteração foi necessária. O plano selecionado já pode ser o seu plano atual.' };
         }
         
-        // 3. Lógica para atualizar a assinatura e cobranças futuras no Asaas
+        // 4. Lógica para atualizar a assinatura e cobranças futuras no Asaas
         if (company.idAsaas) {
             // A. ATUALIZAR A ASSINATURA PRINCIPAL
             const subResponse = await fetch(`${ASAAS_API_URL}/subscriptions?customer=${company.idAsaas}`, {
