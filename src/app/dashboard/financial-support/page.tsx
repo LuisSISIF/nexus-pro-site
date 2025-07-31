@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -6,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getContractData } from '@/actions/contract-actions';
+import { getUserData } from '@/actions/user-actions';
 import { AlertCircle, Mail, MessageSquare } from 'lucide-react';
 
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -49,48 +49,99 @@ const SupportCard = ({ icon, title, description, buttonText, href, target }: { i
 
 
 const FinancialSupportPage = () => {
-    const [idPlano, setIdPlano] = useState<number | null>(null);
+    const [supportData, setSupportData] = useState<{
+        idPlano: number | null;
+        userName: string | null;
+        companyName: string | null;
+    }>({ idPlano: null, userName: null, companyName: null });
+    
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const eligibleWhatsappPlans = [1, 4, 5];
 
     useEffect(() => {
-        const fetchPlan = async () => {
-            const companyId = localStorage.getItem('companyId');
-            if (!companyId) {
-                setError("ID da empresa não encontrado. Faça o login novamente.");
+        const fetchData = async () => {
+            const companyIdStr = localStorage.getItem('companyId');
+            const userIdStr = localStorage.getItem('userId');
+
+            if (!companyIdStr || !userIdStr) {
+                setError("IDs de usuário ou empresa não encontrados. Faça o login novamente.");
                 setLoading(false);
                 return;
             }
 
+            const companyId = Number(companyIdStr);
+            const userId = Number(userIdStr);
+
             try {
-                const result = await getContractData(Number(companyId));
-                if (result.success && result.data) {
-                    setIdPlano(result.data.idPlano);
+                // Fetch data in parallel
+                const [contractResult, userResult] = await Promise.all([
+                    getContractData(companyId),
+                    getUserData(userId, companyId)
+                ]);
+
+                let idPlano: number | null = null;
+                let companyName: string | null = null;
+                let userName: string | null = null;
+                let fetchError = null;
+
+                if (contractResult.success && contractResult.data) {
+                    idPlano = contractResult.data.idPlano;
+                    companyName = contractResult.data.nome_empresa;
                 } else {
-                    setError(result.message);
+                    fetchError = contractResult.message;
                 }
+                
+                if(userResult.success && userResult.data) {
+                    userName = userResult.data.nom_func;
+                } else if(!fetchError) { // only overwrite error if there wasn't one from contract
+                    fetchError = userResult.message;
+                }
+
+                if(fetchError){
+                    setError(fetchError);
+                } else {
+                    setSupportData({ idPlano, userName, companyName });
+                }
+
             } catch (err) {
-                setError("Ocorreu um erro ao buscar os dados do seu plano.");
+                setError("Ocorreu um erro ao buscar os dados necessários.");
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchPlan();
+        fetchData();
     }, []);
+
+    const createMailtoLink = () => {
+        const recipient = "andromedasolutions2025@outlook.com";
+        const subject = `Solicitação de Suporte Financeiro - ${supportData.companyName || 'Empresa'}`;
+        const body = `Olá,
+        
+Eu, ${supportData.userName || 'Usuário'}, da empresa ${supportData.companyName || 'desconhecida'}, estou entrando em contato para solicitar suporte financeiro.
+
+[Descreva sua dúvida ou problema aqui]
+
+Agradeço a atenção.
+
+Atenciosamente,
+${supportData.userName || ''}`;
+
+        return `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
 
     const renderContent = () => {
         if (loading) {
             return (
                 <div className="grid md:grid-cols-2 gap-8">
-                    <div className="space-y-4">
+                    <div className="space-y-4 p-6 border rounded-lg">
                         <Skeleton className="h-12 w-12 rounded-lg" />
                         <Skeleton className="h-6 w-3/4" />
                         <Skeleton className="h-4 w-full" />
                         <Skeleton className="h-10 w-full mt-4" />
                     </div>
-                     <div className="space-y-4">
+                     <div className="space-y-4 p-6 border rounded-lg">
                         <Skeleton className="h-12 w-12 rounded-lg" />
                         <Skeleton className="h-6 w-3/4" />
                         <Skeleton className="h-4 w-full" />
@@ -117,10 +168,10 @@ const FinancialSupportPage = () => {
                     title="Abrir Ticket via E-mail"
                     description="Para questões formais de cobrança, notas fiscais ou pendências. Retornaremos em até 24h úteis."
                     buttonText="Enviar E-mail"
-                    href="mailto:andromedasolutions2025@outlook.com"
+                    href={createMailtoLink()}
                 />
 
-                {idPlano && eligibleWhatsappPlans.includes(idPlano) && (
+                {supportData.idPlano && eligibleWhatsappPlans.includes(supportData.idPlano) && (
                     <SupportCard 
                         icon={WhatsAppIcon}
                         title="Contato via WhatsApp"
