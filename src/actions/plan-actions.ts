@@ -76,6 +76,7 @@ export async function updateCompanyPlan(
             const prorataResult = await createAsaasProrataCharge({
                 customerId: company.idAsaas,
                 planPrice: newPlanPrice,
+                planName: newPlanName, // Passando o nome do plano
                 dueDateDay: company.diaVencimento,
             });
 
@@ -192,3 +193,5 @@ export async function updateCompanyPlan(
         if (connection) await connection.end();
     }
 }
+
+    

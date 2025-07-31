@@ -211,10 +211,11 @@ export async function createAsaasSubscription(data: {
 export async function createAsaasProrataCharge(data: {
     customerId: string;
     planPrice: number;
+    planName: string; // Adicionado para a descrição
     dueDateDay: number;
 }): Promise<{ success: boolean; message: string }> {
 
-    const { customerId, planPrice, dueDateDay } = data;
+    const { customerId, planPrice, planName, dueDateDay } = data;
 
     const today = new Date();
     const tomorrow = new Date(today);
@@ -230,17 +231,25 @@ export async function createAsaasProrataCharge(data: {
     
     // Calcula a diferença em dias
     const diffTime = Math.abs(nextDueDate.getTime() - today.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const diffDays = Math.max(Math.ceil(diffTime / (1000 * 60 * 60 * 24)), 1); // Garante pelo menos 1 dia
     
     const dailyRate = planPrice / 30;
     const prorataValue = Math.max(dailyRate * diffDays, 1.00); // Garante um valor mínimo
+
+    // Formata as datas para a descrição
+    const startDate = today.toLocaleDateString('pt-BR');
+    const firstDueDate = nextDueDate.toLocaleDateString('pt-BR');
+    const monthlyValue = planPrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+    // Monta a descrição detalhada
+    const description = `Cobrança proporcional – Plano ${planName} NexusPro\nPeríodo de uso: ${startDate} a ${firstDueDate}\nValor calculado com base no total mensal de ${monthlyValue}.`;
 
      const payload = {
         customer: customerId,
         billingType: "BOLETO_PIX",
         value: parseFloat(prorataValue.toFixed(2)),
         dueDate: tomorrow.toISOString().split('T')[0],
-        description: `Cobrança proporcional referente aos dias de uso até o início do ciclo de faturamento.`,
+        description: description,
     };
 
      try {
@@ -262,3 +271,5 @@ export async function createAsaasProrataCharge(data: {
         return { success: false, message: 'Erro de comunicação ao criar cobrança proporcional.' };
     }
 }
+
+    
