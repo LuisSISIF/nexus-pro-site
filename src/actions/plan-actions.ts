@@ -45,7 +45,7 @@ export async function updateCompanyPlan(
 
         // 1. Buscar dados da empresa, incluindo o plano atual e idAsaas
         const [companyRows] = await connection.execute(
-            'SELECT idempresa, idPlano, idAsaas, diaVencimento, ultimaAlteracaoPlano FROM empresa WHERE idempresa = ?', 
+            'SELECT idempresa, idPlano, idAsaas, diaVencimento, ultimaAlteracaoPlano, pagamentoMes FROM empresa WHERE idempresa = ?', 
             [companyId]
         );
         const company = (companyRows as any[])[0];
@@ -82,10 +82,15 @@ export async function updateCompanyPlan(
 
             if (!prorataResult.success) {
                  await connection.rollback();
-                 // Idealmente, aqui deveria cancelar a assinatura recém-criada, mas a API do Asaas pode não permitir isso instantaneamente.
-                 // Por enquanto, apenas revertemos o banco e informamos o erro.
                  return { success: false, message: `Falha ao criar cobrança proporcional: ${prorataResult.message}` };
             }
+            
+            // Atualizar o status do pagamento no banco local para Pendente
+            await connection.execute(
+                "UPDATE empresa SET pagamentoMes = 'Pendente' WHERE idempresa = ?",
+                [companyId]
+            );
+
             
         // LÓGICA PARA QUEM JÁ É CLIENTE PAGO E ESTÁ APENAS TROCANDO DE PLANO
         } else {
@@ -196,5 +201,7 @@ export async function updateCompanyPlan(
         if (connection) await connection.end();
     }
 }
+
+    
 
     
