@@ -25,7 +25,7 @@ const ContractDataPage = () => {
   const [data, setData] = useState<ContractData | null>(null);
   const [billingStatus, setBillingStatus] = useState<BillingStatus | null>(null);
   const [loading, setLoading] = useState(true);
-  const [paymentLoading, setPaymentLoading] = useState(false); // Renomear para isCheckingInvoice ou algo similar
+  const [paymentLoading, setPaymentLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
@@ -45,13 +45,11 @@ const ContractDataPage = () => {
         if (contractResult.success && contractResult.data) {
           setData(contractResult.data);
           
-          if (contractResult.data.idPlano !== 2) { // Não é plano de teste
+          if (contractResult.data.idPlano !== 2) { 
             const billingResult = await getBillingStatusFromAsaas(Number(companyId));
             if (billingResult.success && billingResult.data) {
               setBillingStatus(billingResult.data);
             } else {
-              // Mesmo que a busca no Asaas falhe, não definimos um erro geral,
-              // podemos apenas mostrar uma mensagem no local apropriado.
               console.warn(billingResult.message);
             }
           }
@@ -79,6 +77,21 @@ const ContractDataPage = () => {
       return;
     }
     window.open(billingStatus.invoiceUrl, '_blank');
+  };
+
+  const getPlanBadgeStyle = (planId: number): string => {
+    switch (planId) {
+      case 1: // Essencial
+        return "bg-[#F5F6FA] text-gray-800 border-gray-300";
+      case 2: // Teste (AlphaTester)
+        return "bg-gradient-to-tr from-purple-800 to-indigo-900 text-yellow-300 border-yellow-500 font-bold shadow-lg";
+      case 3: // Profissional
+        return "bg-[#2563EB] text-white";
+      case 4: // Empresarial
+        return "bg-[#FFD700] text-black";
+      default:
+        return "bg-gray-200 text-gray-800";
+    }
   };
 
 
@@ -146,7 +159,7 @@ const ContractDataPage = () => {
             <DataRow 
                 label="Plano Atual" 
                 value={
-                <Badge variant={isTestPlan ? "secondary" : "default"}>
+                <Badge className={getPlanBadgeStyle(data.idPlano)}>
                     {data.nomePlano}
                 </Badge>
                 } 
