@@ -62,10 +62,10 @@ async function getAsaasCustomerByCnpj(cnpj: string): Promise<AsaasCustomer | nul
 
 // Função para buscar o cliente ASAAS no banco de dados local ou criá-lo
 async function getOrCreateAsaasCustomer(companyId: number, connection: any) {
-    // 1. Verificar se o asaas_customer_id já existe na tabela `empresa`
-    let [companyRows] = await connection.execute('SELECT asaas_customer_id, nome_empresa, endereco, cnpj_empresa FROM empresa WHERE idempresa = ?', [companyId]);
+    // 1. Verificar se o idAsaas já existe na tabela `empresa`
+    let [companyRows] = await connection.execute('SELECT idAsaas, nome_empresa, endereco, cnpj_empresa FROM empresa WHERE idempresa = ?', [companyId]);
     let companyResult = (companyRows as any[])[0];
-    let asaasCustomerId = companyResult?.asaas_customer_id;
+    let asaasCustomerId = companyResult?.idAsaas;
 
     if (asaasCustomerId) {
         return asaasCustomerId;
@@ -93,9 +93,9 @@ async function getOrCreateAsaasCustomer(companyId: number, connection: any) {
 
     asaasCustomerId = asaasCustomer.id;
 
-    // 4. Salvar o asaas_customer_id no banco de dados local
+    // 4. Salvar o idAsaas no banco de dados local
     await connection.execute(
-        'UPDATE empresa SET asaas_customer_id = ? WHERE idempresa = ?',
+        'UPDATE empresa SET idAsaas = ? WHERE idempresa = ?',
         [asaasCustomerId, companyId]
     );
 
@@ -116,7 +116,7 @@ export async function checkPendingSubscription(companyId: number): Promise<{ suc
     try {
         connection = await db();
 
-        const [companyDataRows] = await connection.execute('SELECT cnpj_empresa, asaas_customer_id FROM empresa WHERE idempresa = ?', [companyId]);
+        const [companyDataRows] = await connection.execute('SELECT cnpj_empresa, idAsaas FROM empresa WHERE idempresa = ?', [companyId]);
         const companyData = (companyDataRows as any[])[0];
 
         if (!companyData || !companyData.cnpj_empresa) {
@@ -131,6 +131,12 @@ export async function checkPendingSubscription(companyId: number): Promise<{ suc
         }
 
         const customerId = customer.id;
+
+        // Se o idAsaas no nosso banco estiver diferente do encontrado, atualizamos.
+        if (companyData.idAsaas !== customerId) {
+             await connection.execute('UPDATE empresa SET idAsaas = ? WHERE idempresa = ?', [customerId, companyId]);
+        }
+
 
         const response = await fetch(`${ASAAS_API_URL}/subscriptions?customer=${customerId}&status=PENDING`, {
             method: 'GET',
