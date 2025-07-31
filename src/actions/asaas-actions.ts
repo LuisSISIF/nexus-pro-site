@@ -97,3 +97,63 @@ export async function getBillingStatusFromAsaas(companyId: number): Promise<{ su
         if (connection) await connection.end();
     }
 }
+
+
+export async function createAsaasCustomer(data: {
+    name: string;
+    cpfCnpj: string;
+    email: string;
+    phone: string;
+    address: string;
+    companyId: number;
+}): Promise<{ success: boolean; customerId?: string; message: string }> {
+    
+    const { name, cpfCnpj, email, phone, address, companyId } = data;
+
+    try {
+        const response = await fetch(`${ASAAS_API_URL}/customers`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'access_token': ASAAS_API_KEY!,
+            },
+            body: JSON.stringify({
+                name,
+                cpfCnpj,
+                email,
+                mobilePhone: phone,
+                address,
+                // outros campos que você possa querer enviar
+            }),
+        });
+        
+        const responseData = await response.json();
+
+        if (!response.ok) {
+            const errorMessages = responseData.errors ? responseData.errors.map((e: AsaasError) => e.description).join(', ') : 'Erro desconhecido';
+            console.error('Erro ao criar cliente no Asaas:', errorMessages);
+            return { success: false, message: `Falha ao criar cliente no gateway de pagamento: ${errorMessages}` };
+        }
+
+        const customerId = responseData.id;
+
+        // Atualiza a tabela empresa com o novo idAsaas
+        const connection = await db();
+        try {
+            await connection.execute('UPDATE empresa SET idAsaas = ? WHERE idempresa = ?', [customerId, companyId]);
+            return { success: true, customerId: customerId, message: 'Cliente criado e vinculado com sucesso!' };
+        } catch (dbError) {
+             console.error('Erro ao atualizar idAsaas no banco de dados:', dbError);
+             return { success: false, message: 'Cliente criado no Asaas, mas falha ao vincular ao sistema. Contate o suporte.' };
+        } finally {
+            if (connection) await connection.end();
+        }
+
+    } catch (error) {
+        console.error('Create Asaas Customer Error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Ocorreu um erro desconhecido.';
+        return { success: false, message: `Erro de comunicação com o gateway de pagamento: ${errorMessage}` };
+    }
+}
+
+    

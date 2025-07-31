@@ -8,7 +8,7 @@ import { getBillingStatusFromAsaas, BillingStatus } from '@/actions/asaas-action
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Briefcase, Calendar, Users, Building, AlertCircle, CalendarClock, CreditCard, Loader2, CalendarCheck2, ExternalLink, Replace, ChevronLeft, ChevronRight, DollarSign } from 'lucide-react';
+import { Briefcase, Calendar, Users, Building, AlertCircle, CalendarClock, CreditCard, Loader2, CalendarCheck2, ExternalLink, Replace, ChevronLeft, ChevronRight, DollarSign, Rocket } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -97,7 +97,7 @@ const ContractDataPage = () => {
       if (direction === 'next' && currentBillingIndex < billingStatuses.length - 1) {
           setCurrentBillingIndex(prev => prev + 1);
       } else if (direction === 'prev' && currentBillingIndex > 0) {
-          setCurrentBillingIndex(prev => prev - 1);
+          setCurrentBillingIndex(prev => prev + 1);
       }
   }
 
@@ -327,35 +327,47 @@ const ContractDataPage = () => {
             )}
             </div>
             
-             {!isTestPlan && (
-                 <div className={cn("mt-8 pt-6 border-t flex flex-col sm:flex-row items-center justify-between gap-4", borderColor)}>
-                    <div className="w-full sm:w-auto">
-                        <Button onClick={handlePayInvoice} disabled={isPayButtonDisabled} className="w-full bg-gray-800 text-white hover:bg-gray-700 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-gray-300">
-                           {paymentLoading ? (
-                               <>
-                               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                               Verificando...
-                               </>
-                           ) : (
-                            <>
-                               <ExternalLink className="mr-2 h-4 w-4" />
-                               Pagar Fatura
-                            </>
-                           )}
-                        </Button>
-                        <p className="text-xs text-muted-foreground mt-2 text-center sm:text-left">Clique para abrir a página de pagamento.</p>
-                    </div>
-                     <div className="w-full sm:w-auto">
-                        <Button asChild className="w-full shadow-lg hover:shadow-primary/40 transition-shadow">
-                            <Link href="/dashboard/change-plan">
-                                <Replace className="mr-2 h-4 w-4" />
-                                Alterar meu Plano
+             <div className={cn("mt-8 pt-6 border-t flex flex-col sm:flex-row items-center justify-between gap-4", borderColor)}>
+                 {!isTestPlan ? (
+                    <>
+                        <div className="w-full sm:w-auto">
+                            <Button onClick={handlePayInvoice} disabled={isPayButtonDisabled} className="w-full bg-gray-800 text-white hover:bg-gray-700 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-gray-300">
+                               {paymentLoading ? (
+                                   <>
+                                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                   Verificando...
+                                   </>
+                               ) : (
+                                <>
+                                   <ExternalLink className="mr-2 h-4 w-4" />
+                                   Pagar Fatura
+                                </>
+                               )}
+                            </Button>
+                            <p className="text-xs text-muted-foreground mt-2 text-center sm:text-left">Clique para abrir a página de pagamento.</p>
+                        </div>
+                        <div className="w-full sm:w-auto">
+                            <Button asChild className="w-full shadow-lg hover:shadow-primary/40 transition-shadow">
+                                <Link href="/dashboard/change-plan">
+                                    <Replace className="mr-2 h-4 w-4" />
+                                    Alterar meu Plano
+                                </Link>
+                            </Button>
+                            <p className="text-xs text-muted-foreground mt-2 text-center sm:text-right">Faça um upgrade ou downgrade.</p>
+                        </div>
+                    </>
+                ) : (
+                    <div className="w-full">
+                        <Button asChild className="w-full text-lg py-6 bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-green-500/40 transition-shadow">
+                            <Link href="/dashboard/complete-registration">
+                                <Rocket className="mr-2 h-5 w-5" />
+                                Contratar um Plano Agora
                             </Link>
                         </Button>
-                         <p className="text-xs text-muted-foreground mt-2 text-center sm:text-right">Faça um upgrade ou downgrade.</p>
+                        <p className="text-xs text-muted-foreground mt-2 text-center">Seu teste expira em breve. Finalize seu cadastro para escolher um plano.</p>
                     </div>
-                </div>
-            )}
+                )}
+            </div>
         </>
       );
     }
@@ -417,3 +429,5 @@ const ContractDataPage = () => {
 };
 
 export default ContractDataPage;
+
+    
