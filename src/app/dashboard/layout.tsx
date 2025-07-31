@@ -58,7 +58,7 @@ export default function DashboardLayout({
                <SidebarMenuButton asChild>
                 <Link href="/dashboard/contract-data">
                   <FileText />
-                  Dados Contratuais
+                  Meu Plano
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
