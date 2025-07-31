@@ -217,23 +217,23 @@ const ContractDataPage = () => {
       const borderColor = getBorderColorClass(data.idPlano);
       
       const getPaymentStatusBadge = (status: string | null) => {
-          if (!status) return <Badge className={cn("bg-gray-400 text-white")}>Indisponível</Badge>;
-        
-          switch (status.toUpperCase()) {
-              case 'CONFIRMED':
-              case 'RECEIVED':
-              case 'RECEIVED_IN_CASH':
-                  return <Badge className={cn("bg-green-500/80 text-white")}>Pago</Badge>;
-              case 'PENDING':
-                  return <Badge className={cn("bg-yellow-400/80 text-white")}>Pendente</Badge>;
-              case 'OVERDUE':
-                  return <Badge className={cn("bg-red-500/80 text-white")}>Em Atraso</Badge>;
-              case 'UNREGISTERED':
-              case 'NOT_FOUND':
-                  return <Badge className={cn("bg-gray-100 text-gray-800")}>Nenhuma Fatura</Badge>;
-              default:
-                  return <Badge className={cn("bg-gray-400 text-white")}>{status}</Badge>;
-          }
+        if (!status) return <Badge className="bg-gray-400 text-white hover:bg-gray-400">Indisponível</Badge>;
+
+        switch (status.toUpperCase()) {
+            case 'CONFIRMED':
+            case 'RECEIVED':
+            case 'RECEIVED_IN_CASH':
+                return <Badge className="bg-green-500/80 text-white hover:bg-green-500/80">Pago</Badge>;
+            case 'PENDING':
+                return <Badge className="bg-yellow-400/80 text-white hover:bg-yellow-400/80">Pendente</Badge>;
+            case 'OVERDUE':
+                return <Badge className="bg-red-500/80 text-white hover:bg-red-500/80">Em Atraso</Badge>;
+            case 'UNREGISTERED':
+            case 'NOT_FOUND':
+                return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-100">Nenhuma Fatura</Badge>;
+            default:
+                return <Badge className="bg-gray-400 text-white hover:bg-gray-400">{status}</Badge>;
+        }
       };
       
       const isPayButtonDisabled = paymentLoading || !currentBillingStatus?.invoiceUrl || ['CONFIRMED', 'RECEIVED', 'RECEIVED_IN_CASH'].includes(currentBillingStatus?.status?.toUpperCase() || '');
@@ -322,7 +322,7 @@ const ContractDataPage = () => {
              {!isTestPlan && (
                  <div className={cn("mt-8 pt-6 border-t flex flex-col sm:flex-row items-center justify-between gap-4", borderColor)}>
                     <div className="w-full sm:w-auto">
-                        <Button onClick={handlePayInvoice} disabled={isPayButtonDisabled} className="w-full bg-transparent hover:bg-gray-100 text-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600">
+                        <Button onClick={handlePayInvoice} disabled={isPayButtonDisabled} className="w-full bg-gray-800 text-white hover:bg-gray-700 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-gray-300">
                            {paymentLoading ? (
                                <>
                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
