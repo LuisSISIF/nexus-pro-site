@@ -166,9 +166,16 @@ export async function createAsaasSubscription(data: {
     const { customerId, planPrice, planName, dueDateDay } = data;
     
     const today = new Date();
-    const nextMonth = new Date(today.getFullYear(), today.getMonth() + 2, 0); // Vai para o próximo mês
-    const nextDueDate = new Date(nextMonth.getFullYear(), nextMonth.getMonth(), dueDateDay);
-   
+    let nextDueDate: Date;
+
+    // Se o dia de vencimento escolhido já passou neste mês, joga para o próximo mês
+    if (today.getDate() > dueDateDay) {
+        nextDueDate = new Date(today.getFullYear(), today.getMonth() + 1, dueDateDay);
+    } else {
+        // Senão, o vencimento é no mês corrente
+        nextDueDate = new Date(today.getFullYear(), today.getMonth(), dueDateDay);
+    }
+
     const payload = {
         customer: customerId,
         billingType: "BOLETO_PIX",
@@ -213,7 +220,13 @@ export async function createAsaasProrataCharge(data: {
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
 
-    const nextDueDate = new Date(today.getFullYear(), today.getMonth() + 1, dueDateDay);
+    let nextDueDate: Date;
+    // Lógica espelhada da criação da assinatura para garantir consistência
+    if (today.getDate() > dueDateDay) {
+        nextDueDate = new Date(today.getFullYear(), today.getMonth() + 1, dueDateDay);
+    } else {
+        nextDueDate = new Date(today.getFullYear(), today.getMonth(), dueDateDay);
+    }
     
     // Calcula a diferença em dias
     const diffTime = Math.abs(nextDueDate.getTime() - today.getTime());
