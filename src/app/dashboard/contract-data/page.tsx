@@ -8,7 +8,7 @@ import { getBillingStatusFromAsaas, BillingStatus } from '@/actions/asaas-action
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Briefcase, Calendar, Users, Building, AlertCircle, CalendarClock, CreditCard, Loader2, CalendarCheck2, ExternalLink, Replace, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Briefcase, Calendar, Users, Building, AlertCircle, CalendarClock, CreditCard, Loader2, CalendarCheck2, ExternalLink, Replace, ChevronLeft, ChevronRight, DollarSign } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -73,7 +73,7 @@ const ContractDataPage = () => {
                 setCurrentBillingIndex(foundIndex >= 0 ? foundIndex : 0);
             } else {
               console.warn(billingResult.message);
-              setBillingStatuses([{ status: 'ERROR', dueDate: null, month: 'Não disponível' }]);
+              setBillingStatuses([{ status: 'ERROR', dueDate: null, month: 'Não disponível', value: null }]);
             }
           }
         } else {
@@ -312,6 +312,13 @@ const ContractDataPage = () => {
                     label="Vencimento da Fatura" 
                     value={currentBillingStatus?.dueDate || `Todo dia ${data.diaVencimento}`}
                     icon={<CalendarClock />}
+                    iconClassName={iconColor}
+                    borderColorClass={borderColor}
+                />
+                 <DataRow 
+                    label="Valor da Fatura" 
+                    value={currentBillingStatus?.value ? currentBillingStatus.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'N/A'}
+                    icon={<DollarSign />}
                     iconClassName={iconColor}
                     borderColorClass={borderColor}
                 />

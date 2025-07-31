@@ -30,6 +30,7 @@ export interface BillingStatus {
     status: string;
     dueDate: string | null;
     month: string | null;
+    value: number | null;
     invoiceUrl?: string; // URL da fatura pode ser opcional
 }
 
@@ -48,7 +49,7 @@ export async function getBillingStatusFromAsaas(companyId: number): Promise<{ su
 
         if (!companyData?.idAsaas) {
             // Se a empresa não tem um ID Asaas, não podemos consultar.
-            return { success: true, data: [{ status: 'UNREGISTERED', dueDate: null, month: 'Não aplicável' }], message: 'Cliente não registrado para faturamento ainda.' };
+            return { success: true, data: [{ status: 'UNREGISTERED', dueDate: null, month: 'Não aplicável', value: null }], message: 'Cliente não registrado para faturamento ainda.' };
         }
 
         const customerId = companyData.idAsaas;
@@ -69,7 +70,7 @@ export async function getBillingStatusFromAsaas(companyId: number): Promise<{ su
         
         if (data.totalCount === 0) {
             // Nenhuma fatura encontrada.
-             return { success: true, data: [{ status: 'NOT_FOUND', dueDate: null, month: 'Não aplicável' }], message: 'Nenhuma fatura encontrada para este cliente.' };
+             return { success: true, data: [{ status: 'NOT_FOUND', dueDate: null, month: 'Não aplicável', value: null }], message: 'Nenhuma fatura encontrada para este cliente.' };
         }
 
         const allPayments: AsaasPayment[] = data.data;
@@ -83,6 +84,7 @@ export async function getBillingStatusFromAsaas(companyId: number): Promise<{ su
                 status: payment.status,
                 dueDate: dueDate.toLocaleDateString('pt-BR'),
                 month: dueDate.toLocaleString('pt-BR', { month: 'long', year: 'numeric' }),
+                value: payment.value,
                 invoiceUrl: payment.invoiceUrl,
             };
         });
