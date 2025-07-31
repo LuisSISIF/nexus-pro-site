@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { getContractData, ContractData } from '@/actions/contract-actions';
-import { createAsaasPaymentLink } from '@/actions/asaas-actions';
+import { checkAsaasCustomerExistsByCPF_CNPJ } from '@/actions/asaas-actions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -55,12 +55,12 @@ const ContractDataPage = () => {
     fetchContractData();
   }, []);
 
-  const handlePayment = async () => {
-    if (!data?.idempresa) {
+  const handlePaymentCheck = async () => {
+    if (!data?.idempresa || data.idPlano === 2) {
         toast({
             variant: "destructive",
-            title: "Erro",
-            description: "Não foi possível identificar a empresa para o pagamento."
+            title: "Ação não permitida",
+            description: "Esta ação não é aplicável para o seu plano atual."
         });
         return;
     }
@@ -68,21 +68,24 @@ const ContractDataPage = () => {
     setPaymentLoading(true);
 
     try {
-        const result = await createAsaasPaymentLink(data.idempresa);
-        if(result.success && result.paymentUrl) {
-            window.open(result.paymentUrl, '_blank');
+        const result = await checkAsaasCustomerExistsByCPF_CNPJ(data.idempresa);
+        if(result.success) {
+            toast({
+                title: "Verificação Concluída",
+                description: result.message,
+            });
         } else {
              toast({
                 variant: "destructive",
-                title: "Erro ao gerar cobrança",
-                description: result.message || "Não foi possível criar o link de pagamento."
+                title: "Erro na verificação",
+                description: result.message || "Não foi possível verificar o cliente no Asaas."
             });
         }
     } catch (error) {
          toast({
             variant: "destructive",
             title: "Erro inesperado",
-            description: "Ocorreu um erro ao tentar gerar o link de pagamento."
+            description: "Ocorreu um erro ao tentar realizar a verificação."
         });
     } finally {
         setPaymentLoading(false);
@@ -197,16 +200,16 @@ const ContractDataPage = () => {
             )}
             </div>
             
-            {!isTestPlan && data.pagamentoMes?.toLowerCase() !== 'pago' && (
+            {!isTestPlan && (
                  <div className="mt-8 pt-6 border-t">
-                    <Button onClick={handlePayment} disabled={paymentLoading} className="w-full sm:w-auto">
+                    <Button onClick={handlePaymentCheck} disabled={paymentLoading} className="w-full sm:w-auto">
                        {paymentLoading ? (
                            <>
                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                           Gerando...
+                           Verificando...
                            </>
                        ) : (
-                           "Efetuar Pagamento da Mensalidade"
+                           "Efetuar Pagamento"
                        )}
                     </Button>
                 </div>

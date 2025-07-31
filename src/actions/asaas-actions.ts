@@ -22,6 +22,7 @@ interface AsaasErrorResponse {
     errors: AsaasError[];
 }
 
+// --- Funções Internas ---
 
 // Função para criar um novo cliente no ASAAS
 async function createAsaasCustomer(companyData: any, userData: any) {
@@ -81,6 +82,62 @@ async function getOrCreateAsaasCustomer(companyId: number, connection: any) {
 
     return asaasCustomerId;
 }
+
+// --- Funções Exportadas ---
+
+
+export async function checkAsaasCustomerExistsByCPF_CNPJ(companyId: number): Promise<{ success: boolean; message: string; exists: boolean }> {
+     if (!companyId) {
+        return { success: false, message: 'ID da empresa não fornecido.', exists: false };
+    }
+    if (!ASAAS_API_KEY || !ASAAS_API_URL) {
+        return { success: false, message: 'Credenciais do ASAAS não configuradas no servidor.', exists: false };
+    }
+
+    let connection;
+    try {
+        connection = await db();
+
+        // Buscar o CPF/CNPJ do usuário administrador da empresa
+        const [userDataRows] = await connection.execute('SELECT cpf FROM usuarios WHERE idempresa = ? AND admUser = 1 LIMIT 1', [companyId]);
+        const userData = (userDataRows as any[])[0];
+
+        if (!userData || !userData.cpf) {
+            return { success: false, message: 'CPF/CNPJ do usuário administrador não encontrado.', exists: false };
+        }
+
+        const cpfCnpj = userData.cpf;
+
+        // Consultar a API do Asaas
+        const response = await fetch(`${ASAAS_API_URL}/customers?cpfCnpj=${cpfCnpj}`, {
+            method: 'GET',
+            headers: {
+                'access_token': ASAAS_API_KEY!,
+            },
+        });
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+            const errorMsg = data.errors?.[0]?.description || 'Erro ao consultar API do Asaas';
+            console.error("Erro ao consultar cliente ASAAS:", data.errors);
+            return { success: false, message: `ASAAS: ${errorMsg}`, exists: false };
+        }
+        
+        const customerExists = data.totalCount > 0;
+        const message = customerExists ? "Sim, cliente encontrado no Asaas." : "Não, cliente não encontrado no Asaas.";
+
+        return { success: true, message, exists: customerExists };
+        
+    } catch (error) {
+        console.error('ASAAS Check Customer Error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Ocorreu um erro desconhecido.';
+        return { success: false, message: errorMessage, exists: false };
+    } finally {
+        if (connection) await connection.end();
+    }
+}
+
 
 export async function createAsaasPaymentLink(companyId: number): Promise<{ success: boolean; message: string; paymentUrl?: string }> {
     if (!companyId) {
