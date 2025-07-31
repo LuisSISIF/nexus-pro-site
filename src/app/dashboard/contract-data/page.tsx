@@ -185,23 +185,24 @@ const ContractDataPage = () => {
       const borderColor = getBorderColorClass(data.idPlano);
       
       const getPaymentStatusBadge = (status: string | null) => {
-        if (!status) return <Badge variant="outline">Indisponível</Badge>;
+        const baseStyle = "border-transparent font-semibold";
+        if (!status) return <Badge className={cn(baseStyle, "bg-gray-400/20")}>Indisponível</Badge>;
         
         switch (status.toUpperCase()) {
           case 'CONFIRMED':
           case 'RECEIVED':
           case 'RECEIVED_IN_CASH':
-            return <Badge className="bg-green-500 text-white hover:bg-green-600">Pago</Badge>;
+            return <Badge className={cn(baseStyle, "bg-green-500/30")}>Pago</Badge>;
           case 'PENDING':
-            return <Badge variant="secondary" className="bg-yellow-400 text-black hover:bg-yellow-500">Pendente</Badge>;
+            return <Badge className={cn(baseStyle, "bg-yellow-400/30")}>Pendente</Badge>;
           case 'OVERDUE':
-             return <Badge variant="destructive">Em Atraso</Badge>;
+             return <Badge className={cn(baseStyle, "bg-red-500/40")}>Em Atraso</Badge>;
           case 'UNREGISTERED':
-             return <Badge variant="outline">Não Registrado</Badge>;
+             return <Badge className={cn(baseStyle, "bg-gray-400/20")}>Não Registrado</Badge>;
           case 'NOT_FOUND':
-             return <Badge variant="outline">Nenhuma Fatura</Badge>;
+             return <Badge className={cn(baseStyle, "bg-gray-400/20")}>Nenhuma Fatura</Badge>;
           default:
-            return <Badge variant="outline">{status}</Badge>;
+            return <Badge className={cn(baseStyle, "bg-gray-400/20")}>{status}</Badge>;
         }
       };
       
