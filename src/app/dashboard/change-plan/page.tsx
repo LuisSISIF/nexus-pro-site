@@ -26,7 +26,6 @@ const plans = [
         "Suporte via E-mail",
       ],
       popular: false,
-      style: "border-gray-300 dark:border-gray-600"
     },
     {
       id: 4,
@@ -42,7 +41,6 @@ const plans = [
         "Suporte via WhatsApp",
       ],
       popular: true,
-      style: "border-blue-500 transform lg:scale-105 shadow-blue-500/20"
     },
     {
       id: 5,
@@ -58,7 +56,6 @@ const plans = [
         "Suporte Prioritário",
       ],
       popular: false,
-      style: "border-gray-300 dark:border-gray-600"
     }
 ];
 
@@ -95,6 +92,20 @@ const ChangePlanPage = () => {
             description: `A lógica para alterar para o plano ID ${planId} será implementada em breve.`,
         });
     }
+
+    const getPlanStyle = (planId: number): string => {
+        switch (planId) {
+            case 3: // Essencial
+                return "border-gray-500 ring-gray-500";
+            case 4: // Profissional
+                return "border-green-700 ring-green-700";
+            case 5: // Empresarial
+                return "border-blue-800 ring-blue-800";
+            default:
+                return "border-gray-200 dark:border-gray-700 ring-primary";
+        }
+    };
+
 
     const renderContent = () => {
         if (loading) {
@@ -140,8 +151,9 @@ const ChangePlanPage = () => {
                     key={plan.id}
                     className={cn(
                         "bg-white dark:bg-gray-800 rounded-2xl shadow-xl border-2 p-8 relative flex flex-col h-full transition-all",
-                        plan.style,
-                        isCurrent && "border-green-500 ring-2 ring-green-500"
+                        getPlanStyle(plan.id),
+                        plan.popular && "lg:scale-105",
+                        isCurrent && "ring-2"
                     )}
                   >
                     {plan.popular && (
