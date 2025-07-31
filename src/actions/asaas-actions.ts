@@ -15,6 +15,11 @@ interface AsaasPaymentLink {
     url: string;
     // other fields if needed
 }
+interface AsaasPayment {
+    status: 'PENDING' | 'CONFIRMED' | 'RECEIVED_IN_CASH' | 'OVERDUE' | 'REFUNDED' | 'DUNNING_REQUESTED' | 'AWAITING_RISK_ANALYSIS';
+    dueDate: string;
+    value: number;
+}
 interface AsaasError {
     description: string;
     code: string;
@@ -103,6 +108,68 @@ async function getOrCreateAsaasCustomer(companyId: number, connection: any) {
 }
 
 // --- Funções Exportadas ---
+
+export interface BillingStatus {
+    status: string;
+    dueDate: string | null;
+    month: string | null;
+}
+
+export async function getBillingStatusFromAsaas(companyId: number): Promise<{ success: boolean; data?: BillingStatus; message: string }> {
+     if (!companyId) {
+        return { success: false, message: 'ID da empresa não fornecido.' };
+    }
+
+    let connection;
+    try {
+        connection = await db();
+
+        const [companyDataRows] = await connection.execute('SELECT idAsaas FROM empresa WHERE idempresa = ?', [companyId]);
+        const companyData = (companyDataRows as any[])[0];
+
+        if (!companyData?.idAsaas) {
+            return { success: false, message: 'Cliente não encontrado no sistema de pagamentos.' };
+        }
+
+        const customerId = companyData.idAsaas;
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
+
+        const response = await fetch(`${ASAAS_API_URL}/payments?customer=${customerId}&dueDate[ge]=${firstDay}&dueDate[le]=${lastDay}`, {
+            method: 'GET',
+            headers: { 'access_token': ASAAS_API_KEY! },
+        });
+
+        if (!response.ok) {
+            return { success: false, message: 'Erro ao consultar faturas no Asaas.' };
+        }
+
+        const data = await response.json();
+        
+        if (data.totalCount === 0) {
+            return { success: false, message: 'Nenhuma fatura encontrada para o mês atual.' };
+        }
+
+        const payment: AsaasPayment = data.data[0]; // Pega a primeira fatura do mês
+        const dueDate = new Date(payment.dueDate);
+
+        const billingStatus: BillingStatus = {
+            status: payment.status,
+            dueDate: dueDate.toLocaleDateString('pt-BR'),
+            month: dueDate.toLocaleString('pt-BR', { month: 'long', year: 'numeric' })
+        };
+        
+        return { success: true, data: billingStatus, message: 'Status da fatura encontrado.' };
+
+    } catch (error) {
+        console.error('ASAAS Billing Status Error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Ocorreu um erro desconhecido.';
+        return { success: false, message: errorMessage };
+    } finally {
+        if (connection) await connection.end();
+    }
+}
 
 export async function checkPendingSubscription(companyId: number): Promise<{ success: boolean; message: string; hasPending: boolean, cnpj?: string }> {
     if (!companyId) {

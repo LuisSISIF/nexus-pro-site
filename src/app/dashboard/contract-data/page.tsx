@@ -4,11 +4,11 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { getContractData, ContractData } from '@/actions/contract-actions';
-import { checkPendingSubscription } from '@/actions/asaas-actions';
+import { checkPendingSubscription, getBillingStatusFromAsaas, BillingStatus } from '@/actions/asaas-actions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Briefcase, Calendar, Users, Building, AlertCircle, CalendarClock, CreditCard, Loader2 } from 'lucide-react';
+import { Briefcase, Calendar, Users, Building, AlertCircle, CalendarClock, CreditCard, Loader2, CalendarCheck2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const DataRow = ({ label, value, icon }: { label: string; value: React.ReactNode; icon?: React.ReactNode }) => (
@@ -23,13 +23,14 @@ const DataRow = ({ label, value, icon }: { label: string; value: React.ReactNode
 
 const ContractDataPage = () => {
   const [data, setData] = useState<ContractData | null>(null);
+  const [billingStatus, setBillingStatus] = useState<BillingStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    const fetchContractData = async () => {
+    const fetchAllData = async () => {
       const companyId = localStorage.getItem('companyId');
 
       if (!companyId) {
@@ -39,21 +40,29 @@ const ContractDataPage = () => {
       }
 
       try {
-        const result = await getContractData(Number(companyId));
-        if (result.success && result.data) {
-          setData(result.data);
+        // Fetch contract data first
+        const contractResult = await getContractData(Number(companyId));
+        if (contractResult.success && contractResult.data) {
+          setData(contractResult.data);
+          // If not a test plan, fetch billing status from Asaas
+          if (contractResult.data.idPlano !== 2) {
+            const billingResult = await getBillingStatusFromAsaas(Number(companyId));
+            if (billingResult.success && billingResult.data) {
+              setBillingStatus(billingResult.data);
+            }
+          }
         } else {
-          setError(result.message);
+          setError(contractResult.message);
         }
       } catch (err) {
-        setError("Ocorreu um erro ao buscar os dados do contrato.");
+        setError("Ocorreu um erro ao buscar os dados.");
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchContractData();
+    fetchAllData();
   }, []);
 
   const handlePaymentCheck = async () => {
@@ -126,15 +135,16 @@ const ContractDataPage = () => {
       const totalUserLimit = data.limiteUsuarios + (data.usersAdicionais || 0);
       
       const getPaymentStatusBadge = (status: string | null) => {
-        if (!status) return null;
+        if (!status) return <Badge variant="outline">Não disponível</Badge>;
         
-        switch (status.toLowerCase()) {
-          case 'pago':
-            return <Badge className="bg-green-500 text-white">{status}</Badge>;
-          case 'à vencer':
-            return <Badge variant="secondary" className="bg-yellow-400 text-black">{status}</Badge>;
-           case 'em atraso':
-             return <Badge variant="destructive">{status}</Badge>;
+        switch (status.toUpperCase()) {
+          case 'CONFIRMED':
+          case 'RECEIVED_IN_CASH':
+            return <Badge className="bg-green-500 text-white">Pago</Badge>;
+          case 'PENDING':
+            return <Badge variant="secondary" className="bg-yellow-400 text-black">Pendente</Badge>;
+           case 'OVERDUE':
+             return <Badge variant="destructive">Em Atraso</Badge>;
           default:
             return <Badge variant="outline">{status}</Badge>;
         }
@@ -186,16 +196,21 @@ const ContractDataPage = () => {
                 value={`${data.qtdLojas} / ${data.limiteLojas}`}
                 icon={<Building className="w-4 h-4 text-primary" />} 
             />
-            {!isTestPlan && data.diaVencimento && (
+            {!isTestPlan && (
                 <>
+                 <DataRow 
+                    label="Mês de Referência" 
+                    value={<span className="capitalize">{billingStatus?.month || 'Não aplicável'}</span>}
+                    icon={<CalendarCheck2 className="w-4 h-4 text-primary" />} 
+                />
                 <DataRow 
                     label="Situação do Pagamento" 
-                    value={getPaymentStatusBadge(data.pagamentoMes)}
+                    value={getPaymentStatusBadge(billingStatus?.status || null)}
                     icon={<CreditCard className="w-4 h-4 text-primary" />} 
                 />
                 <DataRow 
                     label="Dia do Vencimento" 
-                    value={`Todo dia ${data.diaVencimento}`}
+                    value={billingStatus?.dueDate || `Todo dia ${data.diaVencimento}`}
                     icon={<CalendarClock className="w-4 h-4 text-primary" />} 
                 />
                 </>
@@ -211,7 +226,7 @@ const ContractDataPage = () => {
                            Verificando...
                            </>
                        ) : (
-                           "Efetuar Pagamento"
+                           "Verificar Pendências"
                        )}
                     </Button>
                 </div>
