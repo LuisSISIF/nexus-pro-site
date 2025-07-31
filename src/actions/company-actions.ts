@@ -62,17 +62,21 @@ export async function completeCompanyRegistration(data: RegistrationFormValues):
       segmentoMercado,
       parseInt(diaVencimento),
       emailComercial,
-      instagram,
+      instagram || '',
       companyId,
     ]);
 
     // 2. Buscar dados atualizados para criar o cliente no Asaas
-    const [companyRows] = await connection.execute('SELECT nome_empresa, endereco, telefone FROM empresa WHERE idempresa = ?', [companyId]);
+    const [companyRows] = await connection.execute('SELECT nome_empresa, endereco FROM empresa WHERE idempresa = ?', [companyId]);
     const companyInfo = (companyRows as any[])[0];
+    
+    // Precisamos buscar o telefone do usuário administrador que se cadastrou
+    const [userRows] = await connection.execute('SELECT contato FROM usuarios WHERE idempresa = ? AND admUser = 1 ORDER BY idusuarios ASC LIMIT 1', [companyId]);
+    const userInfo = (userRows as any[])[0];
 
-    if (!companyInfo) {
+    if (!companyInfo || !userInfo) {
       await connection.rollback();
-      return { success: false, message: 'Não foi possível encontrar os dados da empresa após a atualização.' };
+      return { success: false, message: 'Não foi possível encontrar os dados da empresa ou usuário para o faturamento.' };
     }
 
     // 3. Criar cliente no Asaas
@@ -80,17 +84,19 @@ export async function completeCompanyRegistration(data: RegistrationFormValues):
       name: companyInfo.nome_empresa,
       cpfCnpj: cnpj,
       email: emailComercial,
-      phone: companyInfo.telefone,
+      phone: userInfo.contato, // Usando o telefone do usuário admin
       address: companyInfo.endereco,
-      companyId: companyId, // Passa o companyId para a função do Asaas fazer o update final
     });
 
-    if (!asaasResult.success) {
-      await connection.rollback(); // Desfaz a atualização dos dados da empresa se a criação no Asaas falhar
+    if (!asaasResult.success || !asaasResult.customerId) {
+      await connection.rollback(); 
       return { success: false, message: asaasResult.message };
     }
 
-    // A função createAsaasCustomer já atualiza o idAsaas na tabela, então só precisamos comitar a transação.
+    // 4. Atualizar o idAsaas na tabela empresa
+    await connection.execute('UPDATE empresa SET idAsaas = ? WHERE idempresa = ?', [asaasResult.customerId, companyId]);
+
+    // Se tudo deu certo, comita a transação
     await connection.commit();
     return { success: true, message: 'Dados da empresa atualizados e cliente criado no Asaas com sucesso!' };
 
@@ -105,5 +111,3 @@ export async function completeCompanyRegistration(data: RegistrationFormValues):
     if (connection) await connection.end();
   }
 }
-
-    

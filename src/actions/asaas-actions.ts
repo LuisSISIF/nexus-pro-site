@@ -105,10 +105,9 @@ export async function createAsaasCustomer(data: {
     email: string;
     phone: string;
     address: string;
-    companyId: number;
 }): Promise<{ success: boolean; customerId?: string; message: string }> {
     
-    const { name, cpfCnpj, email, phone, address, companyId } = data;
+    const { name, cpfCnpj, email, phone, address } = data;
 
     try {
         const response = await fetch(`${ASAAS_API_URL}/customers`, {
@@ -123,7 +122,6 @@ export async function createAsaasCustomer(data: {
                 email,
                 mobilePhone: phone,
                 address,
-                // outros campos que você possa querer enviar
             }),
         });
         
@@ -136,18 +134,7 @@ export async function createAsaasCustomer(data: {
         }
 
         const customerId = responseData.id;
-
-        // Atualiza a tabela empresa com o novo idAsaas
-        const connection = await db();
-        try {
-            await connection.execute('UPDATE empresa SET idAsaas = ? WHERE idempresa = ?', [customerId, companyId]);
-            return { success: true, customerId: customerId, message: 'Cliente criado e vinculado com sucesso!' };
-        } catch (dbError) {
-             console.error('Erro ao atualizar idAsaas no banco de dados:', dbError);
-             return { success: false, message: 'Cliente criado no Asaas, mas falha ao vincular ao sistema. Contate o suporte.' };
-        } finally {
-            if (connection) await connection.end();
-        }
+        return { success: true, customerId: customerId, message: 'Cliente criado com sucesso!' };
 
     } catch (error) {
         console.error('Create Asaas Customer Error:', error);

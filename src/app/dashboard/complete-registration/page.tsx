@@ -72,8 +72,12 @@ const CompleteRegistrationPage = () => {
     }
     
     try {
+      // Remove a máscara do CNPJ antes de enviar
+      const cleanedCnpj = values.cnpj.replace(/[^\d]/g, '');
+
       const result = await completeCompanyRegistration({
         ...values,
+        cnpj: cleanedCnpj,
         companyId: Number(companyId),
       });
 
