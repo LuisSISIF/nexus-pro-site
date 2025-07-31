@@ -8,7 +8,7 @@ import { getBillingStatusFromAsaas, BillingStatus } from '@/actions/asaas-action
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Briefcase, Calendar, Users, Building, AlertCircle, CalendarClock, CreditCard, Loader2, CalendarCheck2, ExternalLink, Replace, ChevronLeft, ChevronRight, DollarSign, Rocket } from 'lucide-react';
+import { Briefcase, Calendar, Users, Building, AlertCircle, CalendarClock, CreditCard, Loader2, CalendarCheck2, ExternalLink, Replace, ChevronLeft, ChevronRight, DollarSign, Rocket, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -320,6 +320,15 @@ const ContractDataPage = () => {
                     iconClassName={iconColor}
                     borderColorClass={borderColor}
                 />
+                 {currentBillingStatus?.description && (
+                    <DataRow
+                        label="Descrição da Fatura"
+                        value={<p className="text-xs whitespace-pre-wrap">{currentBillingStatus.description}</p>}
+                        icon={<FileText />}
+                        iconClassName={iconColor}
+                        borderColorClass={borderColor}
+                    />
+                 )}
                 </>
             )}
             </div>

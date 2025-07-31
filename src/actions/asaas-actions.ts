@@ -13,6 +13,7 @@ interface AsaasPayment {
     dueDate: string;
     value: number;
     invoiceUrl: string; // Link para a fatura
+    description: string;
 }
 interface AsaasError {
     description: string;
@@ -28,6 +29,7 @@ export interface BillingStatus {
     month: string | null;
     value: number | null;
     invoiceUrl?: string; // URL da fatura pode ser opcional
+    description?: string;
 }
 
 
@@ -84,6 +86,7 @@ export async function getBillingStatusFromAsaas(companyId: number): Promise<{ su
                 month: dueDate.toLocaleString('pt-BR', { month: 'long', year: 'numeric' }),
                 value: payment.value,
                 invoiceUrl: payment.invoiceUrl,
+                description: payment.description,
             };
         });
         
@@ -178,7 +181,7 @@ export async function createAsaasSubscription(data: {
 
     const payload = {
         customer: customerId,
-        billingType: "BOLETO",
+        billingType: "BOLETO_PIX",
         value: planPrice,
         nextDueDate: nextDueDate.toISOString().split('T')[0], // Formato YYYY-MM-DD
         cycle: "MONTHLY",
