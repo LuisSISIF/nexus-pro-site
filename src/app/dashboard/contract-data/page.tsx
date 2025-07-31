@@ -46,7 +46,7 @@ const ContractDataPage = () => {
         if (contractResult.success && contractResult.data) {
           setData(contractResult.data);
           
-          if (contractResult.data.idPlano !== 1 && contractResult.data.idPlano !== 2) { 
+          if (contractResult.data.idPlano !== 2) { 
             const billingResult = await getBillingStatusFromAsaas(Number(companyId));
             if (billingResult.success && billingResult.data) {
               setBillingStatus(billingResult.data);
@@ -179,7 +179,7 @@ const ContractDataPage = () => {
     }
 
     if (data) {
-      const isTestPlan = data.idPlano === 1 || data.idPlano === 2;
+      const isTestPlan = data.idPlano === 2;
       const totalUserLimit = data.limiteUsuarios + (data.usersAdicionais || 0);
       const iconColor = getPlanIconColor(data.idPlano);
       const borderColor = getBorderColorClass(data.idPlano);
@@ -229,7 +229,7 @@ const ContractDataPage = () => {
                 borderColorClass={borderColor}
             />
 
-            {isTestPlan && data.periodoTesteInicio && data.periodoTesteFim && (
+            {(data.idPlano === 1 || data.idPlano === 2) && data.periodoTesteInicio && data.periodoTesteFim && (
                 <Card className="bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800">
                     <CardHeader>
                         <CardTitle className="text-md text-blue-800 dark:text-blue-300">Período de Teste</CardTitle>
