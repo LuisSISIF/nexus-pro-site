@@ -67,16 +67,12 @@ export async function completeCompanyRegistration(data: RegistrationFormValues):
     ]);
 
     // 2. Buscar dados atualizados para criar o cliente no Asaas
-    const [companyRows] = await connection.execute('SELECT nome_empresa, endereco FROM empresa WHERE idempresa = ?', [companyId]);
+    const [companyRows] = await connection.execute('SELECT nome_empresa, endereco, telefone FROM empresa WHERE idempresa = ?', [companyId]);
     const companyInfo = (companyRows as any[])[0];
     
-    // Precisamos buscar o telefone do usuário administrador que se cadastrou
-    const [userRows] = await connection.execute('SELECT contato FROM usuarios WHERE idempresa = ? AND admUser = 1 ORDER BY idusuarios ASC LIMIT 1', [companyId]);
-    const userInfo = (userRows as any[])[0];
-
-    if (!companyInfo || !userInfo) {
+    if (!companyInfo) {
       await connection.rollback();
-      return { success: false, message: 'Não foi possível encontrar os dados da empresa ou usuário para o faturamento.' };
+      return { success: false, message: 'Não foi possível encontrar os dados da empresa para o faturamento.' };
     }
 
     // 3. Criar cliente no Asaas
@@ -84,7 +80,7 @@ export async function completeCompanyRegistration(data: RegistrationFormValues):
       name: companyInfo.nome_empresa,
       cpfCnpj: cnpj,
       email: emailComercial,
-      phone: userInfo.contato, // Usando o telefone do usuário admin
+      phone: companyInfo.telefone, // Usando o telefone da tabela empresa
       address: companyInfo.endereco,
     });
 
