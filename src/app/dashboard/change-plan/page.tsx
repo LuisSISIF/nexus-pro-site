@@ -1,6 +1,8 @@
+
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Check, Star, Store, Briefcase, Building, AlertCircle, Loader2 } from 'lucide-react';
@@ -79,6 +81,7 @@ const ChangePlanPage = () => {
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
     const { toast } = useToast();
+    const router = useRouter();
 
     useEffect(() => {
         const fetchCurrentPlan = async () => {
@@ -127,6 +130,12 @@ const ChangePlanPage = () => {
                 title: "Erro ao Alterar Plano",
                 description: result.message,
             });
+
+            if (result.message.includes('Você só pode alterar seu plano a cada 30 dias')) {
+                setTimeout(() => {
+                    router.push('/dashboard/contract-data');
+                }, 3000); // Adiciona um pequeno delay para o usuário ler o toast
+            }
         }
         
         setIsUpdating(false);
