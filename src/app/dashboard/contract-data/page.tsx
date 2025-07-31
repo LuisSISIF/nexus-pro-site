@@ -48,6 +48,7 @@ const ContractDataPage = () => {
         if (contractResult.success && contractResult.data) {
           setData(contractResult.data);
           
+          // Provisional Fix: Only fetch from Asaas if it's a paid plan, to avoid excessive polling.
           if (contractResult.data.idPlano !== 2) { 
             const billingResult = await getBillingStatusFromAsaas(Number(companyId));
             if (billingResult.success && billingResult.data) {
