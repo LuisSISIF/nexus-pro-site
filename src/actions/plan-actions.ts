@@ -17,6 +17,13 @@ interface AsaasSubscription {
     status: 'ACTIVE' | 'INACTIVE' | 'EXPIRED';
 }
 
+interface AsaasPayment {
+    id: string;
+    status: 'PENDING' | 'CONFIRMED' | 'RECEIVED' | 'RECEIVED_IN_CASH' | 'OVERDUE' | 'REFUNDED' | 'DUNNING_REQUESTED' | 'AWAITING_RISK_ANALYSIS';
+    dueDate: string;
+    value: number;
+}
+
 
 export async function updateCompanyPlan(companyId: number, newPlanId: number, newPlanPrice: number): Promise<{ success: boolean; message: string }> {
     const validation = updatePlanSchema.safeParse({ companyId, newPlanId, newPlanPrice });
@@ -50,9 +57,9 @@ export async function updateCompanyPlan(companyId: number, newPlanId: number, ne
             return { success: false, message: 'Nenhuma alteração foi necessária. O plano selecionado já pode ser o seu plano atual.' };
         }
         
-        // 3. Lógica para atualizar a assinatura no Asaas
+        // 3. Lógica para atualizar a assinatura e cobranças futuras no Asaas
         if (company.idAsaas) {
-            // Buscar a assinatura ativa do cliente no Asaas
+            // A. ATUALIZAR A ASSINATURA PRINCIPAL
             const subResponse = await fetch(`${ASAAS_API_URL}/subscriptions?customer=${company.idAsaas}`, {
                 headers: { 'access_token': ASAAS_API_KEY! }
             });
@@ -67,30 +74,49 @@ export async function updateCompanyPlan(companyId: number, newPlanId: number, ne
             const activeSubscription: AsaasSubscription | undefined = subData.data.find((s: AsaasSubscription) => s.status === 'ACTIVE');
             
             if (activeSubscription) {
-                // Se houver uma assinatura ativa, atualize-a
                 const updateSubResponse = await fetch(`${ASAAS_API_URL}/subscriptions/${activeSubscription.id}`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'access_token': ASAAS_API_KEY!,
-                    },
-                    body: JSON.stringify({
-                        value: newPlanPrice,
-                        // Você pode adicionar mais campos aqui se necessário, como description
-                        // description: `Novo plano: ${newPlan.name}`
-                    }),
+                    headers: { 'Content-Type': 'application/json', 'access_token': ASAAS_API_KEY! },
+                    body: JSON.stringify({ value: newPlanPrice }),
                 });
 
                 if (!updateSubResponse.ok) {
                     await connection.rollback();
                     console.error('Erro ao atualizar assinatura no Asaas:', await updateSubResponse.text());
-                    return { success: false, message: 'Houve um erro ao atualizar sua assinatura no provedor de pagamento. A alteração foi revertida.' };
+                    return { success: false, message: 'Houve um erro ao atualizar sua assinatura. A alteração foi revertida.' };
                 }
             } else {
                  console.warn(`Nenhuma assinatura ativa encontrada para o cliente Asaas ${company.idAsaas}. A cobrança pode precisar ser criada manualmente.`);
-                 // Se não houver assinatura, pode ser necessário criar uma nova.
-                 // Por ora, apenas registramos o aviso. A lógica de criação pode ser adicionada aqui.
             }
+
+            // B. ATUALIZAR AS COBRANÇAS PENDENTES FUTURAS
+            const paymentsResponse = await fetch(`${ASAAS_API_URL}/payments?customer=${company.idAsaas}&status=PENDING`, {
+                headers: { 'access_token': ASAAS_API_KEY! }
+            });
+            if (paymentsResponse.ok) {
+                const paymentsData = await paymentsResponse.json();
+                const pendingPayments: AsaasPayment[] = paymentsData.data;
+
+                const today = new Date();
+                const firstDayOfNextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+
+                for (const payment of pendingPayments) {
+                    const dueDate = new Date(payment.dueDate);
+                    // Se a cobrança vencer a partir do próximo mês e o valor for diferente
+                    if (dueDate >= firstDayOfNextMonth && payment.value !== newPlanPrice) {
+                        console.log(`Atualizando cobrança futura ${payment.id} para o valor R$ ${newPlanPrice}`);
+                        await fetch(`${ASAAS_API_URL}/payments/${payment.id}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'access_token': ASAAS_API_KEY! },
+                            body: JSON.stringify({ value: newPlanPrice }),
+                        });
+                         // Não vamos reverter o processo por falha em atualizar uma cobrança, apenas logar.
+                    }
+                }
+            } else {
+                console.error('Erro ao buscar cobranças pendentes no Asaas:', await paymentsResponse.text());
+            }
+
         } else {
             console.warn(`Empresa ${companyId} não possui um idAsaas. A alteração de plano não foi refletida no gateway de pagamento.`);
         }
