@@ -131,7 +131,7 @@ export async function updateCompanyPlan(
                     headers: { 'Content-Type': 'application/json', 'access_token': process.env.ASAAS_API_KEY! },
                     body: JSON.stringify({ 
                         value: newPlanPrice,
-                        billingType: 'BOLETO_PIX'
+                        billingType: 'BOLETO'
                     }),
                 });
 

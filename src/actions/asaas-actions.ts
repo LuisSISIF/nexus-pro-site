@@ -181,7 +181,7 @@ export async function createAsaasSubscription(data: {
 
     const payload = {
         customer: customerId,
-        billingType: "BOLETO_PIX",
+        billingType: "BOLETO",
         value: planPrice,
         nextDueDate: nextDueDate.toISOString().split('T')[0], // Formato YYYY-MM-DD
         cycle: "MONTHLY",
