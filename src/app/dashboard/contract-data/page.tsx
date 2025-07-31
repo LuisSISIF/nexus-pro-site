@@ -8,9 +8,10 @@ import { getBillingStatusFromAsaas, BillingStatus } from '@/actions/asaas-action
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Briefcase, Calendar, Users, Building, AlertCircle, CalendarClock, CreditCard, Loader2, CalendarCheck2, ExternalLink } from 'lucide-react';
+import { Briefcase, Calendar, Users, Building, AlertCircle, CalendarClock, CreditCard, Loader2, CalendarCheck2, ExternalLink, Replace } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 const DataRow = ({ label, value, icon, iconClassName, borderColorClass }: { label: string; value: React.ReactNode; icon?: React.ReactNode, iconClassName?: string, borderColorClass?: string }) => (
   <div className={cn("flex justify-between items-center py-3 border-b", borderColorClass)}>
@@ -220,7 +221,7 @@ const ContractDataPage = () => {
             <DataRow 
                 label="Plano Atual" 
                 value={
-                <Badge className={cn(getPlanBadgeStyle(data.idPlano), "hover:bg-none")}>
+                <Badge className={cn(getPlanBadgeStyle(data.idPlano))}>
                     {data.nomePlano}
                 </Badge>
                 } 
@@ -289,7 +290,7 @@ const ContractDataPage = () => {
             </div>
             
             {!isTestPlan && (
-                 <div className={cn("mt-8 pt-6 border-t", borderColor)}>
+                 <div className={cn("mt-8 pt-6 border-t flex flex-wrap gap-4", borderColor)}>
                     <Button onClick={handlePayInvoice} disabled={isPayButtonDisabled} className="w-full sm:w-auto">
                        {paymentLoading ? (
                            <>
@@ -303,7 +304,13 @@ const ContractDataPage = () => {
                         </>
                        )}
                     </Button>
-                     <p className="text-xs text-muted-foreground mt-2">Clique para abrir a página de pagamento da fatura atual (Boleto, PIX, Cartão).</p>
+                     <Button variant="outline" asChild className="w-full sm:w-auto">
+                        <Link href="/dashboard/change-plan">
+                            <Replace className="mr-2 h-4 w-4" />
+                            Alterar Plano
+                        </Link>
+                    </Button>
+                     <p className="text-xs text-muted-foreground mt-2 basis-full">Clique para abrir a página de pagamento ou para alterar seu plano atual.</p>
                 </div>
             )}
         </>
@@ -316,7 +323,7 @@ const ContractDataPage = () => {
   return (
     <div className="flex flex-col gap-6">
       <div className="space-y-1.5">
-          <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Dados Contratuais</h1>
+          <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Meu Plano</h1>
           <p className="text-muted-foreground">Informações sobre seu plano e faturamento.</p>
       </div>
        <Card className={getPlanCardStyle(data?.idPlano)}>
