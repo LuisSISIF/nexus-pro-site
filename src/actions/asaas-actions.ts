@@ -95,6 +95,8 @@ export async function checkAsaasCustomerExistsByCPF_CNPJ(companyId: number): Pro
         return { success: false, message: 'ID da empresa não fornecido.', exists: false };
     }
     if (!ASAAS_API_KEY || !ASAAS_API_URL) {
+        console.log("KEY: ", ASAAS_API_KEY)
+        console.log("api: ", ASAAS_API_URL)
         return { success: false, message: 'Credenciais do ASAAS não configuradas no servidor.', exists: false };
     }
 
@@ -148,6 +150,8 @@ export async function createAsaasPaymentLink(companyId: number): Promise<{ succe
         return { success: false, message: 'ID da empresa não fornecido.' };
     }
     if (!ASAAS_API_KEY || !ASAAS_API_URL) {
+        console.log("KEY: ", ASAAS_API_KEY)
+        console.log("api: ", ASAAS_API_URL)
         return { success: false, message: 'Credenciais do ASAAS não configuradas no servidor.' };
     }
     
