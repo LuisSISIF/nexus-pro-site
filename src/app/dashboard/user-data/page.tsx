@@ -7,8 +7,18 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { getUserData, updateUserData, UserData } from '@/actions/user-actions';
+import { getUserData, updateUserData } from '@/actions/user-actions';
 import { AlertCircle, Edit, Save, X, Loader2, UserCircle } from 'lucide-react';
+import { z } from 'zod';
+
+// Tipos movidos para o componente que os utiliza
+const UserDataSchema = z.object({
+    nom_func: z.string(),
+    celular: z.string(),
+    login: z.string(),
+    email: z.string().email(),
+});
+type UserData = z.infer<typeof UserDataSchema>;
 
 const UserDataPage = () => {
     const [userData, setUserData] = useState<UserData | null>(null);
@@ -35,13 +45,19 @@ const UserDataPage = () => {
             try {
                 const result = await getUserData(Number(userId), Number(companyId));
                 if (result.success && result.data) {
-                    setUserData(result.data);
-                    setInitialData(result.data); // Guarda o estado inicial
+                    // Validar os dados recebidos com o schema Zod
+                    const validatedData = UserDataSchema.parse(result.data);
+                    setUserData(validatedData);
+                    setInitialData(validatedData); // Guarda o estado inicial
                 } else {
                     setError(result.message);
                 }
             } catch (err) {
-                setError("Ocorreu um erro ao buscar seus dados.");
+                if (err instanceof z.ZodError) {
+                    setError("Os dados recebidos do servidor são inválidos.");
+                } else {
+                    setError("Ocorreu um erro ao buscar seus dados.");
+                }
             } finally {
                 setLoading(false);
             }

@@ -12,14 +12,15 @@ function sha256Hash(password: string): string {
     return hash.digest('hex');
 }
 
-// --- Schemas ---
-export const UserDataSchema = z.object({
+// --- Tipos internos para validação ---
+const UserDataFromDB = z.object({
     nom_func: z.string(),
     celular: z.string(),
     login: z.string(),
     email: z.string(),
 });
-export type UserData = z.infer<typeof UserDataSchema>;
+type UserData = z.infer<typeof UserDataFromDB>;
+
 
 const UpdateUserSchema = z.object({
     userId: z.number(),
@@ -51,7 +52,8 @@ export async function getUserData(userId: number, companyId: number): Promise<{ 
 
         if ((rows as any[]).length > 0 && (rows as any[])[0].length > 0) {
             const userData = (rows as any[])[0][0];
-            const validatedData = UserDataSchema.parse(userData);
+            // Validamos com o schema interno
+            const validatedData = UserDataFromDB.parse(userData);
             return { success: true, data: validatedData, message: 'Dados do usuário encontrados.' };
         } else {
             return { success: false, message: 'Usuário não encontrado.' };
