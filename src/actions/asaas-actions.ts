@@ -178,7 +178,7 @@ export async function createAsaasSubscription(data: {
 
     const payload = {
         customer: customerId,
-        billingType: "BOLETO_PIX",
+        billingType: "BOLETO",
         value: planPrice,
         nextDueDate: nextDueDate.toISOString().split('T')[0], // Formato YYYY-MM-DD
         cycle: "MONTHLY",
@@ -246,7 +246,7 @@ export async function createAsaasProrataCharge(data: {
 
      const payload = {
         customer: customerId,
-        billingType: "BOLETO_PIX",
+        billingType: "BOLETO",
         value: parseFloat(prorataValue.toFixed(2)),
         dueDate: tomorrow.toISOString().split('T')[0],
         description: description,
@@ -271,5 +271,3 @@ export async function createAsaasProrataCharge(data: {
         return { success: false, message: 'Erro de comunicação ao criar cobrança proporcional.' };
     }
 }
-
-    
