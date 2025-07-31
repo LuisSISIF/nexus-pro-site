@@ -4,11 +4,11 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { getContractData, ContractData } from '@/actions/contract-actions';
-import { checkPendingSubscription, getBillingStatusFromAsaas, BillingStatus } from '@/actions/asaas-actions';
+import { createAsaasPaymentLink, getBillingStatusFromAsaas, BillingStatus } from '@/actions/asaas-actions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Briefcase, Calendar, Users, Building, AlertCircle, CalendarClock, CreditCard, Loader2, CalendarCheck2 } from 'lucide-react';
+import { Briefcase, Calendar, Users, Building, AlertCircle, CalendarClock, CreditCard, Loader2, CalendarCheck2, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const DataRow = ({ label, value, icon }: { label: string; value: React.ReactNode; icon?: React.ReactNode }) => (
@@ -63,9 +63,9 @@ const ContractDataPage = () => {
     };
 
     fetchAllData();
-  }, []);
+  }, [toast]);
 
-  const handlePaymentCheck = async () => {
+  const handleGeneratePayment = async () => {
     if (!data?.idempresa || data.idPlano === 2) {
         toast({
             variant: "destructive",
@@ -78,25 +78,26 @@ const ContractDataPage = () => {
     setPaymentLoading(true);
 
     try {
-        const result = await checkPendingSubscription(data.idempresa);
-        if(result.success) {
+        const result = await createAsaasPaymentLink(data.idempresa);
+        if(result.success && result.paymentUrl) {
             toast({
-                title: "Verificação Concluída",
-                description: `CNPJ: ${result.cnpj}. ${result.message}`,
-                variant: result.hasPending ? "destructive" : "default",
+                title: "Link de Pagamento Gerado!",
+                description: "Você será redirecionado para a página de pagamento.",
+                variant: "default",
             });
+            window.open(result.paymentUrl, '_blank');
         } else {
              toast({
                 variant: "destructive",
-                title: "Erro na verificação",
-                description: `CNPJ: ${result.cnpj || 'Não encontrado'}. ${result.message || "Não foi possível verificar a assinatura no Asaas."}`
+                title: "Erro ao Gerar Cobrança",
+                description: result.message || "Não foi possível criar o link de pagamento no Asaas."
             });
         }
     } catch (error) {
          toast({
             variant: "destructive",
             title: "Erro inesperado",
-            description: "Ocorreu um erro ao tentar realizar a verificação."
+            description: "Ocorreu um erro ao tentar realizar a cobrança."
         });
     } finally {
         setPaymentLoading(false);
@@ -139,6 +140,7 @@ const ContractDataPage = () => {
         
         switch (status.toUpperCase()) {
           case 'CONFIRMED':
+          case 'RECEIVED':
           case 'RECEIVED_IN_CASH':
             return <Badge className="bg-green-500 text-white">Pago</Badge>;
           case 'PENDING':
@@ -219,16 +221,20 @@ const ContractDataPage = () => {
             
             {!isTestPlan && (
                  <div className="mt-8 pt-6 border-t">
-                    <Button onClick={handlePaymentCheck} disabled={paymentLoading} className="w-full sm:w-auto">
+                    <Button onClick={handleGeneratePayment} disabled={paymentLoading} className="w-full sm:w-auto">
                        {paymentLoading ? (
                            <>
                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                           Verificando...
+                           Gerando...
                            </>
                        ) : (
-                           "Verificar Pendências"
+                        <>
+                           <ExternalLink className="mr-2 h-4 w-4" />
+                           Pagar Fatura
+                        </>
                        )}
                     </Button>
+                     <p className="text-xs text-muted-foreground mt-2">Clique para gerar um link de pagamento para a mensalidade atual (Boleto, PIX, Cartão).</p>
                 </div>
             )}
         </>

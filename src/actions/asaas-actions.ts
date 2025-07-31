@@ -171,125 +171,6 @@ export async function getBillingStatusFromAsaas(companyId: number): Promise<{ su
     }
 }
 
-export async function checkPendingSubscription(companyId: number): Promise<{ success: boolean; message: string; hasPending: boolean, cnpj?: string }> {
-    if (!companyId) {
-        return { success: false, message: 'ID da empresa não fornecido.', hasPending: false };
-    }
-    if (!ASAAS_API_KEY || !ASAAS_API_URL) {
-        return { success: false, message: 'Credenciais do ASAAS não configuradas no servidor.', hasPending: false };
-    }
-
-    let connection;
-    try {
-        connection = await db();
-
-        const [companyDataRows] = await connection.execute('SELECT cnpj_empresa, idAsaas FROM empresa WHERE idempresa = ?', [companyId]);
-        const companyData = (companyDataRows as any[])[0];
-
-        if (!companyData || !companyData.cnpj_empresa) {
-            return { success: false, message: 'CNPJ da empresa não encontrado.', hasPending: false };
-        }
-
-        const cnpj = companyData.cnpj_empresa;
-        let customer = await getAsaasCustomerByCnpj(cnpj);
-
-        if (!customer) {
-            return { success: true, message: "Cliente não encontrado no Asaas.", hasPending: false, cnpj };
-        }
-
-        const customerId = customer.id;
-
-        // Se o idAsaas no nosso banco estiver diferente do encontrado, atualizamos.
-        if (companyData.idAsaas !== customerId) {
-             await connection.execute('UPDATE empresa SET idAsaas = ? WHERE idempresa = ?', [customerId, companyId]);
-        }
-
-
-        const response = await fetch(`${ASAAS_API_URL}/subscriptions?customer=${customerId}&status=PENDING`, {
-            method: 'GET',
-            headers: {
-                'access_token': ASAAS_API_KEY!,
-            },
-        });
-        
-        const data = await response.json();
-
-        if (!response.ok) {
-            const errorMsg = data.errors?.[0]?.description || 'Erro ao consultar assinaturas no Asaas';
-            console.error("Erro ao consultar assinaturas:", data.errors);
-            return { success: false, message: `ASAAS: ${errorMsg}`, hasPending: false };
-        }
-
-        const hasPending = data.totalCount > 0;
-        const message = hasPending 
-            ? "Status: Assinatura com pagamento pendente encontrada."
-            : "Status: Nenhuma assinatura pendente encontrada.";
-
-        return { success: true, message, hasPending, cnpj };
-
-    } catch (error) {
-        console.error('ASAAS Check Subscription Error:', error);
-        const errorMessage = error instanceof Error ? error.message : 'Ocorreu um erro desconhecido.';
-        return { success: false, message: errorMessage, hasPending: false };
-    } finally {
-        if (connection) await connection.end();
-    }
-}
-
-
-export async function checkAsaasCustomerExistsByCPF_CNPJ(companyId: number): Promise<{ success: boolean; message: string; exists: boolean, cnpj?: string }> {
-     if (!companyId) {
-        return { success: false, message: 'ID da empresa não fornecido.', exists: false };
-    }
-    if (!ASAAS_API_KEY || !ASAAS_API_URL) {
-        return { success: false, message: 'Credenciais do ASAAS não configuradas no servidor.', exists: false };
-    }
-
-    let connection;
-    try {
-        connection = await db();
-
-        // Buscar o CNPJ da empresa
-        const [companyDataRows] = await connection.execute('SELECT cnpj_empresa FROM empresa WHERE idempresa = ?', [companyId]);
-        const companyData = (companyDataRows as any[])[0];
-
-        if (!companyData || !companyData.cnpj_empresa) {
-            return { success: false, message: 'CNPJ da empresa não encontrado.', exists: false };
-        }
-
-        const cnpj = companyData.cnpj_empresa;
-
-        // Consultar a API do Asaas
-        const response = await fetch(`${ASAAS_API_URL}/customers?cpfCnpj=${cnpj}`, {
-            method: 'GET',
-            headers: {
-                'access_token': ASAAS_API_KEY!,
-            },
-        });
-
-        const data = await response.json();
-        
-        if (!response.ok) {
-            const errorMsg = data.errors?.[0]?.description || 'Erro ao consultar API do Asaas';
-            console.error("Erro ao consultar cliente ASAAS:", data.errors);
-            return { success: false, message: `ASAAS: ${errorMsg}`, exists: false };
-        }
-        
-        const customerExists = data.totalCount > 0;
-        const message = customerExists ? "Sim, cliente encontrado no Asaas." : "Não, cliente não encontrado no Asaas.";
-
-        return { success: true, message, exists: customerExists, cnpj };
-        
-    } catch (error) {
-        console.error('ASAAS Check Customer Error:', error);
-        const errorMessage = error instanceof Error ? error.message : 'Ocorreu um erro desconhecido.';
-        return { success: false, message: errorMessage, exists: false };
-    } finally {
-        if (connection) await connection.end();
-    }
-}
-
-
 export async function createAsaasPaymentLink(companyId: number): Promise<{ success: boolean; message: string; paymentUrl?: string }> {
     if (!companyId) {
         return { success: false, message: 'ID da empresa não fornecido.' };
@@ -320,10 +201,7 @@ export async function createAsaasPaymentLink(companyId: number): Promise<{ succe
         // 2. Obter ou criar o cliente no ASAAS
         const asaasCustomerId = await getOrCreateAsaasCustomer(companyId, connection);
 
-        // 3. Criar o Link de Pagamento no ASAAS
-        const nextDueDate = new Date();
-        nextDueDate.setDate(nextDueDate.getDate() + 5); // Vencimento em 5 dias
-
+        // 3. Criar o Link de Pagamento no ASAAS (como cobrança avulsa)
         const paymentPayload = {
             name: `Mensalidade Plano ${contractInfo.data.nomePlano} - ${contractInfo.data.nome_empresa}`,
             description: `Referente à mensalidade do sistema NexusPro.`,
