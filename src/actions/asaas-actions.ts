@@ -206,7 +206,8 @@ export async function createAsaasPaymentLink(companyId: number): Promise<{ succe
             name: `Mensalidade Plano ${contractInfo.data.nomePlano} - ${contractInfo.data.nome_empresa}`,
             description: `Referente à mensalidade do sistema NexusPro.`,
             value: amount,
-            billingType: "UNDEFINED", // Permite que o cliente escolha (Boleto, Cartão, PIX)
+            billingType: "BOLETO", // Define o tipo de cobrança principal
+            allowedPaymentMethods: ["BOLETO", "PIX"], // Limita as opções de pagamento
             chargeType: "DETACHED",
             dueDateLimitDays: 5, // A cobrança expira em 5 dias se não for paga
             customer: asaasCustomerId,
