@@ -49,7 +49,7 @@ const plans = [
       description: "Solução completa para redes e filiais.",
       icon: Building,
       features: [
-        "Até 12 usuários",
+        "Até 12 usuários simultâneos",
         "Gerenciamento Multi-Lojas",
         "Relatórios Estratégicos e personalizados",
         "Controle de Acesso avançado",
