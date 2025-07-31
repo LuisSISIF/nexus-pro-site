@@ -5,7 +5,7 @@ import { db } from '@/lib/db';
 import { getContractData } from './contract-actions';
 
 const ASAAS_API_URL = process.env.ASAAS_API_URL;
-const ASAAS_API_KEY = "$aact_hmlg_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OmFlOGZkNGIyLWRkMzktNGUyZS1iZmIxLTg2MjgyZjUxNWM0ZTo6JGFhY2hfMzhiZTZlZmQtODVmZi00YzgwLTlhOWUtNjVkNGJmZDIwY2U5";
+const ASAAS_API_KEY = "$aact_prod_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OjBhYjY3ZTNkLTA0YzgtNGU1MC05MzM2LWYxMWU5ZTcxODM2NTo6JGFhY2hfYjYzOWE0NzQtZWUwOS00ODkwLWI2MTItMjc2ZTNhOTA1N2Qx";
 
 interface AsaasCustomer {
     id: string;
@@ -33,6 +33,65 @@ export interface BillingStatus {
     value: number | null;
     invoiceUrl?: string; // URL da fatura pode ser opcional
 }
+
+export async function getCustomerStatus(companyId: number): Promise<{ success: boolean; message: string; customerId?: string }> {
+    if (!companyId) {
+        return { success: false, message: 'ID da empresa não fornecido.' };
+    }
+
+    let connection;
+    try {
+        connection = await db();
+
+        const [companyRows] = await connection.execute(
+            'SELECT idAsaas, cnpj FROM empresa WHERE idempresa = ?',
+            [companyId]
+        );
+        const companyData = (companyRows as any[])[0];
+
+        if (!companyData) {
+            return { success: false, message: 'Empresa não encontrada no banco de dados local.' };
+        }
+
+        // 1. Verifica se já temos o idAsaas salvo
+        if (companyData.idAsaas) {
+            return { success: true, message: 'Cliente já registrado.', customerId: companyData.idAsaas };
+        }
+
+        // 2. Se não temos, busca no Asaas pelo CNPJ
+        if (!companyData.cnpj) {
+            return { success: false, message: 'A empresa não possui CNPJ cadastrado para a verificação.' };
+        }
+
+        const response = await fetch(`${ASAAS_API_URL}/customers?cpfCnpj=${companyData.cnpj}`, {
+            headers: { 'access_token': ASAAS_API_KEY! },
+        });
+
+        if (!response.ok) {
+            console.error("Erro na API Asaas ao buscar cliente:", await response.text());
+            return { success: false, message: 'Erro ao consultar o Asaas.' };
+        }
+
+        const data = await response.json();
+
+        if (data.totalCount > 0 && data.data.length > 0) {
+            const customerId = data.data[0].id;
+             // Opcional: Salvar o ID encontrado no seu banco de dados para futuras consultas.
+            await connection.execute('UPDATE empresa SET idAsaas = ? WHERE idempresa = ?', [customerId, companyId]);
+            return { success: true, message: 'Cliente encontrado no Asaas.', customerId: customerId };
+        } else {
+            return { success: false, message: 'Nenhum cliente encontrado no Asaas com este CNPJ.' };
+        }
+
+    } catch (error) {
+        console.error('ASAAS Customer Status Error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Ocorreu um erro desconhecido.';
+        return { success: false, message: errorMessage };
+    } finally {
+        if (connection) await connection.end();
+    }
+}
+
 
 // Retorna uma lista de status de cobrança
 export async function getBillingStatusFromAsaas(companyId: number): Promise<{ success: boolean; data?: BillingStatus[]; message: string }> {

@@ -9,7 +9,8 @@ import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { getUserData, updateUserData } from '@/actions/user-actions';
-import { AlertCircle, Edit, Save, X, Loader2, UserCircle, Eye, EyeOff } from 'lucide-react';
+import { getCustomerStatus } from '@/actions/asaas-actions';
+import { AlertCircle, Edit, Save, X, Loader2, UserCircle, Eye, EyeOff, CreditCard, Search } from 'lucide-react';
 import { z } from 'zod';
 
 // Tipos movidos para o componente que os utiliza
@@ -32,6 +33,11 @@ const UserDataPage = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const [asaasStatus, setAsaasStatus] = useState<{ message: string; customerId?: string } | null>(null);
+    const [isCheckingAsaas, setIsCheckingAsaas] = useState(false);
+
+
     const { toast } = useToast();
 
     useEffect(() => {
@@ -139,6 +145,32 @@ const UserDataPage = () => {
             setUserData({...userData, [name]: value});
         }
     };
+
+    const handleCheckAsaasStatus = async () => {
+        const companyId = localStorage.getItem('companyId');
+        if (!companyId) {
+            toast({ variant: 'destructive', title: 'Erro', description: 'ID da empresa não encontrado.' });
+            return;
+        }
+
+        setIsCheckingAsaas(true);
+        setAsaasStatus(null);
+        try {
+            const result = await getCustomerStatus(Number(companyId));
+            setAsaasStatus({ message: result.message, customerId: result.customerId });
+             toast({
+                title: result.success ? 'Verificação Concluída' : 'Aviso',
+                description: result.message,
+                variant: result.success ? 'default' : 'destructive',
+            });
+        } catch (err) {
+            setAsaasStatus({ message: 'Ocorreu um erro inesperado durante a verificação.' });
+            toast({ variant: 'destructive', title: 'Erro na Verificação', description: 'Não foi possível completar a operação.' });
+        } finally {
+            setIsCheckingAsaas(false);
+        }
+    }
+
 
     const renderContent = () => {
         if (loading) {
@@ -257,6 +289,36 @@ const UserDataPage = () => {
                 </CardHeader>
                 <CardContent>
                     {renderContent()}
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <CreditCard className="w-6 h-6 text-primary"/>
+                        Informações de Faturamento (Asaas)
+                    </CardTitle>
+                    <CardDescription>
+                        Verifique o status de cadastro da sua empresa no nosso gateway de pagamento.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                        <Button onClick={handleCheckAsaasStatus} disabled={isCheckingAsaas}>
+                            {isCheckingAsaas ? (
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
+                            ) : (
+                                <Search className="mr-2 h-4 w-4"/>
+                            )}
+                             {isCheckingAsaas ? 'Verificando...' : 'Verificar Status no Asaas'}
+                        </Button>
+                        {asaasStatus && (
+                             <div className="p-3 rounded-md bg-muted text-sm w-full">
+                                <p><strong>Status:</strong> {asaasStatus.message}</p>
+                                {asaasStatus.customerId && <p className="font-mono text-xs mt-1"><strong>ID:</strong> {asaasStatus.customerId}</p>}
+                            </div>
+                        )}
+                    </div>
                 </CardContent>
             </Card>
         </div>
