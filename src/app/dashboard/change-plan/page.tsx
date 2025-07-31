@@ -10,6 +10,7 @@ import { getContractData, ContractData } from '@/actions/contract-actions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
 
 const plans = [
     {

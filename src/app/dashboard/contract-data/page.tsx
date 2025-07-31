@@ -289,28 +289,33 @@ const ContractDataPage = () => {
             )}
             </div>
             
-            {!isTestPlan && (
-                 <div className={cn("mt-8 pt-6 border-t flex flex-wrap gap-4", borderColor)}>
-                    <Button onClick={handlePayInvoice} disabled={isPayButtonDisabled} className="w-full sm:w-auto">
-                       {paymentLoading ? (
-                           <>
-                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                           Verificando...
-                           </>
-                       ) : (
-                        <>
-                           <ExternalLink className="mr-2 h-4 w-4" />
-                           Pagar Fatura
-                        </>
-                       )}
-                    </Button>
-                     <Button variant="outline" asChild className="w-full sm:w-auto">
-                        <Link href="/dashboard/change-plan">
-                            <Replace className="mr-2 h-4 w-4" />
-                            Alterar Plano
-                        </Link>
-                    </Button>
-                     <p className="text-xs text-muted-foreground mt-2 basis-full">Clique para abrir a página de pagamento ou para alterar seu plano atual.</p>
+             {!isTestPlan && (
+                 <div className={cn("mt-8 pt-6 border-t flex flex-col sm:flex-row items-center justify-between gap-4", borderColor)}>
+                    <div className="w-full sm:w-auto">
+                        <Button onClick={handlePayInvoice} disabled={isPayButtonDisabled} variant="outline" className="w-full">
+                           {paymentLoading ? (
+                               <>
+                               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                               Verificando...
+                               </>
+                           ) : (
+                            <>
+                               <ExternalLink className="mr-2 h-4 w-4" />
+                               Pagar Fatura
+                            </>
+                           )}
+                        </Button>
+                        <p className="text-xs text-muted-foreground mt-2 text-center sm:text-left">Clique para abrir a página de pagamento.</p>
+                    </div>
+                     <div className="w-full sm:w-auto">
+                        <Button asChild className="w-full shadow-lg hover:shadow-primary/40 transition-shadow">
+                            <Link href="/dashboard/change-plan">
+                                <Replace className="mr-2 h-4 w-4" />
+                                Alterar meu Plano
+                            </Link>
+                        </Button>
+                         <p className="text-xs text-muted-foreground mt-2 text-center sm:text-right">Faça um upgrade ou downgrade.</p>
+                    </div>
                 </div>
             )}
         </>
