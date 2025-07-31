@@ -10,14 +10,15 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Briefcase, Calendar, Users, Building, AlertCircle, CalendarClock, CreditCard, Loader2, CalendarCheck2, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
-const DataRow = ({ label, value, icon }: { label: string; value: React.ReactNode; icon?: React.ReactNode }) => (
-  <div className="flex justify-between items-center py-3 border-b border-gray-200 dark:border-gray-700">
+const DataRow = ({ label, value, icon, iconClassName }: { label: string; value: React.ReactNode; icon?: React.ReactNode, iconClassName?: string }) => (
+  <div className="flex justify-between items-center py-3 border-b border-white/10 dark:border-gray-700">
     <div className="flex items-center gap-3">
-      {icon}
-      <span className="text-sm font-medium text-muted-foreground">{label}</span>
+       {React.cloneElement(icon as React.ReactElement, { className: cn("w-4 h-4", iconClassName) })}
+      <span className="text-sm font-medium">{label}</span>
     </div>
-    <span className="text-sm font-semibold text-foreground text-right">{value}</span>
+    <span className="text-sm font-semibold text-right">{value}</span>
   </div>
 );
 
@@ -82,17 +83,47 @@ const ContractDataPage = () => {
   const getPlanBadgeStyle = (planId: number): string => {
     switch (planId) {
       case 1: // Essencial
-        return "bg-[#F5F6FA] text-gray-800 border-gray-300";
+        return "bg-gray-200 text-gray-800 border-gray-300";
       case 2: // Teste (AlphaTester)
-        return "bg-gradient-to-tr from-purple-800 to-indigo-900 text-yellow-300 border-yellow-500 font-bold shadow-lg";
+        return "bg-gradient-to-tr from-purple-500 to-indigo-600 text-yellow-300 border-yellow-500 shadow-lg";
       case 3: // Profissional
-        return "bg-[#2563EB] text-white";
+        return "bg-[#E0E7FF] text-blue-800";
       case 4: // Empresarial
-        return "bg-[#FFD700] text-black";
+        return "bg-black text-yellow-300";
       default:
         return "bg-gray-200 text-gray-800";
     }
   };
+
+    const getPlanCardStyle = (planId?: number | null): string => {
+        if (!planId) return "shadow-lg";
+        switch (planId) {
+            case 1: // Essencial
+                return "shadow-lg bg-[#F5F6FA] text-gray-800";
+            case 2: // Teste (AlphaTester)
+                return "shadow-xl bg-gradient-to-tr from-purple-900 to-indigo-900 text-white border-purple-700";
+            case 3: // Profissional
+                return "shadow-lg bg-blue-600 text-white";
+            case 4: // Empresarial
+                return "shadow-lg bg-yellow-400 text-black";
+            default:
+                return "shadow-lg";
+        }
+    };
+
+    const getPlanIconColor = (planId?: number | null): string => {
+        if (!planId) return "text-primary";
+        switch (planId) {
+             case 2: // Teste
+                return "text-yellow-400";
+            case 3: // Profissional
+                return "text-blue-100";
+            case 4: // Empresarial
+                return "text-black";
+            default: // Essencial e outros
+                return "text-primary";
+        }
+    }
 
 
   const renderContent = () => {
@@ -124,6 +155,7 @@ const ContractDataPage = () => {
     if (data) {
       const isTestPlan = data.idPlano === 2;
       const totalUserLimit = data.limiteUsuarios + (data.usersAdicionais || 0);
+      const iconColor = getPlanIconColor(data.idPlano);
       
       const getPaymentStatusBadge = (status: string | null) => {
         if (!status) return <Badge variant="outline">Indisponível</Badge>;
@@ -154,7 +186,8 @@ const ContractDataPage = () => {
             <DataRow 
                 label="Empresa" 
                 value={data.nome_empresa} 
-                icon={<Briefcase className="w-4 h-4 text-primary" />} 
+                icon={<Briefcase />} 
+                iconClassName={iconColor}
             />
             <DataRow 
                 label="Plano Atual" 
@@ -163,7 +196,8 @@ const ContractDataPage = () => {
                     {data.nomePlano}
                 </Badge>
                 } 
-                icon={<Calendar className="w-4 h-4 text-primary" />} 
+                icon={<Calendar />}
+                iconClassName={iconColor}
             />
 
             {isTestPlan && data.periodoTesteInicio && data.periodoTesteFim && (
@@ -187,29 +221,34 @@ const ContractDataPage = () => {
             <DataRow 
                 label="Usuários" 
                 value={`${data.qtdFunc} / ${totalUserLimit}`} 
-                icon={<Users className="w-4 h-4 text-primary" />} 
+                icon={<Users />}
+                iconClassName={iconColor}
             />
             <DataRow 
                 label="Lojas/Filiais" 
                 value={`${data.qtdLojas} / ${data.limiteLojas}`}
-                icon={<Building className="w-4 h-4 text-primary" />} 
+                icon={<Building />}
+                iconClassName={iconColor}
             />
             {!isTestPlan && (
                 <>
                  <DataRow 
                     label="Mês de Referência" 
                     value={<span className="capitalize">{billingStatus?.month || 'Não aplicável'}</span>}
-                    icon={<CalendarCheck2 className="w-4 h-4 text-primary" />} 
+                    icon={<CalendarCheck2 />}
+                    iconClassName={iconColor}
                 />
                 <DataRow 
                     label="Situação do Pagamento" 
                     value={getPaymentStatusBadge(billingStatus?.status || null)}
-                    icon={<CreditCard className="w-4 h-4 text-primary" />} 
+                    icon={<CreditCard />}
+                    iconClassName={iconColor}
                 />
                 <DataRow 
                     label="Vencimento da Fatura" 
                     value={billingStatus?.dueDate || `Todo dia ${data.diaVencimento}`}
-                    icon={<CalendarClock className="w-4 h-4 text-primary" />} 
+                    icon={<CalendarClock />}
+                    iconClassName={iconColor}
                 />
                 </>
             )}
@@ -246,17 +285,17 @@ const ContractDataPage = () => {
           <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Dados Contratuais</h1>
           <p className="text-muted-foreground">Informações sobre seu plano e faturamento.</p>
       </div>
-      <Card className="shadow-lg">
-        <CardHeader>
-          <CardTitle>Seu Plano</CardTitle>
-          <CardDescription>
-            Detalhes sobre o plano contratado, limites de uso e pagamento.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {renderContent()}
-        </CardContent>
-      </Card>
+       <Card className={getPlanCardStyle(data?.idPlano)}>
+         <CardHeader>
+           <CardTitle>Seu Plano</CardTitle>
+           <CardDescription className={data?.idPlano === 3 || data?.idPlano === 2 ? 'text-white/80' : ''}>
+              Detalhes sobre o plano contratado, limites de uso e pagamento.
+           </CardDescription>
+         </CardHeader>
+         <CardContent>
+           {renderContent()}
+         </CardContent>
+       </Card>
     </div>
   );
 };
