@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Header from '@/components/home/Header';
 import Footer from '@/components/home/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -48,6 +49,7 @@ type RegistrationFormValues = z.infer<typeof registrationSchema>;
 
 const SignUpPage = () => {
     const { toast } = useToast();
+    const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -77,9 +79,9 @@ const SignUpPage = () => {
             if (result.success) {
                 toast({
                     title: "Cadastro realizado com sucesso!",
-                    description: "Sua conta foi criada e você já pode fazer o login.",
+                    description: "Sua conta foi criada. Redirecionando para o login...",
                 });
-                // TODO: Redirect to login page or dashboard
+                router.push('/login');
             } else {
                 toast({
                     variant: "destructive",
