@@ -206,7 +206,7 @@ ${supportData.userName || ''}`;
                 </CardHeader>
                 <CardContent>
                     <p className="text-muted-foreground">
-                       Nosso suporte financeiro opera de <strong>Segunda a Sexta-feira, das 09:00 às 18:00</strong>. Solicitações enviadas fora desse horário serão processadas no próximo dia útil.
+                       Nosso suporte financeiro opera de <strong>Segunda a Sexta-feira, das 09:00 às 17:00</strong>, e aos <strong>Sábados, das 09:00 às 12:00</strong>. Solicitações enviadas fora desse horário serão processadas no próximo dia útil.
                     </p>
                 </CardContent>
             </Card>
