@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { getUserData, updateUserData } from '@/actions/user-actions';
-import { AlertCircle, Edit, Save, X, Loader2, UserCircle } from 'lucide-react';
+import { AlertCircle, Edit, Save, X, Loader2, UserCircle, Eye, EyeOff } from 'lucide-react';
 import { z } from 'zod';
 
 // Tipos movidos para o componente que os utiliza
@@ -29,6 +29,8 @@ const UserDataPage = () => {
     const [error, setError] = useState<string | null>(null);
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const { toast } = useToast();
 
     useEffect(() => {
@@ -185,11 +187,21 @@ const UserDataPage = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <Label htmlFor="password">Nova Senha</Label>
-                                    <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                                    <div className="relative">
+                                        <Input id="password" type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} />
+                                        <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setShowPassword(prev => !prev)}>
+                                            {showPassword ? <EyeOff className="h-4 w-4"/> : <Eye className="h-4 w-4"/>}
+                                        </Button>
+                                    </div>
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="confirmPassword">Confirmar Nova Senha</Label>
-                                    <Input id="confirmPassword" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                                     <div className="relative">
+                                        <Input id="confirmPassword" type={showConfirmPassword ? 'text' : 'password'} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                                        <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setShowConfirmPassword(prev => !prev)}>
+                                            {showConfirmPassword ? <EyeOff className="h-4 w-4"/> : <Eye className="h-4 w-4"/>}
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
