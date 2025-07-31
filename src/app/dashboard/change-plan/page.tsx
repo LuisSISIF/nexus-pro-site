@@ -115,11 +115,16 @@ const ChangePlanPage = () => {
         setIsUpdating(true);
         const companyId = Number(localStorage.getItem('companyId'));
 
-        const result = await updateCompanyPlan(companyId, selectedPlan.id, selectedPlan.price);
+        const result = await updateCompanyPlan(
+            companyId,
+            selectedPlan.id,
+            selectedPlan.price,
+            selectedPlan.name
+        );
 
         if (result.success) {
             toast({
-                title: "Plano Alterado!",
+                title: "Sucesso!",
                 description: result.message,
             });
             router.push('/dashboard/contract-data');
@@ -259,6 +264,15 @@ const ChangePlanPage = () => {
         )
     }
 
+    const getDialogDescription = () => {
+        if (!selectedPlan) return '';
+        if (currentPlan?.idPlano === 2) { // Vindo do plano de teste
+             return `Você está prestes a contratar o plano ${selectedPlan.name}. Uma assinatura de R$ ${selectedPlan.price}/mês será criada, com a primeira cobrança no próximo dia ${currentPlan?.diaVencimento}. Além disso, uma cobrança proporcional pelos dias restantes até lá será gerada para amanhã. Deseja continuar?`;
+        }
+        // Trocando entre planos pagos
+        return `Você está prestes a alterar seu plano para ${selectedPlan.name}. A nova cobrança será de R$ ${selectedPlan.price} por mês, aplicada no próximo ciclo de faturamento. Deseja continuar?`;
+    };
+
     return (
         <div className="flex flex-col gap-8">
             <div className="space-y-1.5">
@@ -275,16 +289,14 @@ const ChangePlanPage = () => {
                     <AlertDialogHeader>
                     <AlertDialogTitle>Confirmar Alteração de Plano?</AlertDialogTitle>
                     <AlertDialogDescription>
-                        Você está prestes a alterar seu plano para <strong>{selectedPlan?.name}</strong>. 
-                        A nova cobrança será de <strong>R$ {selectedPlan?.price} por mês</strong>, 
-                        aplicada no próximo ciclo de faturamento. Deseja continuar?
+                       {getDialogDescription()}
                     </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                     <AlertDialogCancel onClick={() => setSelectedPlan(null)} disabled={isUpdating}>Cancelar</AlertDialogCancel>
                     <AlertDialogAction onClick={handleConfirmChange} disabled={isUpdating}>
                         {isUpdating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        {isUpdating ? "Alterando..." : "Confirmar e Alterar Plano"}
+                        {isUpdating ? "Processando..." : "Confirmar e Contratar"}
                     </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

@@ -143,4 +143,109 @@ export async function createAsaasCustomer(data: {
     }
 }
 
+const getPlanDescription = (planName: string): string => {
+    switch (planName.toLowerCase()) {
+        case 'essencial':
+            return 'Licença de uso mensal do sistema NexusPro – Plano Básico.\nAcesso ao sistema de gestão empresarial com funcionalidades de controle de estoque, vendas, cadastro de clientes e relatórios básicos.';
+        case 'profissional':
+            return 'Licença de uso mensal do sistema NexusPro – Plano Profissional.\nAcesso completo ao sistema de gestão empresarial com recursos avançados, incluindo controle financeiro, crédito de clientes, controle de caixa e múltiplas filiais.';
+        case 'empresarial':
+            return 'Licença de uso mensal do sistema NexusPro – Plano Empresarial.\nAcesso total ao sistema de gestão empresarial com todos os módulos liberados, suporte prioritário e recursos personalizados conforme demanda da empresa.';
+        default:
+            return `Licença de uso mensal do sistema NexusPro – Plano ${planName}.`;
+    }
+};
+
+export async function createAsaasSubscription(data: {
+    customerId: string;
+    planPrice: number;
+    planName: string;
+    dueDateDay: number;
+}): Promise<{ success: boolean; message: string }> {
     
+    const { customerId, planPrice, planName, dueDateDay } = data;
+    
+    const today = new Date();
+    const nextMonth = new Date(today.getFullYear(), today.getMonth() + 2, 0); // Vai para o próximo mês
+    const nextDueDate = new Date(nextMonth.getFullYear(), nextMonth.getMonth(), dueDateDay);
+   
+    const payload = {
+        customer: customerId,
+        billingType: "BOLETO_PIX",
+        value: planPrice,
+        nextDueDate: nextDueDate.toISOString().split('T')[0], // Formato YYYY-MM-DD
+        cycle: "MONTHLY",
+        description: getPlanDescription(planName),
+        fine: { value: 2, type: "PERCENTAGE" },
+        interest: { value: 1, type: "PERCENTAGE" },
+    };
+
+    try {
+        const response = await fetch(`${ASAAS_API_URL}/subscriptions`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'access_token': ASAAS_API_KEY! },
+            body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            const errorMessage = errorData.errors ? errorData.errors.map((e: any) => e.description).join(', ') : 'Erro desconhecido';
+            return { success: false, message: `Falha na API Asaas (Assinatura): ${errorMessage}` };
+        }
+        
+        return { success: true, message: 'Assinatura criada com sucesso!' };
+    } catch (error) {
+        console.error("Create Subscription Error:", error);
+        return { success: false, message: 'Erro de comunicação ao criar assinatura.' };
+    }
+}
+
+
+export async function createAsaasProrataCharge(data: {
+    customerId: string;
+    planPrice: number;
+    dueDateDay: number;
+}): Promise<{ success: boolean; message: string }> {
+
+    const { customerId, planPrice, dueDateDay } = data;
+
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    const nextDueDate = new Date(today.getFullYear(), today.getMonth() + 1, dueDateDay);
+    
+    // Calcula a diferença em dias
+    const diffTime = Math.abs(nextDueDate.getTime() - today.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    const dailyRate = planPrice / 30;
+    const prorataValue = Math.max(dailyRate * diffDays, 1.00); // Garante um valor mínimo
+
+     const payload = {
+        customer: customerId,
+        billingType: "BOLETO_PIX",
+        value: parseFloat(prorataValue.toFixed(2)),
+        dueDate: tomorrow.toISOString().split('T')[0],
+        description: `Cobrança proporcional referente aos dias de uso até o início do ciclo de faturamento.`,
+    };
+
+     try {
+        const response = await fetch(`${ASAAS_API_URL}/payments`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'access_token': ASAAS_API_KEY! },
+            body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            const errorMessage = errorData.errors ? errorData.errors.map((e: any) => e.description).join(', ') : 'Erro desconhecido';
+            return { success: false, message: `Falha na API Asaas (Cobrança Proporcional): ${errorMessage}` };
+        }
+        
+        return { success: true, message: 'Cobrança proporcional criada com sucesso!' };
+    } catch (error) {
+        console.error("Create Prorata Charge Error:", error);
+        return { success: false, message: 'Erro de comunicação ao criar cobrança proporcional.' };
+    }
+}
