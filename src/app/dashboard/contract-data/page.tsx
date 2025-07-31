@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -7,7 +8,7 @@ import { getBillingStatusFromAsaas, BillingStatus } from '@/actions/asaas-action
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Briefcase, Calendar, Users, Building, AlertCircle, CalendarClock, CreditCard, Loader2, CalendarCheck2, ExternalLink, Replace } from 'lucide-react';
+import { Briefcase, Calendar, Users, Building, AlertCircle, CalendarClock, CreditCard, Loader2, CalendarCheck2, ExternalLink, Replace, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -24,7 +25,8 @@ const DataRow = ({ label, value, icon, iconClassName, borderColorClass }: { labe
 
 const ContractDataPage = () => {
   const [data, setData] = useState<ContractData | null>(null);
-  const [billingStatus, setBillingStatus] = useState<BillingStatus | null>(null);
+  const [billingStatuses, setBillingStatuses] = useState<BillingStatus[]>([]);
+  const [currentBillingIndex, setCurrentBillingIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -46,13 +48,32 @@ const ContractDataPage = () => {
         if (contractResult.success && contractResult.data) {
           setData(contractResult.data);
           
-          // Somente busca status de pagamento se não for o plano de teste grátis (ID 2)
           if (contractResult.data.idPlano !== 2) { 
             const billingResult = await getBillingStatusFromAsaas(Number(companyId));
             if (billingResult.success && billingResult.data) {
-              setBillingStatus(billingResult.data);
+                setBillingStatuses(billingResult.data);
+                // Encontra o índice da fatura do mês atual ou a mais próxima
+                const today = new Date();
+                const currentMonth = today.getMonth();
+                const currentYear = today.getFullYear();
+                
+                let foundIndex = billingResult.data.findIndex(bs => {
+                    if(!bs.dueDate) return false;
+                    const dueDate = new Date(bs.dueDate.split('/').reverse().join('-'));
+                    return dueDate.getMonth() === currentMonth && dueDate.getFullYear() === currentYear;
+                });
+                
+                if (foundIndex === -1) {
+                    // Se não achar, pega a última pendente ou a última paga
+                    foundIndex = billingResult.data.map(bs => bs.status).lastIndexOf('PENDING');
+                    if (foundIndex === -1) {
+                       foundIndex = billingResult.data.length -1;
+                    }
+                }
+                setCurrentBillingIndex(foundIndex >= 0 ? foundIndex : 0);
             } else {
               console.warn(billingResult.message);
+              setBillingStatuses([{ status: 'ERROR', dueDate: null, month: 'Não disponível' }]);
             }
           }
         } else {
@@ -69,8 +90,18 @@ const ContractDataPage = () => {
     fetchAllData();
   }, []);
 
+  const currentBillingStatus = billingStatuses[currentBillingIndex];
+
+  const handleNavigateBilling = (direction: 'next' | 'prev') => {
+      if (direction === 'next' && currentBillingIndex < billingStatuses.length - 1) {
+          setCurrentBillingIndex(prev => prev + 1);
+      } else if (direction === 'prev' && currentBillingIndex > 0) {
+          setCurrentBillingIndex(prev => prev - 1);
+      }
+  }
+
   const handlePayInvoice = () => {
-    if (!billingStatus?.invoiceUrl) {
+    if (!currentBillingStatus?.invoiceUrl) {
       toast({
         variant: "destructive",
         title: "Fatura não disponível",
@@ -78,7 +109,7 @@ const ContractDataPage = () => {
       });
       return;
     }
-    window.open(billingStatus.invoiceUrl, '_blank');
+    window.open(currentBillingStatus.invoiceUrl, '_blank');
   };
 
     const getPlanBadgeStyle = (planId: number): string => {
@@ -180,33 +211,33 @@ const ContractDataPage = () => {
     }
 
     if (data) {
-      const isTestPlan = data.idPlano === 2; // Somente o plano 2 é considerado de teste (sem fatura)
+      const isTestPlan = data.idPlano === 2; 
       const totalUserLimit = data.limiteUsuarios + (data.usersAdicionais || 0);
       const iconColor = getPlanIconColor(data.idPlano);
       const borderColor = getBorderColorClass(data.idPlano);
       
       const getPaymentStatusBadge = (status: string | null) => {
-        const baseStyle = "border-transparent font-semibold";
-        if (!status) return <Badge className={cn(baseStyle, "bg-gray-400 text-white")}>Indisponível</Badge>;
+          const baseStyle = "border-transparent font-semibold text-white";
+          if (!status) return <Badge className={cn(baseStyle, "bg-gray-400")}>Indisponível</Badge>;
         
-        switch (status.toUpperCase()) {
-            case 'CONFIRMED':
-            case 'RECEIVED':
-            case 'RECEIVED_IN_CASH':
-                return <Badge className={cn(baseStyle, "bg-green-500/30 text-white")}>Pago</Badge>;
-            case 'PENDING':
-                return <Badge className={cn(baseStyle, "bg-yellow-400/30 text-white")}>Pendente</Badge>;
-            case 'OVERDUE':
-                return <Badge className={cn(baseStyle, "bg-red-500/40 text-white")}>Em Atraso</Badge>;
-            case 'UNREGISTERED':
-            case 'NOT_FOUND':
-                return <Badge className={cn(baseStyle, "bg-white text-gray-800")}>Nenhuma Fatura</Badge>;
-            default:
-                return <Badge className={cn(baseStyle, "bg-gray-400 text-white")}>{status}</Badge>;
-        }
+          switch (status.toUpperCase()) {
+              case 'CONFIRMED':
+              case 'RECEIVED':
+              case 'RECEIVED_IN_CASH':
+                  return <Badge className={cn(baseStyle, "bg-green-500/80")}>Pago</Badge>;
+              case 'PENDING':
+                  return <Badge className={cn(baseStyle, "bg-yellow-400/80")}>Pendente</Badge>;
+              case 'OVERDUE':
+                  return <Badge className={cn(baseStyle, "bg-red-500/80")}>Em Atraso</Badge>;
+              case 'UNREGISTERED':
+              case 'NOT_FOUND':
+                  return <Badge className={cn("border-transparent font-semibold bg-gray-100 text-gray-800")}>Nenhuma Fatura</Badge>;
+              default:
+                  return <Badge className={cn(baseStyle, "bg-gray-400")}>{status}</Badge>;
+          }
       };
       
-      const isPayButtonDisabled = paymentLoading || !billingStatus?.invoiceUrl || ['CONFIRMED', 'RECEIVED', 'RECEIVED_IN_CASH'].includes(billingStatus?.status?.toUpperCase() || '');
+      const isPayButtonDisabled = paymentLoading || !currentBillingStatus?.invoiceUrl || ['CONFIRMED', 'RECEIVED', 'RECEIVED_IN_CASH'].includes(currentBillingStatus?.status?.toUpperCase() || '');
 
       return (
         <>
@@ -266,21 +297,21 @@ const ContractDataPage = () => {
                 <>
                  <DataRow 
                     label="Mês de Referência" 
-                    value={<span className="capitalize">{billingStatus?.month || 'Não aplicável'}</span>}
+                    value={<span className="capitalize">{currentBillingStatus?.month || 'Não aplicável'}</span>}
                     icon={<CalendarCheck2 />}
                     iconClassName={iconColor}
                     borderColorClass={borderColor}
                 />
                 <DataRow 
                     label="Situação do Pagamento" 
-                    value={getPaymentStatusBadge(billingStatus?.status || null)}
+                    value={getPaymentStatusBadge(currentBillingStatus?.status || null)}
                     icon={<CreditCard />}
                     iconClassName={iconColor}
                     borderColorClass={borderColor}
                 />
                 <DataRow 
                     label="Vencimento da Fatura" 
-                    value={billingStatus?.dueDate || `Todo dia ${data.diaVencimento}`}
+                    value={currentBillingStatus?.dueDate || `Todo dia ${data.diaVencimento}`}
                     icon={<CalendarClock />}
                     iconClassName={iconColor}
                     borderColorClass={borderColor}
@@ -325,6 +356,8 @@ const ContractDataPage = () => {
     return null;
   };
 
+  const isTestPlan = data?.idPlano === 2;
+
   return (
     <div className="flex flex-col gap-6">
       <div className="space-y-1.5">
@@ -332,17 +365,41 @@ const ContractDataPage = () => {
           <p className="text-muted-foreground">Informações sobre seu plano e faturamento.</p>
       </div>
        <Card className={getPlanCardStyle(data?.idPlano)}>
-         <CardHeader>
-           <CardTitle>Seu Plano</CardTitle>
-           <CardDescription className={cn({
-                'text-amber-400/80': data?.idPlano === 1,
-                'text-gray-600': data?.idPlano === 2,
-                'text-gray-300': data?.idPlano === 3,
-                'text-green-300': data?.idPlano === 4,
-                'text-blue-300': data?.idPlano === 5,
-            })}>
-              Detalhes sobre o plano contratado, limites de uso e pagamento.
-           </CardDescription>
+         <CardHeader className="flex flex-row items-start justify-between">
+            <div>
+                <CardTitle>Seu Plano</CardTitle>
+                <CardDescription className={cn({
+                        'text-amber-400/80': data?.idPlano === 1,
+                        'text-gray-600': data?.idPlano === 2,
+                        'text-gray-300': data?.idPlano === 3,
+                        'text-green-300': data?.idPlano === 4,
+                        'text-blue-300': data?.idPlano === 5,
+                    })}>
+                    Detalhes sobre o plano contratado, limites de uso e pagamento.
+                </CardDescription>
+            </div>
+             {!isTestPlan && billingStatuses.length > 1 && (
+                <div className="flex items-center gap-2">
+                    <Button 
+                        variant="outline" 
+                        size="icon" 
+                        onClick={() => handleNavigateBilling('prev')}
+                        disabled={currentBillingIndex === 0}
+                        className="h-8 w-8"
+                    >
+                        <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                        variant="outline" 
+                        size="icon" 
+                        onClick={() => handleNavigateBilling('next')}
+                        disabled={currentBillingIndex === billingStatuses.length - 1}
+                        className="h-8 w-8"
+                    >
+                        <ChevronRight className="h-4 w-4" />
+                    </Button>
+                </div>
+            )}
          </CardHeader>
          <CardContent>
            {renderContent()}

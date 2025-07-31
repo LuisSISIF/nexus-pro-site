@@ -33,7 +33,8 @@ export interface BillingStatus {
     invoiceUrl?: string; // URL da fatura pode ser opcional
 }
 
-export async function getBillingStatusFromAsaas(companyId: number): Promise<{ success: boolean; data?: BillingStatus; message: string }> {
+// Retorna uma lista de status de cobrança
+export async function getBillingStatusFromAsaas(companyId: number): Promise<{ success: boolean; data?: BillingStatus[]; message: string }> {
      if (!companyId) {
         return { success: false, message: 'ID da empresa não fornecido.' };
     }
@@ -47,17 +48,13 @@ export async function getBillingStatusFromAsaas(companyId: number): Promise<{ su
 
         if (!companyData?.idAsaas) {
             // Se a empresa não tem um ID Asaas, não podemos consultar.
-            // Isso pode significar que ela nunca teve uma cobrança gerada.
-            return { success: true, data: { status: 'UNREGISTERED', dueDate: null, month: new Date().toLocaleString('pt-BR', { month: 'long', year: 'numeric' }) }, message: 'Cliente não registrado para faturamento ainda.' };
+            return { success: true, data: [{ status: 'UNREGISTERED', dueDate: null, month: 'Não aplicável' }], message: 'Cliente não registrado para faturamento ainda.' };
         }
 
         const customerId = companyData.idAsaas;
-        const today = new Date();
-        // Busca cobranças com vencimento no mês e ano atuais
-        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
-        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
-
-        const response = await fetch(`${ASAAS_API_URL}/payments?customer=${customerId}&dueDate[ge]=${firstDay}&dueDate[le]=${lastDay}`, {
+        
+        // Busca todas as cobranças do cliente
+        const response = await fetch(`${ASAAS_API_URL}/payments?customer=${customerId}`, {
             method: 'GET',
             headers: { 'access_token': ASAAS_API_KEY! },
         });
@@ -71,22 +68,26 @@ export async function getBillingStatusFromAsaas(companyId: number): Promise<{ su
         const data = await response.json();
         
         if (data.totalCount === 0) {
-            // Nenhuma fatura encontrada para o mês atual.
-             return { success: true, data: { status: 'NOT_FOUND', dueDate: null, month: new Date().toLocaleString('pt-BR', { month: 'long', year: 'numeric' }) }, message: 'Nenhuma fatura encontrada para o mês atual.' };
+            // Nenhuma fatura encontrada.
+             return { success: true, data: [{ status: 'NOT_FOUND', dueDate: null, month: 'Não aplicável' }], message: 'Nenhuma fatura encontrada para este cliente.' };
         }
 
-        // Pega a fatura mais relevante (a primeira da lista, que geralmente é a mais recente)
-        const payment: AsaasPayment = data.data[0]; 
-        const dueDate = new Date(payment.dueDate);
+        const allPayments: AsaasPayment[] = data.data;
 
-        const billingStatus: BillingStatus = {
-            status: payment.status,
-            dueDate: dueDate.toLocaleDateString('pt-BR'),
-            month: dueDate.toLocaleString('pt-BR', { month: 'long', year: 'numeric' }),
-            invoiceUrl: payment.invoiceUrl, // Retornamos a URL da fatura
-        };
+        // Ordena as cobranças pela data de vencimento
+        const sortedPayments = allPayments.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+
+        const billingStatuses: BillingStatus[] = sortedPayments.map(payment => {
+            const dueDate = new Date(payment.dueDate);
+            return {
+                status: payment.status,
+                dueDate: dueDate.toLocaleDateString('pt-BR'),
+                month: dueDate.toLocaleString('pt-BR', { month: 'long', year: 'numeric' }),
+                invoiceUrl: payment.invoiceUrl,
+            };
+        });
         
-        return { success: true, data: billingStatus, message: 'Status da fatura encontrado.' };
+        return { success: true, data: billingStatuses, message: 'Status das faturas encontrado.' };
 
     } catch (error) {
         console.error('ASAAS Billing Status Error:', error);
