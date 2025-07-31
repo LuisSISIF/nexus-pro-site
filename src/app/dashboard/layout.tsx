@@ -12,7 +12,7 @@ import {
   SidebarTrigger,
   SidebarInset,
 } from "@/components/ui/sidebar";
-import { Home, User, Video, LogOut, FileText, Download } from "lucide-react";
+import { Home, User, Video, LogOut, FileText, Download, Headset } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { ThemeToggleButton } from "@/components/theme-toggle";
@@ -59,6 +59,14 @@ export default function DashboardLayout({
                 <Link href="/dashboard/contract-data">
                   <FileText />
                   Dados Contratuais
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+               <SidebarMenuButton asChild>
+                <Link href="/dashboard/financial-support">
+                  <Headset />
+                  Suporte Financeiro
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
