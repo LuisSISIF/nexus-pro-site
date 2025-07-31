@@ -12,8 +12,8 @@ import { Briefcase, Calendar, Users, Building, AlertCircle, CalendarClock, Credi
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
-const DataRow = ({ label, value, icon, iconClassName }: { label: string; value: React.ReactNode; icon?: React.ReactNode, iconClassName?: string }) => (
-  <div className="flex justify-between items-center py-3 border-b border-white/10 dark:border-gray-700">
+const DataRow = ({ label, value, icon, iconClassName, borderColorClass }: { label: string; value: React.ReactNode; icon?: React.ReactNode, iconClassName?: string, borderColorClass?: string }) => (
+  <div className={cn("flex justify-between items-center py-3 border-b", borderColorClass)}>
     <div className="flex items-center gap-3">
        {React.cloneElement(icon as React.ReactElement, { className: cn("w-4 h-4", iconClassName) })}
       <span className="text-sm font-medium">{label}</span>
@@ -83,7 +83,7 @@ const ContractDataPage = () => {
     const getPlanBadgeStyle = (planId: number): string => {
         switch (planId) {
             case 1: // Alpha Tester
-                return "bg-black text-white border-amber-400";
+                return "bg-black text-amber-400 border-amber-400";
             case 2: // Teste Grátis
                 return "bg-green-600 text-white border-green-700";
             case 3: // Essencial
@@ -101,7 +101,7 @@ const ContractDataPage = () => {
         if (!planId) return "shadow-lg";
         switch (planId) {
             case 1: // Alpha Tester
-                return "shadow-xl bg-[#1A1A1A] text-white border-amber-500";
+                return "shadow-xl bg-[#1A1A1A] text-white border border-amber-500";
             case 2: // Teste Grátis
                  return "shadow-lg bg-[#F3F4F6] text-gray-800";
             case 3: // Essencial
@@ -131,7 +131,25 @@ const ContractDataPage = () => {
             default:
                 return "text-primary";
         }
-    }
+    };
+
+    const getBorderColorClass = (planId?: number | null): string => {
+        if (!planId) return "border-gray-200 dark:border-gray-700";
+         switch (planId) {
+            case 1: // Alpha Tester
+                return "border-amber-400/30";
+            case 2: // Teste Grátis
+                 return "border-green-600/30";
+            case 3: // Essencial
+                return "border-gray-400/30";
+            case 4: // Profissional
+                return "border-green-400/30";
+            case 5: // Empresarial
+                return "border-amber-500/30";
+            default:
+                return "border-gray-200 dark:border-gray-700";
+        }
+    };
 
 
   const renderContent = () => {
@@ -164,6 +182,7 @@ const ContractDataPage = () => {
       const isTestPlan = data.idPlano === 1 || data.idPlano === 2;
       const totalUserLimit = data.limiteUsuarios + (data.usersAdicionais || 0);
       const iconColor = getPlanIconColor(data.idPlano);
+      const borderColor = getBorderColorClass(data.idPlano);
       
       const getPaymentStatusBadge = (status: string | null) => {
         if (!status) return <Badge variant="outline">Indisponível</Badge>;
@@ -196,6 +215,7 @@ const ContractDataPage = () => {
                 value={data.nome_empresa} 
                 icon={<Briefcase />} 
                 iconClassName={iconColor}
+                borderColorClass={borderColor}
             />
             <DataRow 
                 label="Plano Atual" 
@@ -206,6 +226,7 @@ const ContractDataPage = () => {
                 } 
                 icon={<Calendar />}
                 iconClassName={iconColor}
+                borderColorClass={borderColor}
             />
 
             {isTestPlan && data.periodoTesteInicio && data.periodoTesteFim && (
@@ -231,12 +252,14 @@ const ContractDataPage = () => {
                 value={`${data.qtdFunc} / ${totalUserLimit}`} 
                 icon={<Users />}
                 iconClassName={iconColor}
+                borderColorClass={borderColor}
             />
             <DataRow 
                 label="Lojas/Filiais" 
                 value={`${data.qtdLojas} / ${data.limiteLojas}`}
                 icon={<Building />}
                 iconClassName={iconColor}
+                borderColorClass={borderColor}
             />
             {!isTestPlan && (
                 <>
@@ -245,25 +268,28 @@ const ContractDataPage = () => {
                     value={<span className="capitalize">{billingStatus?.month || 'Não aplicável'}</span>}
                     icon={<CalendarCheck2 />}
                     iconClassName={iconColor}
+                    borderColorClass={borderColor}
                 />
                 <DataRow 
                     label="Situação do Pagamento" 
                     value={getPaymentStatusBadge(billingStatus?.status || null)}
                     icon={<CreditCard />}
                     iconClassName={iconColor}
+                    borderColorClass={borderColor}
                 />
                 <DataRow 
                     label="Vencimento da Fatura" 
                     value={billingStatus?.dueDate || `Todo dia ${data.diaVencimento}`}
                     icon={<CalendarClock />}
                     iconClassName={iconColor}
+                    borderColorClass={borderColor}
                 />
                 </>
             )}
             </div>
             
             {!isTestPlan && (
-                 <div className="mt-8 pt-6 border-t border-white/10 dark:border-gray-600">
+                 <div className={cn("mt-8 pt-6 border-t", borderColor)}>
                     <Button onClick={handlePayInvoice} disabled={isPayButtonDisabled} className="w-full sm:w-auto">
                        {paymentLoading ? (
                            <>
