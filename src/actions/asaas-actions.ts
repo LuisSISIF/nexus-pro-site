@@ -1,3 +1,4 @@
+
 'use server';
 
 import { db } from '@/lib/db';
@@ -34,7 +35,7 @@ async function createAsaasCustomer(companyData: any, userData: any) {
         },
         body: JSON.stringify({
             name: companyData.nome_empresa,
-            cpfCnpj: companyData.cnpj, // Usar o CNPJ da empresa
+            cpfCnpj: companyData.cpf_cnpj, // Usar o CNPJ da empresa
             email: userData.email,
             phone: userData.contato,
             address: companyData.endereco,
@@ -47,7 +48,7 @@ async function createAsaasCustomer(companyData: any, userData: any) {
 // Função para buscar o cliente ASAAS no banco de dados local ou criá-lo
 async function getOrCreateAsaasCustomer(companyId: number, connection: any) {
     // 1. Verificar se o asaas_customer_id já existe na tabela `empresa`
-    let [companyRows] = await connection.execute('SELECT asaas_customer_id, nome_empresa, endereco, cnpj FROM empresa WHERE idempresa = ?', [companyId]);
+    let [companyRows] = await connection.execute('SELECT asaas_customer_id, nome_empresa, endereco, cpf_cnpj FROM empresa WHERE idempresa = ?', [companyId]);
     let companyResult = (companyRows as any[])[0];
     let asaasCustomerId = companyResult?.asaas_customer_id;
 
@@ -63,7 +64,7 @@ async function getOrCreateAsaasCustomer(companyId: number, connection: any) {
     if (!userData || !companyResult) {
         throw new Error('Dados do usuário ou da empresa não encontrados para criar cliente no ASAAS.');
     }
-     if (!companyResult.cnpj) {
+     if (!companyResult.cpf_cnpj) {
         throw new Error('CNPJ da empresa não encontrado para criar cliente no ASAAS.');
     }
     
@@ -89,7 +90,7 @@ async function getOrCreateAsaasCustomer(companyId: number, connection: any) {
 // --- Funções Exportadas ---
 
 
-export async function checkAsaasCustomerExistsByCPF_CNPJ(companyId: number): Promise<{ success: boolean; message: string; exists: boolean }> {
+export async function checkAsaasCustomerExistsByCPF_CNPJ(companyId: number): Promise<{ success: boolean; message: string; exists: boolean, cnpj?: string }> {
      if (!companyId) {
         return { success: false, message: 'ID da empresa não fornecido.', exists: false };
     }
@@ -102,14 +103,14 @@ export async function checkAsaasCustomerExistsByCPF_CNPJ(companyId: number): Pro
         connection = await db();
 
         // Buscar o CNPJ da empresa
-        const [companyDataRows] = await connection.execute('SELECT cnpj FROM empresa WHERE idempresa = ?', [companyId]);
+        const [companyDataRows] = await connection.execute('SELECT cpf_cnpj FROM empresa WHERE idempresa = ?', [companyId]);
         const companyData = (companyDataRows as any[])[0];
 
-        if (!companyData || !companyData.cnpj) {
+        if (!companyData || !companyData.cpf_cnpj) {
             return { success: false, message: 'CNPJ da empresa não encontrado.', exists: false };
         }
 
-        const cnpj = companyData.cnpj;
+        const cnpj = companyData.cpf_cnpj;
 
         // Consultar a API do Asaas
         const response = await fetch(`${ASAAS_API_URL}/customers?cpfCnpj=${cnpj}`, {
@@ -130,7 +131,7 @@ export async function checkAsaasCustomerExistsByCPF_CNPJ(companyId: number): Pro
         const customerExists = data.totalCount > 0;
         const message = customerExists ? "Sim, cliente encontrado no Asaas." : "Não, cliente não encontrado no Asaas.";
 
-        return { success: true, message, exists: customerExists };
+        return { success: true, message, exists: customerExists, cnpj };
         
     } catch (error) {
         console.error('ASAAS Check Customer Error:', error);

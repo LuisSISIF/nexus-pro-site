@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -72,13 +73,13 @@ const ContractDataPage = () => {
         if(result.success) {
             toast({
                 title: "Verificação Concluída",
-                description: result.message,
+                description: `CNPJ: ${result.cnpj}. ${result.message}`,
             });
         } else {
              toast({
                 variant: "destructive",
                 title: "Erro na verificação",
-                description: result.message || "Não foi possível verificar o cliente no Asaas."
+                description: `CNPJ: ${result.cnpj || 'Não encontrado'}. ${result.message || "Não foi possível verificar o cliente no Asaas."}`
             });
         }
     } catch (error) {
