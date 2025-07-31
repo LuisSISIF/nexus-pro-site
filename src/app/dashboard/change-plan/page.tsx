@@ -26,7 +26,7 @@ const plans = [
     {
       id: 3,
       name: "Essencial",
-      price: "80",
+      price: 80,
       description: "Ideal para pequenos comércios e MEIs.",
       icon: Store,
       features: [
@@ -40,7 +40,7 @@ const plans = [
     {
       id: 4,
       name: "Profissional",
-      price: "120",
+      price: 120,
       description: "Para lojas em crescimento com maior fluxo.",
       icon: Briefcase,
       features: [
@@ -55,7 +55,7 @@ const plans = [
     {
       id: 5,
       name: "Empresarial",
-      price: "190",
+      price: 190,
       description: "Solução completa para redes e filiais.",
       icon: Building,
       features: [
@@ -112,7 +112,7 @@ const ChangePlanPage = () => {
         setIsUpdating(true);
         const companyId = Number(localStorage.getItem('companyId'));
 
-        const result = await updateCompanyPlan(companyId, selectedPlan.id);
+        const result = await updateCompanyPlan(companyId, selectedPlan.id, selectedPlan.price);
 
         if (result.success) {
             toast({

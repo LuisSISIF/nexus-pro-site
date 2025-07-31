@@ -6,16 +6,10 @@ import { z } from 'zod';
 const ASAAS_API_URL = process.env.ASAAS_API_URL;
 const ASAAS_API_KEY = "$aact_hmlg_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OmFlOGZkNGIyLWRkMzktNGUyZS1iZmIxLTg2MjgyZjUxNWM0ZTo6JGFhY2hfMzhiZTZlZmQtODVmZi00YzgwLTlhOWUtNjVkNGJmZDIwY2U5";
 
-// Mapeamento centralizado de planos e seus preços
-export const plans = [
-    { id: 3, name: "Essencial", price: 80.00 },
-    { id: 4, name: "Profissional", price: 120.00 },
-    { id: 5, name: "Empresarial", price: 190.00 },
-];
-
 const updatePlanSchema = z.object({
   companyId: z.number().int().positive("ID da empresa inválido."),
   newPlanId: z.number().int().positive("ID do plano inválido."),
+  newPlanPrice: z.number().positive("Preço do plano inválido."),
 });
 
 interface AsaasSubscription {
@@ -24,16 +18,11 @@ interface AsaasSubscription {
 }
 
 
-export async function updateCompanyPlan(companyId: number, newPlanId: number): Promise<{ success: boolean; message: string }> {
-    const validation = updatePlanSchema.safeParse({ companyId, newPlanId });
+export async function updateCompanyPlan(companyId: number, newPlanId: number, newPlanPrice: number): Promise<{ success: boolean; message: string }> {
+    const validation = updatePlanSchema.safeParse({ companyId, newPlanId, newPlanPrice });
     if (!validation.success) {
         const firstError = validation.error.errors[0].message;
         return { success: false, message: firstError };
-    }
-
-    const newPlan = plans.find(p => p.id === newPlanId);
-    if (!newPlan) {
-        return { success: false, message: 'Plano selecionado não é válido.' };
     }
 
     let connection;
@@ -46,6 +35,7 @@ export async function updateCompanyPlan(companyId: number, newPlanId: number): P
         const company = (companyRows as any[])[0];
 
         if (!company) {
+            await connection.rollback();
             return { success: false, message: 'Empresa não encontrada.' };
         }
 
@@ -85,7 +75,7 @@ export async function updateCompanyPlan(companyId: number, newPlanId: number): P
                         'access_token': ASAAS_API_KEY!,
                     },
                     body: JSON.stringify({
-                        value: newPlan.price,
+                        value: newPlanPrice,
                         // Você pode adicionar mais campos aqui se necessário, como description
                         // description: `Novo plano: ${newPlan.name}`
                     }),
