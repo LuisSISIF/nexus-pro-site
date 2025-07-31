@@ -46,7 +46,8 @@ const ContractDataPage = () => {
         if (contractResult.success && contractResult.data) {
           setData(contractResult.data);
           
-          if (contractResult.data.idPlano !== 2) { 
+          // Planos 1 (Alpha Tester) e 2 (Teste Grátis) são de teste.
+          if (contractResult.data.idPlano !== 1 && contractResult.data.idPlano !== 2) { 
             const billingResult = await getBillingStatusFromAsaas(Number(companyId));
             if (billingResult.success && billingResult.data) {
               setBillingStatus(billingResult.data);
@@ -82,13 +83,14 @@ const ContractDataPage = () => {
 
   const getPlanBadgeStyle = (planId: number): string => {
     switch (planId) {
-      case 1: // Essencial
-        return "bg-gray-200 text-gray-800 border-gray-300";
-      case 2: // Teste (AlphaTester)
+      case 1: // Alpha Tester
+      case 2: // Teste Grátis
         return "bg-gradient-to-tr from-purple-500 to-indigo-600 text-yellow-300 border-yellow-500 shadow-lg";
-      case 3: // Profissional
-        return "bg-[#E0E7FF] text-blue-800";
-      case 4: // Empresarial
+      case 3: // Essencial
+        return "bg-gray-200 text-gray-800 border-gray-300";
+      case 4: // Profissional
+        return "bg-blue-600 text-white";
+      case 5: // Empresarial
         return "bg-black text-yellow-300";
       default:
         return "bg-gray-200 text-gray-800";
@@ -98,14 +100,15 @@ const ContractDataPage = () => {
     const getPlanCardStyle = (planId?: number | null): string => {
         if (!planId) return "shadow-lg";
         switch (planId) {
-            case 1: // Essencial
-                return "shadow-lg bg-[#F5F6FA] text-gray-800";
-            case 2: // Teste (AlphaTester)
+            case 1: // Alpha Tester
+            case 2: // Teste Grátis
                 return "shadow-xl bg-gradient-to-tr from-purple-900 to-indigo-900 text-white border-purple-700";
-            case 3: // Profissional
-                return "shadow-lg bg-blue-600 text-white";
-            case 4: // Empresarial
-                return "shadow-lg bg-yellow-400 text-black";
+            case 3: // Essencial
+                 return "shadow-lg bg-[#F5F6FA] text-gray-800";
+            case 4: // Profissional
+                 return "shadow-lg bg-blue-600 text-white";
+            case 5: // Empresarial
+                 return "shadow-lg bg-yellow-400 text-black";
             default:
                 return "shadow-lg";
         }
@@ -114,11 +117,12 @@ const ContractDataPage = () => {
     const getPlanIconColor = (planId?: number | null): string => {
         if (!planId) return "text-primary";
         switch (planId) {
-             case 2: // Teste
+             case 1: // Alpha Tester
+             case 2: // Teste Grátis
                 return "text-yellow-400";
-            case 3: // Profissional
+            case 4: // Profissional
                 return "text-blue-100";
-            case 4: // Empresarial
+            case 5: // Empresarial
                 return "text-black";
             default: // Essencial e outros
                 return "text-primary";
@@ -153,7 +157,7 @@ const ContractDataPage = () => {
     }
 
     if (data) {
-      const isTestPlan = data.idPlano === 2;
+      const isTestPlan = data.idPlano === 1 || data.idPlano === 2;
       const totalUserLimit = data.limiteUsuarios + (data.usersAdicionais || 0);
       const iconColor = getPlanIconColor(data.idPlano);
       
@@ -255,7 +259,7 @@ const ContractDataPage = () => {
             </div>
             
             {!isTestPlan && (
-                 <div className="mt-8 pt-6 border-t">
+                 <div className="mt-8 pt-6 border-t border-white/10 dark:border-gray-600">
                     <Button onClick={handlePayInvoice} disabled={isPayButtonDisabled} className="w-full sm:w-auto">
                        {paymentLoading ? (
                            <>
@@ -288,7 +292,7 @@ const ContractDataPage = () => {
        <Card className={getPlanCardStyle(data?.idPlano)}>
          <CardHeader>
            <CardTitle>Seu Plano</CardTitle>
-           <CardDescription className={data?.idPlano === 3 || data?.idPlano === 2 ? 'text-white/80' : ''}>
+           <CardDescription className={(data?.idPlano === 1 || data?.idPlano === 2 || data?.idPlano === 4) ? 'text-white/80' : (data?.idPlano === 5 ? 'text-black/80' : '')}>
               Detalhes sobre o plano contratado, limites de uso e pagamento.
            </CardDescription>
          </CardHeader>
