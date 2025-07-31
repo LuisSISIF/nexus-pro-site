@@ -1,16 +1,26 @@
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Check, Star, Store, Briefcase, Building, AlertCircle } from 'lucide-react';
+import { Check, Star, Store, Briefcase, Building, AlertCircle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getContractData, ContractData } from '@/actions/contract-actions';
+import { updateCompanyPlan } from '@/actions/plan-actions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const plans = [
     {
@@ -59,10 +69,15 @@ const plans = [
     }
 ];
 
+type Plan = typeof plans[0];
+
 const ChangePlanPage = () => {
     const [currentPlan, setCurrentPlan] = useState<ContractData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const [isUpdating, setIsUpdating] = useState(false);
     const { toast } = useToast();
 
     useEffect(() => {
@@ -85,12 +100,37 @@ const ChangePlanPage = () => {
         fetchCurrentPlan();
     }, []);
 
-    const handleSelectPlan = (planId: number) => {
-        // TODO: Implementar a lógica de atualização do plano
-        toast({
-            title: "Funcionalidade em desenvolvimento",
-            description: `A lógica para alterar para o plano ID ${planId} será implementada em breve.`,
-        });
+    const handleSelectPlan = (plan: Plan) => {
+        setSelectedPlan(plan);
+        setIsConfirmOpen(true);
+    }
+    
+    const handleConfirmChange = async () => {
+        if (!selectedPlan || !currentPlan) return;
+
+        setIsUpdating(true);
+        const companyId = Number(localStorage.getItem('companyId'));
+
+        const result = await updateCompanyPlan(companyId, selectedPlan.id);
+
+        if (result.success) {
+            toast({
+                title: "Plano Alterado!",
+                description: result.message,
+            });
+            // Recarrega a página para refletir a mudança
+            window.location.reload(); 
+        } else {
+             toast({
+                variant: "destructive",
+                title: "Erro ao Alterar Plano",
+                description: result.message,
+            });
+        }
+        
+        setIsUpdating(false);
+        setIsConfirmOpen(false);
+        setSelectedPlan(null);
     }
 
     const getPlanStyle = (planId: number): string => {
@@ -197,7 +237,7 @@ const ChangePlanPage = () => {
                     <div className="mt-auto">
                         <Button 
                             className="w-full text-lg py-6"
-                            onClick={() => handleSelectPlan(plan.id)}
+                            onClick={() => handleSelectPlan(plan)}
                             disabled={isCurrent}
                         >
                             {isCurrent ? 'Seu Plano Atual' : 'Escolher Plano'}
@@ -220,6 +260,26 @@ const ChangePlanPage = () => {
             </div>
             
             {renderContent()}
+
+             <AlertDialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                    <AlertDialogTitle>Confirmar Alteração de Plano?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Você está prestes a alterar seu plano para <strong>{selectedPlan?.name}</strong>. 
+                        A nova cobrança será de <strong>R$ {selectedPlan?.price} por mês</strong>, 
+                        aplicada no próximo ciclo de faturamento. Deseja continuar?
+                    </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                    <AlertDialogCancel onClick={() => setSelectedPlan(null)} disabled={isUpdating}>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleConfirmChange} disabled={isUpdating}>
+                        {isUpdating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {isUpdating ? "Alterando..." : "Confirmar e Alterar Plano"}
+                    </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
 
             <Card className="mt-8 bg-primary/5">
                 <CardHeader>
