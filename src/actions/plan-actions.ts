@@ -124,7 +124,10 @@ export async function updateCompanyPlan(
                 const updateSubResponse = await fetch(`${process.env.ASAAS_API_URL}/subscriptions/${activeSubscription.id}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'access_token': process.env.ASAAS_API_KEY! },
-                    body: JSON.stringify({ value: newPlanPrice }),
+                    body: JSON.stringify({ 
+                        value: newPlanPrice,
+                        billingType: 'BOLETO_PIX'
+                    }),
                 });
 
                 if (!updateSubResponse.ok) {
