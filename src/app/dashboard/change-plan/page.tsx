@@ -101,6 +101,7 @@ const ChangePlanPage = () => {
     }, []);
 
     const handleSelectPlan = (plan: Plan) => {
+        if (plan.id === currentPlan?.idPlano) return;
         setSelectedPlan(plan);
         setIsConfirmOpen(true);
     }
@@ -138,9 +139,9 @@ const ChangePlanPage = () => {
             case 3: // Essencial
                 return "border-gray-500 ring-gray-500";
             case 4: // Profissional
-                return "border-green-700 ring-green-700";
+                return "border-blue-500 ring-blue-500";
             case 5: // Empresarial
-                return "border-blue-800 ring-blue-800";
+                return "border-yellow-400 ring-yellow-400";
             default:
                 return "border-gray-200 dark:border-gray-700 ring-primary";
         }
@@ -287,7 +288,7 @@ const ChangePlanPage = () => {
                 </CardHeader>
                 <CardContent className="space-y-2 text-muted-foreground">
                     <p>Ao escolher um novo plano, a alteração será agendada. Se for um upgrade, as novas funcionalidades podem ser liberadas imediatamente.</p>
-                    <p>A cobrança do novo valor será feita no próximo ciclo de faturamento de forma pro-rata (proporcional).</p>
+                    <p>A cobrança do novo valor será feita no próximo ciclo de faturamento. Nosso sistema se comunica com o gateway de pagamento para atualizar sua assinatura automaticamente.</p>
                     <p>Em caso de dúvidas, entre em contato com nosso <Link href="/dashboard/financial-support" className="text-primary hover:underline font-medium">suporte financeiro</Link>.</p>
                 </CardContent>
             </Card>

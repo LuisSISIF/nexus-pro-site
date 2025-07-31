@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -47,6 +46,7 @@ const ContractDataPage = () => {
         if (contractResult.success && contractResult.data) {
           setData(contractResult.data);
           
+          // Somente busca status de pagamento se não for o plano de teste grátis (ID 2)
           if (contractResult.data.idPlano !== 2) { 
             const billingResult = await getBillingStatusFromAsaas(Number(companyId));
             if (billingResult.success && billingResult.data) {
@@ -180,7 +180,7 @@ const ContractDataPage = () => {
     }
 
     if (data) {
-      const isTestPlan = data.idPlano === 2;
+      const isTestPlan = data.idPlano === 2; // Somente o plano 2 é considerado de teste (sem fatura)
       const totalUserLimit = data.limiteUsuarios + (data.usersAdicionais || 0);
       const iconColor = getPlanIconColor(data.idPlano);
       const borderColor = getBorderColorClass(data.idPlano);
