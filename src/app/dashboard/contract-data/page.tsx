@@ -186,23 +186,22 @@ const ContractDataPage = () => {
       
       const getPaymentStatusBadge = (status: string | null) => {
         const baseStyle = "border-transparent font-semibold";
-        if (!status) return <Badge className={cn(baseStyle, "bg-gray-400/20")}>Indisponível</Badge>;
+        if (!status) return <Badge className={cn(baseStyle, "bg-gray-400 text-white")}>Indisponível</Badge>;
         
         switch (status.toUpperCase()) {
-          case 'CONFIRMED':
-          case 'RECEIVED':
-          case 'RECEIVED_IN_CASH':
-            return <Badge className={cn(baseStyle, "bg-green-500/30")}>Pago</Badge>;
-          case 'PENDING':
-            return <Badge className={cn(baseStyle, "bg-yellow-400/30")}>Pendente</Badge>;
-          case 'OVERDUE':
-             return <Badge className={cn(baseStyle, "bg-red-500/40")}>Em Atraso</Badge>;
-          case 'UNREGISTERED':
-             return <Badge className={cn(baseStyle, "bg-gray-400/20")}>Não Registrado</Badge>;
-          case 'NOT_FOUND':
-             return <Badge className={cn(baseStyle, "bg-gray-400/20")}>Nenhuma Fatura</Badge>;
-          default:
-            return <Badge className={cn(baseStyle, "bg-gray-400/20")}>{status}</Badge>;
+            case 'CONFIRMED':
+            case 'RECEIVED':
+            case 'RECEIVED_IN_CASH':
+                return <Badge className={cn(baseStyle, "bg-green-500/30 text-white")}>Pago</Badge>;
+            case 'PENDING':
+                return <Badge className={cn(baseStyle, "bg-yellow-400/30 text-white")}>Pendente</Badge>;
+            case 'OVERDUE':
+                return <Badge className={cn(baseStyle, "bg-red-500/40 text-white")}>Em Atraso</Badge>;
+            case 'UNREGISTERED':
+            case 'NOT_FOUND':
+                return <Badge className={cn(baseStyle, "bg-white text-gray-800")}>Nenhuma Fatura</Badge>;
+            default:
+                return <Badge className={cn(baseStyle, "bg-gray-400 text-white")}>{status}</Badge>;
         }
       };
       
@@ -221,7 +220,7 @@ const ContractDataPage = () => {
             <DataRow 
                 label="Plano Atual" 
                 value={
-                <Badge className={getPlanBadgeStyle(data.idPlano)}>
+                <Badge className={cn(getPlanBadgeStyle(data.idPlano), "hover:bg-none")}>
                     {data.nomePlano}
                 </Badge>
                 } 
