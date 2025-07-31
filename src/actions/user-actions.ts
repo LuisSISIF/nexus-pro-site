@@ -25,7 +25,7 @@ type UserData = z.infer<typeof UserDataFromDB>;
 
 const UpdateUserSchema = z.object({
     userId: z.number(),
-    companyId: z.number(),
+    companyId: z.number(), // Mantido para validação inicial, mas não usado na nova procedure
     nome: z.string().min(3, "O nome é obrigatório."),
     celular: z.string().min(10, "O celular é obrigatório."),
     login: z.string().min(6, "O login deve ter pelo menos 6 caracteres."),
@@ -82,19 +82,31 @@ export async function updateUserData(data: unknown): Promise<{ success: boolean;
         return { success: false, message: firstError || 'Dados inválidos.' };
     }
     
-    const { userId, companyId, nome, celular, login, email, senha } = validation.data;
+    const { userId, nome, celular, login, email, senha } = validation.data;
 
     let connection;
     try {
         connection = await db();
 
-        // PROCEDURE `USUARIOS_UPDATE`(idUser INT, idEmp INT, nomeUser VARCHAR(255), celularUser VARCHAR(45), loginUser VARCHAR(255), emailUser VARCHAR(255), senhaUser VARCHAR(255))
-        // O último parâmetro (senha) pode ser NULL ou '' se não for para alterar.
-        const hashedPassword = senha ? sha256Hash(senha) : null;
+        // PROCEDURE `USUARIOS_ALTERAR`(idUser int, nome varchar(150), cel varchar(15), emai varchar(150), log varchar(90), sen varchar(300))
+        // A procedure requer a senha, mesmo que não seja alterada.
+        // Se a senha não for alterada, precisamos buscar a senha atual para enviá-la.
+        let finalPassword;
+        if (senha) {
+            finalPassword = sha256Hash(senha);
+        } else {
+            // Buscar a senha atual se não for fornecida uma nova
+            const [userRows] = await connection.execute('SELECT senha FROM usuarios WHERE idusuarios = ?', [userId]);
+            const currentUser = (userRows as any[])[0];
+            if (!currentUser) {
+                return { success: false, message: "Usuário não encontrado para atualização." };
+            }
+            finalPassword = currentUser.senha;
+        }
         
         await connection.execute(
-            'CALL USUARIOS_UPDATE(?, ?, ?, ?, ?, ?, ?)',
-            [userId, companyId, nome, celular, login, email, hashedPassword]
+            'CALL USUARIOS_ALTERAR(?, ?, ?, ?, ?, ?)',
+            [userId, nome, celular, email, login, finalPassword]
         );
 
         return { success: true, message: 'Dados atualizados com sucesso!' };
