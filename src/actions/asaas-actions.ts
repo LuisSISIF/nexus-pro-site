@@ -44,7 +44,7 @@ export async function getCustomerStatus(companyId: number): Promise<{ success: b
         connection = await db();
 
         const [companyRows] = await connection.execute(
-            'SELECT idAsaas, cnpj FROM empresa WHERE idempresa = ?',
+            'SELECT idAsaas, cnpj_empresa FROM empresa WHERE idempresa = ?',
             [companyId]
         );
         const companyData = (companyRows as any[])[0];
@@ -59,11 +59,11 @@ export async function getCustomerStatus(companyId: number): Promise<{ success: b
         }
 
         // 2. Se não temos, busca no Asaas pelo CNPJ
-        if (!companyData.cnpj) {
+        if (!companyData.cnpj_empresa) {
             return { success: false, message: 'A empresa não possui CNPJ cadastrado para a verificação.' };
         }
 
-        const response = await fetch(`${ASAAS_API_URL}/customers?cpfCnpj=${companyData.cnpj}`, {
+        const response = await fetch(`${ASAAS_API_URL}/customers?cpfCnpj=${companyData.cnpj_empresa}`, {
             headers: { 'access_token': ASAAS_API_KEY! },
         });
 
