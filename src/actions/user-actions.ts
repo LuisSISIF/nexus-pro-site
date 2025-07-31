@@ -18,7 +18,7 @@ const UserDataFromDB = z.object({
     nom_func: z.string(),
     celular: z.string(),
     login: z.string(),
-    email: z.string(),
+    email: z.string().email(),
 });
 type UserData = z.infer<typeof UserDataFromDB>;
 
@@ -30,7 +30,7 @@ const UpdateUserSchema = z.object({
     celular: z.string().min(10, "O celular é obrigatório."),
     login: z.string().min(6, "O login deve ter pelo menos 6 caracteres."),
     email: z.string().email("O e-mail é inválido."),
-    senha: z.string().min(6, "A senha deve ter pelo menos 6 caracteres.").optional().or(z.literal('')),
+    senha: z.string().min(6, "A nova senha deve ter pelo menos 6 caracteres.").optional().or(z.literal('')),
     confirmarSenha: z.string().optional(),
 }).refine(data => data.senha === data.confirmarSenha, {
     message: "As senhas não coincidem.",
@@ -61,6 +61,9 @@ export async function getUserData(userId: number, companyId: number): Promise<{ 
         }
     } catch (error) {
         console.error('Get User Data Error:', error);
+        if (error instanceof z.ZodError) {
+             return { success: false, message: `Dados inválidos recebidos do banco: ${error.errors.map(e => e.path).join(', ')}` };
+        }
         if (error instanceof Error && (error as any).sqlMessage) {
             return { success: false, message: `Erro no banco de dados: ${(error as any).sqlMessage}` };
         }
