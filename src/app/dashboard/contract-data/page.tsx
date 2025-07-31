@@ -48,12 +48,10 @@ const ContractDataPage = () => {
         if (contractResult.success && contractResult.data) {
           setData(contractResult.data);
           
-          // Provisional Fix: Only fetch from Asaas if it's a paid plan, to avoid excessive polling.
           if (contractResult.data.idPlano !== 2) { 
             const billingResult = await getBillingStatusFromAsaas(Number(companyId));
             if (billingResult.success && billingResult.data) {
                 setBillingStatuses(billingResult.data);
-                // Encontra o índice da fatura do mês atual ou a mais próxima
                 const today = new Date();
                 const currentMonth = today.getMonth();
                 const currentYear = today.getFullYear();
@@ -65,7 +63,6 @@ const ContractDataPage = () => {
                 });
                 
                 if (foundIndex === -1) {
-                    // Se não achar, pega a última pendente ou a última paga
                     foundIndex = billingResult.data.map(bs => bs.status).lastIndexOf('PENDING');
                     if (foundIndex === -1) {
                        foundIndex = billingResult.data.length -1;
@@ -97,7 +94,7 @@ const ContractDataPage = () => {
       if (direction === 'next' && currentBillingIndex < billingStatuses.length - 1) {
           setCurrentBillingIndex(prev => prev + 1);
       } else if (direction === 'prev' && currentBillingIndex > 0) {
-          setCurrentBillingIndex(prev => prev + 1);
+          setCurrentBillingIndex(prev => prev - 1);
       }
   }
 
@@ -136,7 +133,7 @@ const ContractDataPage = () => {
             case 1: // Alpha Tester
                 return "shadow-xl bg-[#1A1A1A] text-white border border-amber-500";
             case 2: // Teste Grátis
-                 return "shadow-lg bg-[#F3F4F6] text-gray-800";
+                 return "shadow-lg bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100";
             case 3: // Essencial
                  return "shadow-lg bg-[#374151] text-white";
             case 4: // Profissional
@@ -154,7 +151,7 @@ const ContractDataPage = () => {
             case 1: // Alpha Tester
                 return "text-amber-400";
             case 2: // Teste Grátis
-                 return "text-green-600";
+                 return "text-green-600 dark:text-green-400";
             case 3: // Essencial
                 return "text-gray-400";
             case 4: // Profissional
@@ -262,9 +259,9 @@ const ContractDataPage = () => {
             />
 
             {(data.idPlano === 1 || data.idPlano === 2) && data.periodoTesteInicio && data.periodoTesteFim && (
-                <Card className="bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800">
+                <Card className="bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800 text-gray-900 dark:text-gray-100">
                     <CardHeader>
-                        <CardTitle className="text-md text-blue-800 dark:text-blue-300">Período de Teste</CardTitle>
+                        <CardTitle className="text-md text-green-800 dark:text-green-300">Período de Teste</CardTitle>
                     </CardHeader>
                     <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                     <div>
@@ -387,9 +384,9 @@ const ContractDataPage = () => {
          <CardHeader className="flex flex-row items-start justify-between">
             <div>
                 <CardTitle>Seu Plano</CardTitle>
-                <CardDescription className={cn({
+                <CardDescription className={cn("dark:text-gray-300", {
                         'text-amber-400/80': data?.idPlano === 1,
-                        'text-gray-600': data?.idPlano === 2,
+                        'text-gray-700': data?.idPlano === 2,
                         'text-gray-300': data?.idPlano === 3,
                         'text-green-300': data?.idPlano === 4,
                         'text-blue-300': data?.idPlano === 5,
@@ -429,5 +426,3 @@ const ContractDataPage = () => {
 };
 
 export default ContractDataPage;
-
-    
