@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { getContractData, ContractData } from '@/actions/contract-actions';
-import { createAsaasPaymentLink, getBillingStatusFromAsaas, BillingStatus } from '@/actions/asaas-actions';
+import { getBillingStatusFromAsaas, BillingStatus } from '@/actions/asaas-actions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -25,12 +25,13 @@ const ContractDataPage = () => {
   const [data, setData] = useState<ContractData | null>(null);
   const [billingStatus, setBillingStatus] = useState<BillingStatus | null>(null);
   const [loading, setLoading] = useState(true);
-  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [paymentLoading, setPaymentLoading] = useState(false); // Renomear para isCheckingInvoice ou algo similar
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
     const fetchAllData = async () => {
+      setLoading(true);
       const companyId = localStorage.getItem('companyId');
 
       if (!companyId) {
@@ -40,15 +41,18 @@ const ContractDataPage = () => {
       }
 
       try {
-        // Fetch contract data first
         const contractResult = await getContractData(Number(companyId));
         if (contractResult.success && contractResult.data) {
           setData(contractResult.data);
-          // If not a test plan, fetch billing status from Asaas
-          if (contractResult.data.idPlano !== 2) {
+          
+          if (contractResult.data.idPlano !== 2) { // Não é plano de teste
             const billingResult = await getBillingStatusFromAsaas(Number(companyId));
             if (billingResult.success && billingResult.data) {
               setBillingStatus(billingResult.data);
+            } else {
+              // Mesmo que a busca no Asaas falhe, não definimos um erro geral,
+              // podemos apenas mostrar uma mensagem no local apropriado.
+              console.warn(billingResult.message);
             }
           }
         } else {
@@ -63,45 +67,18 @@ const ContractDataPage = () => {
     };
 
     fetchAllData();
-  }, [toast]);
+  }, []);
 
-  const handleGeneratePayment = async () => {
-    if (!data?.idempresa || data.idPlano === 2) {
-        toast({
-            variant: "destructive",
-            title: "Ação não permitida",
-            description: "Esta ação não é aplicável para o seu plano atual."
-        });
-        return;
+  const handlePayInvoice = () => {
+    if (!billingStatus?.invoiceUrl) {
+      toast({
+        variant: "destructive",
+        title: "Fatura não disponível",
+        description: "Não há uma fatura pendente ou disponível para pagamento este mês.",
+      });
+      return;
     }
-    
-    setPaymentLoading(true);
-
-    try {
-        const result = await createAsaasPaymentLink(data.idempresa);
-        if(result.success && result.paymentUrl) {
-            toast({
-                title: "Link de Pagamento Gerado!",
-                description: "Você será redirecionado para a página de pagamento.",
-                variant: "default",
-            });
-            window.open(result.paymentUrl, '_blank');
-        } else {
-             toast({
-                variant: "destructive",
-                title: "Erro ao Gerar Cobrança",
-                description: result.message || "Não foi possível criar o link de pagamento no Asaas."
-            });
-        }
-    } catch (error) {
-         toast({
-            variant: "destructive",
-            title: "Erro inesperado",
-            description: "Ocorreu um erro ao tentar realizar a cobrança."
-        });
-    } finally {
-        setPaymentLoading(false);
-    }
+    window.open(billingStatus.invoiceUrl, '_blank');
   };
 
 
@@ -136,22 +113,28 @@ const ContractDataPage = () => {
       const totalUserLimit = data.limiteUsuarios + (data.usersAdicionais || 0);
       
       const getPaymentStatusBadge = (status: string | null) => {
-        if (!status) return <Badge variant="outline">Não disponível</Badge>;
+        if (!status) return <Badge variant="outline">Indisponível</Badge>;
         
         switch (status.toUpperCase()) {
           case 'CONFIRMED':
           case 'RECEIVED':
           case 'RECEIVED_IN_CASH':
-            return <Badge className="bg-green-500 text-white">Pago</Badge>;
+            return <Badge className="bg-green-500 text-white hover:bg-green-600">Pago</Badge>;
           case 'PENDING':
-            return <Badge variant="secondary" className="bg-yellow-400 text-black">Pendente</Badge>;
-           case 'OVERDUE':
+            return <Badge variant="secondary" className="bg-yellow-400 text-black hover:bg-yellow-500">Pendente</Badge>;
+          case 'OVERDUE':
              return <Badge variant="destructive">Em Atraso</Badge>;
+          case 'UNREGISTERED':
+             return <Badge variant="outline">Não Registrado</Badge>;
+          case 'NOT_FOUND':
+             return <Badge variant="outline">Nenhuma Fatura</Badge>;
           default:
             return <Badge variant="outline">{status}</Badge>;
         }
       };
       
+      const isPayButtonDisabled = paymentLoading || !billingStatus?.invoiceUrl || ['CONFIRMED', 'RECEIVED', 'RECEIVED_IN_CASH'].includes(billingStatus?.status?.toUpperCase() || '');
+
       return (
         <>
             <div className="space-y-6">
@@ -211,7 +194,7 @@ const ContractDataPage = () => {
                     icon={<CreditCard className="w-4 h-4 text-primary" />} 
                 />
                 <DataRow 
-                    label="Dia do Vencimento" 
+                    label="Vencimento da Fatura" 
                     value={billingStatus?.dueDate || `Todo dia ${data.diaVencimento}`}
                     icon={<CalendarClock className="w-4 h-4 text-primary" />} 
                 />
@@ -221,11 +204,11 @@ const ContractDataPage = () => {
             
             {!isTestPlan && (
                  <div className="mt-8 pt-6 border-t">
-                    <Button onClick={handleGeneratePayment} disabled={paymentLoading} className="w-full sm:w-auto">
+                    <Button onClick={handlePayInvoice} disabled={isPayButtonDisabled} className="w-full sm:w-auto">
                        {paymentLoading ? (
                            <>
                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                           Gerando...
+                           Verificando...
                            </>
                        ) : (
                         <>
@@ -234,7 +217,7 @@ const ContractDataPage = () => {
                         </>
                        )}
                     </Button>
-                     <p className="text-xs text-muted-foreground mt-2">Clique para gerar um link de pagamento para a mensalidade atual (Boleto, PIX, Cartão).</p>
+                     <p className="text-xs text-muted-foreground mt-2">Clique para abrir a página de pagamento da fatura atual (Boleto, PIX, Cartão).</p>
                 </div>
             )}
         </>
