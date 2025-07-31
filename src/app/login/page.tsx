@@ -47,10 +47,10 @@ const LoginPage = () => {
           description: "Redirecionando para o painel...",
         });
         
-        // Temporary solution: Store companyId in localStorage
         // A proper session management system should be implemented
         if (typeof window !== 'undefined') {
             localStorage.setItem('companyId', result.user.idempresa.toString());
+            localStorage.setItem('userId', result.user.idusuarios.toString());
         }
 
         router.push('/dashboard');
