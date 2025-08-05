@@ -11,19 +11,19 @@ const Testimonials = () => {
     },
     {
       name: "Juliana Ferreira",
-      company: "Farmácia Central",
+      company: "Assistencia Técnica",
       text: "Sistema muito intuitivo e o suporte é excepcional. Em apenas 2 semanas já estava dominando todas as funcionalidades.",
       rating: 5
     },
     {
       name: "Roberto Silva",
-      company: "Supermercado Família",
+      company: "Adega e distribuidora",
       text: "Aumentamos nossas vendas em 30% no primeiro mês. Os relatórios nos ajudam a tomar decisões mais assertivas.",
       rating: 5
     },
     {
       name: "Ana Paula Costa",
-      company: "Loja de Roupas Elegance",
+      company: "Loja de Roupas",
       text: "A impressão de etiquetas ficou muito mais fácil. O que antes demorava horas, agora faço em minutos.",
       rating: 5
     },
@@ -35,7 +35,7 @@ const Testimonials = () => {
     },
     {
       name: "Maria Oliveira",
-      company: "Pet Shop Amigo Fiel",
+      company: "Pet Shop",
       text: "Sistema perfeito para nossa rotina. Interface simples e todas as funcionalidades que precisamos em um só lugar.",
       rating: 5
     }
@@ -49,7 +49,7 @@ const Testimonials = () => {
             O Que Nossos Clientes Dizem
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300">
-            Mais de 500 empresas já transformaram seus negócios com o NexusPro
+            Muitas empresas já transformaram seus negócios com o NexusPro
           </p>
         </div>
 
