@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react';
-import { Phone, Calendar, Zap, Menu, X, User } from 'lucide-react';
+import { Phone, Calendar, Zap, Menu, X, User, Info } from 'lucide-react';
 import { ThemeToggleButton } from '../theme-toggle';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -14,6 +14,7 @@ const Header = () => {
     { href: '/#testimonials', label: 'Depoimentos' },
     { href: '/#pricing', label: 'Preços' },
     { href: '/#faq', label: 'FAQ' },
+    { href: '/about', label: 'Sobre Nós' },
   ];
 
   return (
