@@ -14,7 +14,6 @@ const Header = () => {
     { href: '/#testimonials', label: 'Depoimentos' },
     { href: '/#pricing', label: 'Preços' },
     { href: '/#faq', label: 'FAQ' },
-    { href: '/about', label: 'Sobre Nós' },
   ];
 
   return (

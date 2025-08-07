@@ -70,6 +70,7 @@ const Footer = () => {
               <a href="/#testimonials" className="block text-gray-300 hover:text-white transition-colors">Depoimentos</a>
               <a href="/#support" className="block text-gray-300 hover:text-white transition-colors">Suporte</a>
               <a href="/#faq" className="block text-gray-300 hover:text-white transition-colors">FAQ</a>
+              <a href="/about" className="block text-gray-300 hover:text-white transition-colors">Sobre Nós</a>
             </div>
           </div>
 
