@@ -24,16 +24,35 @@ const LgpdPage = () => {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-3 text-gray-900 dark:text-white">2. Quais dados coletamos?</h2>
+              <h2 className="text-2xl font-semibold mb-3 text-gray-900 dark:text-white">2. Quais dados coletamos e por quê?</h2>
               <p>
-                Coletamos informações que você nos fornece diretamente ao se cadastrar para o teste grátis, contratar um plano ou entrar em contato com o suporte:
+                Nossa coleta de dados é realizada em duas etapas, visando agilizar seu acesso inicial e solicitar informações detalhadas apenas quando elas se tornam necessárias.
               </p>
-              <ul className="list-disc list-inside mt-2 space-y-1">
-                <li><strong>Dados de Identificação:</strong> Nome completo, e-mail, telefone, CPF/CNPJ.</li>
-                <li><strong>Dados da Empresa:</strong> Nome da empresa, endereço, segmento de atuação.</li>
-                <li><strong>Dados de Pagamento:</strong> Informações de cartão de crédito ou dados para faturamento (processados por parceiros seguros).</li>
-                <li><strong>Dados de Uso do Sistema:</strong> Informações sobre como você utiliza o NexusPro, como funcionalidades acessadas e volume de dados processados (vendas, estoque, etc.), para fins de melhoria do serviço.</li>
-              </ul>
+              
+              <div className="mt-4 space-y-4">
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-2">Etapa 1: Cadastro para o Teste Gratuito</h3>
+                    <p className="mb-2">Para que você possa iniciar o uso do NexusPro de forma rápida e com o mínimo de atrito, coletamos apenas os dados essenciais para a criação da sua conta e da sua empresa no sistema. As informações coletadas nesta fase são:</p>
+                    <ul className="list-disc list-inside mt-2 space-y-1">
+                      <li><strong>Dados do Usuário Administrador:</strong> Nome completo, CPF, telefone, e-mail e dados de login (usuário e senha).</li>
+                      <li><strong>Dados da Empresa:</strong> Nome da empresa, endereço, nome do representante legal e atividade principal.</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-2">Etapa 2: Finalização do Cadastro e Contratação do Plano</h3>
+                    <p className="mb-2">Após o período de teste, para ativar todas as funcionalidades do sistema, como o faturamento de mensalidades e a conformidade fiscal, solicitamos informações complementares. Estes dados são cruciais para o funcionamento pleno do NexusPro:</p>
+                     <ul className="list-disc list-inside mt-2 space-y-1">
+                      <li><strong>Dados Fiscais da Empresa:</strong> CNPJ, Inscrição Estadual e Regime Tributário.</li>
+                      <li><strong>Dados Comerciais e de Faturamento:</strong> E-mail comercial, dia de vencimento para a mensalidade e segmento de mercado.</li>
+                       <li><strong>Dados de Pagamento:</strong> As informações de faturamento são gerenciadas pelo nosso parceiro de pagamentos (Asaas), que segue rigorosos padrões de segurança.</li>
+                    </ul>
+                  </div>
+              </div>
+
+               <p className="mt-4">
+                 Além disso, coletamos <strong>Dados de Uso do Sistema</strong> (funcionalidades acessadas, volume de vendas, etc.) de forma anonimizada para entender como o serviço é utilizado, corrigir erros e promover melhorias contínuas.
+              </p>
             </section>
 
             <section>
