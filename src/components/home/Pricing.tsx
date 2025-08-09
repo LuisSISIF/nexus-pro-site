@@ -1,5 +1,7 @@
-import React from 'react';
+'use client';
+import React, { useEffect, useRef } from 'react';
 import { Check, Star, X, Briefcase, Building, Store } from 'lucide-react';
+import { motion, useAnimation, useInView } from 'framer-motion';
 
 const Pricing = () => {
   const plans = [
@@ -72,7 +74,34 @@ const Pricing = () => {
       title: "🟣 Empresarial (R$ 190/mês)",
       description: "Solução robusta para redes com múltiplas unidades, controle por setores, número ilimitado de usuários e recursos em expansão voltados à gestão avançada."
     }
-  ]
+  ];
+
+  const controls = useAnimation();
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, amount: 0.2 });
+
+  useEffect(() => {
+    if (isInView) {
+      controls.start('visible');
+    }
+  }, [isInView, controls]);
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1, 
+      transition: { staggerChildren: 0.15 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { 
+      y: 0, 
+      opacity: 1,
+      transition: { duration: 0.5 }
+    }
+  };
 
   return (
     <section id="pricing" className="py-20 bg-white dark:bg-gray-900">
@@ -92,12 +121,19 @@ const Pricing = () => {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <motion.div 
+          ref={ref}
+          initial="hidden"
+          animate={controls}
+          variants={containerVariants}
+          className="grid md:grid-cols-1 lg:grid-cols-3 gap-8 items-start"
+        >
           {plans.map((plan, index) => {
             const Icon = plan.icon;
             return (
-              <div 
+              <motion.div
                 key={index}
+                variants={itemVariants}
                 className={`bg-white dark:bg-gray-800 rounded-2xl shadow-xl border-2 p-8 relative flex flex-col h-full ${
                   plan.popular ? 'border-blue-500 transform lg:scale-105' : 'border-gray-200 dark:border-gray-700'
                 }`}
@@ -136,10 +172,10 @@ const Pricing = () => {
                     </div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
             )
           })}
-        </div>
+        </motion.div>
 
         {/* Plan Summaries */}
         <div className="mt-20">
