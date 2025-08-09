@@ -95,11 +95,29 @@ const Pricing = () => {
   };
 
   const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
+    hidden: { y: 20, opacity: 0, scale: 1 },
     visible: { 
       y: 0, 
       opacity: 1,
+      scale: 1,
       transition: { duration: 0.5 }
+    }
+  };
+  
+   const popularItemVariants = {
+    hidden: { y: 20, opacity: 0, scale: 1 },
+    visible: { 
+      y: 0, 
+      opacity: 1,
+      scale: [1, 1.05, 1],
+      transition: { 
+        duration: 0.5,
+        scale: {
+            delay: 0.6,
+            duration: 0.4,
+            ease: "easeInOut",
+        }
+      }
     }
   };
 
@@ -133,9 +151,9 @@ const Pricing = () => {
             return (
               <motion.div
                 key={index}
-                variants={itemVariants}
+                variants={plan.popular ? popularItemVariants : itemVariants}
                 className={`bg-white dark:bg-gray-800 rounded-2xl shadow-xl border-2 p-8 relative flex flex-col h-full ${
-                  plan.popular ? 'border-blue-500 transform lg:scale-105' : 'border-gray-200 dark:border-gray-700'
+                  plan.popular ? 'border-blue-500' : 'border-gray-200 dark:border-gray-700'
                 }`}
               >
                 {plan.popular && (
