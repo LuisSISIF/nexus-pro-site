@@ -24,13 +24,12 @@ export const ContractDialog: React.FC<ContractDialogProps> = ({ isOpen, onOpenCh
   const [isAccepted, setIsAccepted] = useState(false);
   const [contractText, setContractText] = useState('Carregando contrato...');
   const [isContractLoading, setIsContractLoading] = useState(true);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
 
-  const handleScroll = () => {
-    const el = scrollRef.current;
+  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    const el = event.currentTarget;
     if (el) {
-      // Use Math.ceil para evitar problemas de arredondamento com valores de pixel
-      const isAtBottom = Math.ceil(el.scrollTop + el.clientHeight) >= el.scrollHeight;
+      const isAtBottom = Math.ceil(el.scrollTop + el.clientHeight) >= el.scrollHeight - 5; // -5px de tolerância
       if (isAtBottom) {
         setHasScrolledToEnd(true);
       }
@@ -183,15 +182,19 @@ Documento gerado eletronicamente pela Andromeda Solutions.
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="h-96 w-full rounded-md border p-4" onScroll={handleScroll} ref={scrollRef}>
-            {isContractLoading ? (
-                 <div className="flex items-center justify-center h-full">
-                    <Loader2 className="mr-2 h-6 w-6 animate-spin" />
-                    <span>Carregando contrato...</span>
-                </div>
-            ) : (
-                <pre className="text-xs whitespace-pre-wrap font-sans">{contractText}</pre>
-            )}
+        <ScrollArea className="h-96 w-full rounded-md border" >
+          <div ref={viewportRef} className="h-full w-full" onScroll={handleScroll}>
+            <div className="p-4">
+              {isContractLoading ? (
+                  <div className="flex items-center justify-center h-full">
+                      <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                      <span>Carregando contrato...</span>
+                  </div>
+              ) : (
+                  <pre className="text-xs whitespace-pre-wrap font-sans">{contractText}</pre>
+              )}
+            </div>
+          </div>
         </ScrollArea>
         
         <DialogFooter className="flex-col sm:flex-col sm:space-x-0 items-start gap-4">
