@@ -80,6 +80,7 @@ const Footer = () => {
             <div className="space-y-2">
               <a href="/privacy-policy" className="block text-gray-300 hover:text-white transition-colors">Política de Privacidade</a>
               <a href="/terms-of-use" className="block text-gray-300 hover:text-white transition-colors">Termos de Uso</a>
+              <a href="/free-trial-license" className="block text-gray-300 hover:text-white transition-colors">Contrato de Licença de Uso Gratuito</a>
               <a href="/lgpd" className="block text-gray-300 hover:text-white transition-colors">LGPD</a>
               <a href="/cookies" className="block text-gray-300 hover:text-white transition-colors">Cookies</a>
             </div>
