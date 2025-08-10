@@ -30,14 +30,13 @@ const AboutUsPage = () => {
               Decidimos mudar esse cenário. O <strong>NexusPro</strong> é o resultado dessa missão: um sistema de gestão (ERP) completo, construído do zero para ser intuitivo, eficiente e um verdadeiro parceiro estratégico para pequenas e médias empresas.
             </p>
           </div>
-          <div className="relative group flex justify-center">
-             <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg blur opacity-50 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
+          <div className="flex justify-center">
             <Image
               src={Logo}
               alt="Logotipo da Andromeda Solutions"
               width={400}
               height={400}
-              className="rounded-lg shadow-xl relative"
+              className="rounded-lg"
               data-ai-hint="logo"
             />
           </div>
