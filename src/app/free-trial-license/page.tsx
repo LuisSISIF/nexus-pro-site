@@ -2,7 +2,6 @@
 import Footer from '@/components/home/Footer';
 import Header from '@/components/home/Header';
 import React from 'react';
-import AnimatedSection from '@/components/home/AnimatedSection';
 
 const SectionTitle: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <h2 className="text-2xl font-semibold mt-6 mb-3 text-gray-900 dark:text-white">{children}</h2>
@@ -20,7 +19,6 @@ const FreeTrialLicensePage = () => {
     <div className="min-h-screen bg-white dark:bg-gray-900">
       <Header />
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-gray-800 dark:text-gray-200">
-        <AnimatedSection>
         <div className="space-y-8">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white font-headline">
             Contrato de Licença de Uso Gratuito
@@ -170,7 +168,6 @@ const FreeTrialLicensePage = () => {
             </SubSection>
           </div>
         </div>
-        </AnimatedSection>
       </main>
       <Footer />
     </div>
