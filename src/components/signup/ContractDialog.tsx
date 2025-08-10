@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label';
+import { Label } from '@/components/ui/label';
 import { Loader2, Check } from 'lucide-react';
 import type { RegistrationFormValues } from '@/app/signup/page';
 
