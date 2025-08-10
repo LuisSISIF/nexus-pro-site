@@ -29,7 +29,8 @@ export const ContractDialog: React.FC<ContractDialogProps> = ({ isOpen, onOpenCh
   const handleScroll = () => {
     const el = scrollRef.current;
     if (el) {
-      const isAtBottom = el.scrollHeight - el.scrollTop <= el.clientHeight + 1;
+      // Use Math.ceil para evitar problemas de arredondamento com valores de pixel
+      const isAtBottom = Math.ceil(el.scrollTop + el.clientHeight) >= el.scrollHeight;
       if (isAtBottom) {
         setHasScrolledToEnd(true);
       }
