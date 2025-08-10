@@ -107,13 +107,17 @@ const SignUpPage = () => {
                     title: "Cadastro realizado com sucesso!",
                     description: "Sua conta foi criada. Redirecionando para o login...",
                 });
-                router.push('/login');
+                // Delay redirection for a better user experience
+                setTimeout(() => {
+                    router.push('/login');
+                }, 2000); 
             } else {
                 toast({
                     variant: "destructive",
                     title: "Erro no cadastro",
                     description: result.message,
                 });
+                setLoading(false);
             }
         } catch (error) {
             toast({
@@ -121,8 +125,10 @@ const SignUpPage = () => {
                 title: "Erro inesperado",
                 description: "Ocorreu um erro ao processar seu cadastro. Tente novamente.",
             });
-        } finally {
             setLoading(false);
+        } finally {
+            // Keep loading true on success to show loading state during redirection
+            // setLoading(false); 
             setFormData(null);
         }
     };
