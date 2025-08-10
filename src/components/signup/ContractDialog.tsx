@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -178,6 +177,27 @@ const ContractContent = ({ formData, systemVersion }: { formData: RegistrationFo
           <p className="mt-2"><strong>Observação:</strong> recomenda-se executar o instalador apenas a partir do site oficial (https://www.andromedasolutions.com.br) e manter o antivírus atualizado para evitar alertas ou bloqueios indevidos.</p>
         </SubSection>
         
+        <SectionTitle>14. Limitação de Responsabilidade e Exclusão de Danos</SectionTitle>
+        <p>A Andromeda Solutions não se responsabiliza, em nenhuma hipótese, por lucros cessantes, danos morais, interrupção de atividades comerciais ou quaisquer outros danos indiretos. A responsabilidade por força maior (fenômenos naturais, atos governamentais, pandemias) ou falhas de terceiros (internet, energia, equipamentos) é excluída. O usuário é o único responsável pela integridade dos dados inseridos e por eventuais exclusões.</p>
+
+        <SectionTitle>15. Propriedade dos Dados e Portabilidade</SectionTitle>
+        <p>O usuário tem o direito garantido de exportar integralmente seus dados em formato CSV durante o período de teste e por até 30 dias após seu término. A Andromeda Solutions garante que não fará uso comercial dos dados do cliente.</p>
+
+        <SectionTitle>16. Atualizações e Modificações do Software</SectionTitle>
+        <p>Todas as atualizações do NexusPro são obrigatórias e automáticas para garantir a segurança, integridade e compatibilidade do sistema. Mudanças significativas serão comunicadas com 48 horas de antecedência. Não é possível recusar atualizações, pois o sistema depende delas para funcionar corretamente.</p>
+
+        <SectionTitle>17. Política de Cancelamento (Período de Teste)</SectionTitle>
+        <p>O cancelamento durante o período de teste é imediato, pode ser feito a qualquer momento sem justificativa e não gera qualquer tipo de reembolso, pois o serviço é gratuito. Após o cancelamento, o acesso é bloqueado, e os dados serão mantidos para download por 30 dias.</p>
+
+        <SectionTitle>18. Resolução Alternativa de Disputas</SectionTitle>
+        <p>Qualquer disputa será resolvida primeiramente por negociação direta em até 15 dias. Persistindo o desacordo, as partes se comprometem a participar de uma sessão de mediação online, com custos rateados, por até 30 dias antes de qualquer medida judicial.</p>
+
+        <SectionTitle>19. Cessão e Transferência</SectionTitle>
+        <p>O cliente não pode ceder ou transferir os direitos desta licença a terceiros. Em caso de fusão ou aquisição da empresa do cliente, a Andromeda Solutions deverá ser notificada em até 30 dias para avaliação da continuidade do contrato.</p>
+
+        <SectionTitle>20. Vigência Específica para Teste</SectionTitle>
+        <p>A vigência de 14 dias inicia-se no momento exato do registro na plataforma, utilizando o fuso horário de Brasília (GMT-3). O término é automático, e a contagem regressiva será exibida na interface do sistema.</p>
+
         <div className="pt-4 mt-4 border-t">
             <p><strong>Versão do Documento:</strong> {systemVersion}</p>
         </div>
