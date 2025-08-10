@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Check, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -21,12 +21,13 @@ import { registerUserAndCompany } from '@/actions/auth-actions';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { ContractDialog } from '@/components/signup/ContractDialog';
 
 const registrationSchema = z.object({
   // User
   fullName: z.string().min(3, "Nome completo é obrigatório"),
   cpf: z.string().refine(isValidCPF, "CPF inválido"),
-  gender: z.enum(["male", "female", "other"], { required_error: "Gênero é obrigatório"}),
+  gender: z.enum(["male", "female", "other"], { required_error: "Gênero é obrigatório" }),
   login: z.string().min(3, "Login deve ter pelo menos 3 caracteres"),
   password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
   confirmPassword: z.string().min(6),
@@ -44,13 +45,14 @@ const registrationSchema = z.object({
   path: ["confirmPassword"], 
 });
 
-type RegistrationFormValues = z.infer<typeof registrationSchema>;
-
+export type RegistrationFormValues = z.infer<typeof registrationSchema>;
 
 const SignUpPage = () => {
     const { toast } = useToast();
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const [isContractOpen, setIsContractOpen] = useState(false);
+    const [formData, setFormData] = useState<RegistrationFormValues | null>(null);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     
@@ -72,10 +74,18 @@ const SignUpPage = () => {
       },
     });
 
-    const onSubmit = async (values: RegistrationFormValues) => {
+    const onFormSubmit = (values: RegistrationFormValues) => {
+        setFormData(values);
+        setIsContractOpen(true);
+    };
+
+    const handleContractAccept = async () => {
+        if (!formData) return;
         setLoading(true);
+        setIsContractOpen(false);
+
         try {
-            const result = await registerUserAndCompany(values);
+            const result = await registerUserAndCompany(formData);
             if (result.success) {
                 toast({
                     title: "Cadastro realizado com sucesso!",
@@ -97,10 +107,13 @@ const SignUpPage = () => {
             });
         } finally {
             setLoading(false);
+            setFormData(null);
         }
-    }
+    };
+
 
   return (
+    <>
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
       <Header />
       <main className="flex-grow flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
@@ -122,7 +135,7 @@ const SignUpPage = () => {
                 </Alert>
 
                <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-6">
                     
                     <p className="font-semibold text-gray-800 dark:text-gray-200 border-t pt-4 text-lg">Dados da Empresa</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -204,12 +217,8 @@ const SignUpPage = () => {
                     </div>
 
                     <Button type="submit" className="w-full text-lg py-6" disabled={loading}>
-                        {loading ? (
-                           <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                        ) : (
-                           <Check className="mr-2 h-5 w-5" />
-                        )}
-                        {loading ? 'Finalizando Cadastro...' : 'Finalizar Cadastro e Iniciar Teste'}
+                        {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <ArrowRight className="mr-2 h-5 w-5" />}
+                        {loading ? 'Aguarde...' : 'Continuar para Contrato'}
                       </Button>
                 </form>
                </Form>
@@ -227,7 +236,19 @@ const SignUpPage = () => {
       </main>
       <Footer />
     </div>
+
+    {formData && (
+        <ContractDialog
+            isOpen={isContractOpen}
+            onOpenChange={setIsContractOpen}
+            onAccept={handleContractAccept}
+            isLoading={loading}
+            formData={formData}
+        />
+    )}
+    </>
   );
 };
 
 export default SignUpPage;
+
