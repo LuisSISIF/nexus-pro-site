@@ -34,7 +34,7 @@ const SubSection: React.FC<{ title: string; children: React.ReactNode }> = ({ ti
 
 const ContractContent = ({ formData, systemVersion }: { formData: RegistrationFormValues, systemVersion: string }) => (
     <div className="space-y-4 text-sm text-muted-foreground">
-        <p className="font-semibold text-center">Termos de Uso – Período de Teste Gratuito (14 dias) para o Software NexusPro</p>
+        <p className="font-semibold text-center text-lg">Termos de Uso – Período de Teste Gratuito (14 dias) para o Software NexusPro</p>
         
         <SectionTitle>1. Identificação das Partes</SectionTitle>
         <SubSection title="Licenciante:">
@@ -115,10 +115,10 @@ const ContractContent = ({ formData, systemVersion }: { formData: RegistrationFo
             <li><strong>Limitações no teste:</strong> dúvidas de instalação/configuração inicial apenas.</li>
             <li><strong>Documentação:</strong> guia rápido, PDFs e vídeos.</li>
         </ul>
-        
-        <SectionTitle>8. Transição para plano pago</SectionTitle>
+
+        <SectionTitle>8. Transição para Plano Pago e Política de Cobrança Proporcional</SectionTitle>
         <p><strong>Planos pagos:</strong></p>
-         <ul className="list-disc pl-5 space-y-1">
+        <ul className="list-disc pl-5 space-y-1">
             <li>Essencial (vendas, estoque, financeiro): R$ 80,00/mês</li>
             <li>Profissional (+ relatórios avançados, integrações): R$ 120,00/mês</li>
             <li>Empresarial (+ personalizações, suporte prioritário, multiunidade): R$ 190,00/mês</li>
@@ -126,6 +126,21 @@ const ContractContent = ({ formData, systemVersion }: { formData: RegistrationFo
         <p>Dados do teste mantidos integralmente; contratação sem reinstalação.</p>
         <p>Backup diário em nuvem; checagem de integridade após ativação.</p>
         <p>Ofertas especiais conforme campanhas vigentes.</p>
+        <p className='mt-2'>Os planos pagos do NexusPro são oferecidos sob a modalidade pré-paga: o usuário realiza o pagamento antecipadamente para liberar o acesso ao sistema. Ao finalizar o período de teste, o usuário pode escolher a data de vencimento de sua mensalidade.</p>
+        <p>De acordo com a data escolhida para vencimento, será aplicada a cobrança proporcional referente aos dias de utilização entre o início do plano e a data de vencimento definida. Exemplos:</p>
+        <ul className="list-disc pl-5 space-y-1">
+            <li>Se o início for no dia 10 e o vencimento escolhido for dia 20, será cobrado proporcionalmente pelos 10 dias de utilização.</li>
+            <li>Se o início for dia 10 e o vencimento escolhido for o dia 5 do mês seguinte, será cobrado proporcionalmente pelo período entre o dia atual e o próximo vencimento.</li>
+        </ul>
+        <p className='mt-2'><strong>Fórmula de cálculo do valor proporcional:</strong></p>
+        <p className='italic text-center my-2'>Valor proporcional = (Valor do plano escolhido / 30) × (Quantidade de dias de uso até o vencimento)</p>
+        <p>Os valores são baseados em meses de 30 dias para padronização do cálculo.</p>
+        <p className='mt-2'>No momento da transição pode haver dois valores em aberto:</p>
+        <ul className="list-disc pl-5 space-y-1">
+            <li>O valor proporcional referente aos dias até o vencimento escolhido.</li>
+            <li>O valor da mensalidade integral, com vencimento na data definida pelo usuário.</li>
+        </ul>
+        <p className='mt-2'>O acesso ao sistema é liberado mediante pagamento dos valores proporcionais e, posteriormente, o ciclo mensal será sempre iniciado e cobrado conforme a data de vencimento fixada pelo usuário.</p>
 
         <SectionTitle>9. Disponibilidade e manutenção</SectionTitle>
         <ul className="list-disc pl-5 space-y-1">
@@ -133,7 +148,7 @@ const ContractContent = ({ formData, systemVersion }: { formData: RegistrationFo
             <li><strong>Manutenções programadas:</strong> aviso prévio de 24 h, geralmente 22h–5h.</li>
             <li><strong>Backup diário:</strong> restauração a partir do backup mais recente.</li>
         </ul>
-
+        
         <SectionTitle>10. Comunicações</SectionTitle>
         <ul className="list-disc pl-5 space-y-1">
             <li><strong>E-mail oficial:</strong> cadastrado pelo cliente no início do teste.</li>
@@ -148,16 +163,20 @@ const ContractContent = ({ formData, systemVersion }: { formData: RegistrationFo
         <SectionTitle>12. Aceite eletrônico</SectionTitle>
         <p>O usuário declara que leu e aceitou estes termos ao marcar a opção “Li e aceito os termos de uso” no sistema. O sistema registra data, hora e usuário para comprovação. Este aceite possui validade jurídica equiparada à assinatura manuscrita, nos termos da MP 2.200-2/2001.</p>
         
-        <SectionTitle>13. ASSINATURA DIGITAL E VERIFICAÇÕES DE SEGURANÇA</SectionTitle>
-        <p><strong>13.1. Instalador sem Certificado Digital:</strong> Devido ao recente lançamento do NexusPro, o instalador disponibilizado para download não contém certificado de assinatura digital emitido por autoridade certificadora. Consequentemente, sistemas operacionais como o Windows poderão exibir alertas de “aplicativo possivelmente perigoso” ou “fornecedor não reconhecido” ao executar o instalador.</p>
-        <p><strong>13.2. Garantia de Integridade e Segurança:</strong> Apesar da ausência de assinatura digital, todo pacote de instalação baixado diretamente do site oficial da Andromeda Solutions passa por rigorosos processos de:</p>
-        <ul className="list-disc pl-5 space-y-1">
-            <li>Verificação de integridade (hash de arquivos)</li>
-            <li>Análise anti-malware automatizada</li>
-            <li>Testes de risco em ambiente controlado</li>
-        </ul>
-        <p>Essas medidas asseguram que o instalador esteja livre de softwares maliciosos e que os dados do cliente sejam protegidos em todas as etapas de instalação e uso do sistema.</p>
-        <p><strong>Observação:</strong> recomenda-se executar o instalador apenas a partir do site oficial (https://www.andromedasolutions.com.br) e manter o antivírus atualizado para evitar alertas ou bloqueios indevidos.</p>
+        <SectionTitle>13. Assinatura Digital e Verificações de Segurança</SectionTitle>
+        <SubSection title="13.1. Instalador sem Certificado Digital:">
+          <p>Devido ao recente lançamento do NexusPro, o instalador disponibilizado para download não contém certificado de assinatura digital emitido por autoridade certificadora. Consequentemente, sistemas operacionais como o Windows poderão exibir alertas de “aplicativo possivelmente perigoso” ou “fornecedor não reconhecido” ao executar o instalador.</p>
+        </SubSection>
+        <SubSection title="13.2. Garantia de Integridade e Segurança:">
+          <p>Apesar da ausência de assinatura digital, todo pacote de instalação baixado diretamente do site oficial da Andromeda Solutions passa por rigorosos processos de:</p>
+          <ul className="list-disc pl-5 space-y-1">
+              <li>Verificação de integridade (hash de arquivos)</li>
+              <li>Análise anti-malware automatizada</li>
+              <li>Testes de risco em ambiente controlado</li>
+          </ul>
+          <p className="mt-2">Essas medidas asseguram que o instalador esteja livre de softwares maliciosos e que os dados do cliente sejam protegidos em todas as etapas de instalação e uso do sistema.</p>
+          <p className="mt-2"><strong>Observação:</strong> recomenda-se executar o instalador apenas a partir do site oficial (https://www.andromedasolutions.com.br) e manter o antivírus atualizado para evitar alertas ou bloqueios indevidos.</p>
+        </SubSection>
         
         <div className="pt-4 mt-4 border-t">
             <p><strong>Versão do Documento:</strong> {systemVersion}</p>
