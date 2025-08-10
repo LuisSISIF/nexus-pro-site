@@ -4,6 +4,7 @@ import Footer from '@/components/home/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Rocket, Target, Heart, Users, CheckCircle, Lightbulb, Handshake, MessageSquare } from 'lucide-react';
 import Image from 'next/image';
+import Logo from '@/images/logo.png';
 
 const AboutUsPage = () => {
   return (
@@ -29,15 +30,15 @@ const AboutUsPage = () => {
               Decidimos mudar esse cenário. O <strong>NexusPro</strong> é o resultado dessa missão: um sistema de gestão (ERP) completo, construído do zero para ser intuitivo, eficiente e um verdadeiro parceiro estratégico para pequenas e médias empresas.
             </p>
           </div>
-          <div className="relative group">
+          <div className="relative group flex justify-center">
              <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg blur opacity-50 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
             <Image
-              src="https://placehold.co/600x400.png"
-              alt="Equipe da Andromeda Solutions em uma reunião de estratégia"
-              width={600}
+              src={Logo}
+              alt="Logotipo da Andromeda Solutions"
+              width={400}
               height={400}
               className="rounded-lg shadow-xl relative"
-              data-ai-hint="team business meeting"
+              data-ai-hint="logo"
             />
           </div>
         </div>
