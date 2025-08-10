@@ -4,7 +4,7 @@ import Footer from '@/components/home/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Rocket, Target, Heart, Users, CheckCircle, Lightbulb, Handshake, MessageSquare } from 'lucide-react';
 import Image from 'next/image';
-import Logo from '@/images/logo.png';
+import Logo from '@/images/logoRedSemFundo.png';
 
 const AboutUsPage = () => {
   return (
