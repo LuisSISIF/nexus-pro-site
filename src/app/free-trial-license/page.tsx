@@ -203,6 +203,9 @@ const FreeTrialLicensePage = () => {
             <SubClause>
                 <ClauseText>8.10. O acesso ao sistema é liberado mediante pagamento dos valores proporcionais e, posteriormente, o ciclo mensal será sempre iniciado e cobrado conforme a data de vencimento fixada pelo usuário.</ClauseText>
             </SubClause>
+            <SubClause>
+                <ClauseText>8.11. Todos os pagamentos relativos ao software NexusPro serão processados e intermediados pela instituição de pagamento ASAAS, nos termos de sua política de cobrança e conformidade, garantindo segurança e confiabilidade nas transações.</ClauseText>
+            </SubClause>
 
             <SectionTitle>9. DISPONIBILIDADE E MANUTENÇÃO</SectionTitle>
             <SubClause>
