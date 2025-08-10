@@ -12,7 +12,7 @@ const PrivacyPolicyPage = () => {
             Política de Privacidade
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-400">
-            Última atualização: 24 de julho de 2024
+            Última atualização: 29 de julho de 2024
           </p>
 
           <div className="space-y-6">
