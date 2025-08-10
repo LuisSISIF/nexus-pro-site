@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Loader2, Check } from 'lucide-react';
 import type { RegistrationFormValues } from '@/app/signup/page';
 import { getSystemVersion } from '@/actions/system-actions';
+import { cn } from '@/lib/utils';
 
 interface ContractDialogProps {
   isOpen: boolean;
@@ -19,155 +20,105 @@ interface ContractDialogProps {
   formData: RegistrationFormValues;
 }
 
-export const ContractDialog: React.FC<ContractDialogProps> = ({ isOpen, onOpenChange, onAccept, isLoading, formData }) => {
-  const [hasScrolledToEnd, setHasScrolledToEnd] = useState(false);
-  const [isAccepted, setIsAccepted] = useState(false);
-  const [contractText, setContractText] = useState('Carregando contrato...');
-  const [isContractLoading, setIsContractLoading] = useState(true);
-  const viewportRef = useRef<HTMLDivElement>(null);
+const SectionTitle: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <h2 className="text-lg font-semibold mt-4 mb-2 text-foreground">{children}</h2>
+);
 
-  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    const el = event.currentTarget;
-    if (el) {
-      const isAtBottom = Math.ceil(el.scrollTop + el.clientHeight) >= el.scrollHeight - 5; // -5px de tolerância
-      if (isAtBottom) {
-        setHasScrolledToEnd(true);
-      }
-    }
-  };
+const SubSection: React.FC<{ title: string, children: React.ReactNode }> = ({ title, children }) => (
+    <div className="mt-3">
+        <h3 className="font-semibold text-foreground">{title}</h3>
+        <div className="pl-2 text-muted-foreground">{children}</div>
+    </div>
+);
+
+const ContractContent = ({ formData, systemVersion }: { formData: RegistrationFormValues, systemVersion: string }) => (
+    <div className="space-y-4 text-sm text-muted-foreground">
+        <p>Este contrato rege os termos do seu acesso gratuito de 14 dias ao software NexusPro.</p>
+        
+        <SectionTitle>1. Identificação das Partes</SectionTitle>
+        <SubSection title="Licenciante:">
+            <p><strong>ANDROMEDA SOLUTIONS</strong>, CNPJ 53.489.502/0001-94, representada por Luís Henrique Freire de Lima.</p>
+        </SubSection>
+        <SubSection title="Licenciado/Usuário:">
+            <p><strong>Nome:</strong> {formData.fullName}</p>
+            <p><strong>CPF:</strong> {formData.cpf}</p>
+            <p><strong>Empresa:</strong> {formData.companyName}</p>
+        </SubSection>
+
+        <SectionTitle>2. Objeto</SectionTitle>
+        <p>Concessão de licença temporária (14 dias), não exclusiva e intransferível de uso do NexusPro.</p>
+
+        <SectionTitle>3. Descrição Técnica</SectionTitle>
+        <ul className="list-disc pl-5 space-y-1">
+            <li><strong>Categoria:</strong> ERP especializado para gestão de varejo.</li>
+            <li><strong>Implementação:</strong> Instalação local com banco de dados na nuvem e plataforma web.</li>
+            <li><strong>Requisitos Mínimos:</strong> Core i3, 4GB RAM, Win 10 (64 bits), Internet 5 Mbps.</li>
+        </ul>
+
+        <SectionTitle>4. Limitações do Plano de Teste</SectionTitle>
+        <ul className="list-disc pl-5 space-y-1">
+            <li>Até 2 usuários e 1 loja.</li>
+            <li>Impressão de cupom não fiscal indisponível.</li>
+            <li>Suporte técnico limitado a dúvidas de instalação via e-mail.</li>
+        </ul>
+
+        <SectionTitle>5. Coleta e Tratamento de Dados (LGPD)</SectionTitle>
+        <ul className="list-disc pl-5 space-y-1">
+            <li><strong>Dados Coletados:</strong> Informações de cadastro do usuário e da empresa.</li>
+            <li><strong>Finalidade:</strong> Operacionalização do sistema, cadastro e backup.</li>
+            <li><strong>Base Legal:</strong> Execução de contrato (LGPD art. 7º, V).</li>
+            <li><strong>Segurança:</strong> Criptografia, controle de acesso e servidores em São Paulo-SP.</li>
+        </ul>
+        
+        <SectionTitle>6. Uso Permitido e Proibido</SectionTitle>
+        <p>É permitido avaliar as funcionalidades. É proibido realizar engenharia reversa, cópia, atividades ilícitas ou compartilhamento de credenciais.</p>
+
+        <SectionTitle>7. Suporte e Transição para Plano Pago</SectionTitle>
+        <p>Após o teste, os dados são mantidos por 30 dias para contratação de um plano pago (Essencial, Profissional ou Empresarial), sem necessidade de reinstalação.</p>
+        
+        <SectionTitle>8. Instalação e Segurança</SectionTitle>
+        <p>O instalador do NexusPro não possui certificado digital, o que pode gerar alertas de segurança no Windows. Garantimos que o software baixado do nosso site oficial é seguro, verificado e livre de malware.</p>
+
+        <SectionTitle>9. Aceite Eletrônico e Jurisdição</SectionTitle>
+        <p>Ao aceitar estes termos, você firma um contrato com validade jurídica. Fica eleito o foro da Comarca de Machado – MG para dirimir quaisquer controvérsias.</p>
+        
+        <div className="pt-4 mt-4 border-t">
+            <p><strong>Versão do Documento:</strong> {systemVersion}</p>
+            <p><strong>Data de Vigência:</strong> 24 de julho de 2024</p>
+        </div>
+    </div>
+);
+
+
+export const ContractDialog: React.FC<ContractDialogProps> = ({ isOpen, onOpenChange, onAccept, isLoading, formData }) => {
+  const [isAccepted, setIsAccepted] = useState(false);
+  const [systemVersion, setSystemVersion] = useState('[Versão não disponível]');
+  const [isContractLoading, setIsContractLoading] = useState(true);
 
   useEffect(() => {
     const fetchContractData = async () => {
       if (isOpen) {
         setIsContractLoading(true);
-        const versionResult = await getSystemVersion();
-        const systemVersion = versionResult.success ? versionResult.version : '[Versão não disponível]';
-
-        setContractText(`
-Termos de Uso – Período de Teste Gratuito (14 dias)
-Software NexusPro
-
-1. Identificação das Partes
-Licenciante:
-ANDROMEDA SOLUTIONS, pessoa jurídica de direito privado, inscrita no CNPJ sob o nº 53.489.502/0001-94, com domicílio fiscal à Rua Varginha, nº 6, Santa Luiza, Machado – MG, CEP 37750-000 (endereço residencial do representante legal, visto que a empresa não possui sede comercial), neste ato representada por seu CEO Luís Henrique Freire de Lima, brasileiro, e-mail andromedasolutions2025@outlook.com, telefone (35) 99861-5203.
-
-Licenciado/Usuário:
-Pessoa física ou jurídica que aceita estes termos para uso do NexusPro no período de teste gratuito.
-Nome: ${formData.fullName}
-CPF: ${formData.cpf}
-Empresa: ${formData.companyName}
-
-2. Objeto
-Concessão de licença temporária, não exclusiva e intransferível de uso do software NexusPro, plataforma de gerenciamento e automação de estoque, vendas, finanças, controle de clientes e crédito para comércios de varejo em geral, pelo prazo de 14 (quatorze) dias corridos, iniciando-se no primeiro acesso.
-
-3. Descrição técnica
-a) Categoria: ERP especializado para gestão de varejo, com recursos de vendas, estoque, financeiro e relatórios integrados.
-b) Implementação: instalação local + banco de dados em servidor na nuvem + plataforma web para controle financeiro.
-c) Requisitos mínimos:
-Processador Intel Core i3 ou AMD equivalente
-4 GB RAM
-10 GB livres no HD/SSD
-Windows 10 (64 bits)
-Tela 1366×768
-Internet 5 Mbps
-(Opcional) impressora de recibos, etiquetas; leitor de código de barras
-d) Requisitos recomendados:
-Intel Core i5 (8ª geração) ou AMD Ryzen 5
-8 GB RAM
-SSD 20 GB livres
-Windows 10/11 (64 bits)
-Tela Full HD 1920×1080
-Internet 20 Mbps
-(Opcional) impressora de recibos, etiquetas; leitor de código de barras; gaveta de dinheiro
-
-4. Limitações do plano de teste
-Até 2 usuários simultâneos.
-Controle de apenas 1 loja.
-14 dias a contar do cadastro.
-Impressão de cupom não fiscal indisponível (CNPJ cliente não coletado).
-Demonstração de crediário limitada a 1 cliente.
-Suporte via e-mail (retorno em 24–48 h; seg–sex 9h–17h, sáb 9h–12h).
-
-5. Coleta e tratamento de dados
-Dados coletados: nome, CPF, e-mail, telefone, sexo, login e senha de administrador; nome, atividade principal e endereço da empresa.
-Finalidade: operacional para uso básico, cadastro de produtos, vendas, estoque, financeiro, funcionários e relatórios; sincronização e backup remoto para bancos online.
-Base legal:
-Execução de contrato (LGPD art. 7º, V)
-Cumprimento de obrigação legal (emissão de NF-e)
-Retenção: 30 dias pós-teste para migração, depois exclusão.
-Localização dos servidores: América do Sul (São Paulo – SP).
-Segurança: criptografia de senhas; controle de acesso e permissões; credenciais no banco de dados.
-Exercício de direitos: solicitação via e-mail/suporte para acesso, correção ou exclusão.
-
-6. Uso permitido e proibido
-Permitido: avaliação das funcionalidades conforme limitações acima.
-Proibido:
-Engenharia reversa, descompilação, cópia ou redistribuição sem autorização.
-Atividades ilícitas ou violação de leis.
-Compartilhamento de credenciais.
-Hospedagem de dados não relacionados à operação legítima.
-Consequências: suspensão temporária ou rescisão sem reembolso; medidas legais cabíveis.
-
-7. Suporte técnico
-Canais: e-mail, WhatsApp/chat, telefone (seg–sex 8h–18h, exceto feriados).
-Tempo de resposta: e-mail até 48 h úteis; chat/WhatsApp até 2 h úteis (planos pagos); telefone imediato (planos pagos).
-Limitações no teste: dúvidas de instalação/configuração inicial apenas.
-Documentação: guia rápido, PDFs e vídeos.
-
-8. Transição para plano pago
-Planos pagos:
-Essencial (vendas, estoque, financeiro): R$ 80,00/mês
-Profissional (+ relatórios avançados, integrações): R$ 120,00/mês
-Empresarial (+ personalizações, suporte prioritário, multiunidade): R$ 190,00/mês
-Dados do teste mantidos integralmente; contratação sem reinstalação.
-Backup diário em nuvem; checagem de integridade após ativação.
-Ofertas especiais conforme campanhas vigentes.
-
-9. Disponibilidade e manutenção
-Uptime banco online: ≥ 98%, salvo manutenções ou eventos de provedor.
-Manutenções programadas: aviso prévio de 24 h, geralmente 22h–5h.
-Backup diário: restauração a partir do backup mais recente.
-
-10. Comunicações
-E-mail oficial: cadastrado pelo cliente no início do teste.
-Aviso de término: e-mail e mensagem no sistema com ≥ 3 dias de antecedência.
-Alterações nos termos: aviso com ≥ 15 dias.
-Suporte técnico: e-mail ou telefone conforme horários acima.
-
-11. Jurisdição e legislação
-Este termo é regido pelas leis brasileiras. Fica eleito o foro da Comarca de Machado – MG para dirimir quaisquer controvérsias, com exclusão de qualquer outro.
-
-12. Aceite eletrônico
-O usuário declara que leu e aceitou estes termos ao marcar a opção “Li e aceito os termos de uso” no sistema. O sistema registra data, hora e usuário para comprovação. Este aceite possui validade jurídica equiparada à assinatura manuscrita, nos termos da MP 2.200-2/2001.
-
-13. ASSINATURA DIGITAL E VERIFICAÇÕES DE SEGURANÇA
-13.1. Instalador sem Certificado Digital:
-Devido ao recente lançamento do NexusPro, o instalador disponibilizado para download não contém certificado de assinatura digital emitido por autoridade certificadora. Consequentemente, sistemas operacionais como o Windows poderão exibir alertas de “aplicativo possivelmente perigoso” ou “fornecedor não reconhecido” ao executar o instalador.
-
-13.2. Garantia de Integridade e Segurança:
-Apesar da ausência de assinatura digital, todo pacote de instalação baixado diretamente do site oficial da Andromeda Solutions passa por rigorosos processos de:
-Verificação de integridade (hash de arquivos)
-Análise anti-malware automatizada
-Testes de risco em ambiente controlado
-Essas medidas asseguram que o instalador esteja livre de softwares maliciosos e que os dados do cliente sejam protegidos em todas as etapas de instalação e uso do sistema.
-Observação: recomenda-se executar o instalador apenas a partir do site oficial (https://www.andromedasolutions.com.br) e manter o antivírus atualizado para evitar alertas ou bloqueios indevidos.
-
-Data de vigência: 09/08/2025
-Versão: ${systemVersion}
-Documento gerado eletronicamente pela Andromeda Solutions.
-`);
-        setIsContractLoading(false);
+        try {
+            const versionResult = await getSystemVersion();
+            if (versionResult.success && versionResult.version) {
+                 setSystemVersion(versionResult.version);
+            }
+        } catch (e) {
+            console.error("Failed to fetch system version", e)
+        } finally {
+            setIsContractLoading(false);
+        }
       }
     };
 
     fetchContractData();
-  }, [isOpen, formData]);
+  }, [isOpen]);
 
 
   // Reset states when dialog opens
   useEffect(() => {
     if (isOpen) {
-      setHasScrolledToEnd(false);
       setIsAccepted(false);
     }
   }, [isOpen]);
@@ -178,41 +129,34 @@ Documento gerado eletronicamente pela Andromeda Solutions.
         <DialogHeader>
           <DialogTitle>Termos de Uso – Período de Teste Gratuito</DialogTitle>
           <DialogDescription>
-            Leia atentamente o contrato de licença. Você precisa rolar até o final para poder aceitar os termos.
+            Por favor, leia e aceite os termos de licença para continuar.
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="h-96 w-full rounded-md border" >
-          <div ref={viewportRef} className="h-full w-full" onScroll={handleScroll}>
-            <div className="p-4">
-              {isContractLoading ? (
-                  <div className="flex items-center justify-center h-full">
-                      <Loader2 className="mr-2 h-6 w-6 animate-spin" />
-                      <span>Carregando contrato...</span>
-                  </div>
-              ) : (
-                  <pre className="text-xs whitespace-pre-wrap font-sans">{contractText}</pre>
-              )}
-            </div>
-          </div>
+        <ScrollArea className="h-96 w-full rounded-md border p-4">
+            {isContractLoading ? (
+                <div className="flex items-center justify-center h-full">
+                    <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                    <span>Carregando contrato...</span>
+                </div>
+            ) : (
+                <ContractContent formData={formData} systemVersion={systemVersion} />
+            )}
         </ScrollArea>
         
         <DialogFooter className="flex-col sm:flex-col sm:space-x-0 items-start gap-4">
             <div className="flex items-center space-x-2">
                 <Checkbox 
                     id="terms" 
-                    disabled={!hasScrolledToEnd || isLoading || isContractLoading}
+                    disabled={isLoading || isContractLoading}
                     checked={isAccepted}
                     onCheckedChange={(checked) => setIsAccepted(checked as boolean)}
                 />
-                <Label htmlFor="terms" className={!hasScrolledToEnd ? 'text-muted-foreground' : ''}>
+                <Label htmlFor="terms" className={cn(isContractLoading && 'text-muted-foreground')}>
                     Li e aceito os termos de uso
                 </Label>
             </div>
-            {!hasScrolledToEnd && !isContractLoading && (
-                <p className="text-xs text-yellow-600">Role até o final do contrato para habilitar o aceite.</p>
-            )}
-
+            
             <Button 
                 type="button" 
                 onClick={onAccept}

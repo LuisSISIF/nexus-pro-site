@@ -17,7 +17,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { isValidCPF } from '@/lib/validators';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { registerUserAndCompany } from '@/actions/auth-actions';
+import { registerUserAndCompany, checkUserExists } from '@/actions/auth-actions';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -74,9 +74,25 @@ const SignUpPage = () => {
       },
     });
 
-    const onFormSubmit = (values: RegistrationFormValues) => {
+    const onFormSubmit = async (values: RegistrationFormValues) => {
+        setLoading(true);
+        // Step 1: Check if user exists
+        const userCheck = await checkUserExists(values.login, values.email);
+        
+        if (!userCheck.success) {
+            toast({
+                variant: "destructive",
+                title: "Erro de Cadastro",
+                description: userCheck.message,
+            });
+            setLoading(false);
+            return;
+        }
+
+        // Step 2: If user doesn't exist, open contract
         setFormData(values);
         setIsContractOpen(true);
+        setLoading(false);
     };
 
     const handleContractAccept = async () => {
@@ -218,7 +234,7 @@ const SignUpPage = () => {
 
                     <Button type="submit" className="w-full text-lg py-6" disabled={loading}>
                         {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <ArrowRight className="mr-2 h-5 w-5" />}
-                        {loading ? 'Aguarde...' : 'Continuar para Contrato'}
+                        {loading ? 'Verificando...' : 'Continuar para Contrato'}
                       </Button>
                 </form>
                </Form>
@@ -251,4 +267,3 @@ const SignUpPage = () => {
 };
 
 export default SignUpPage;
-

@@ -47,6 +47,37 @@ const loginSchema = z.object({
 
 // --- Server Actions ---
 
+export async function checkUserExists(login: string, email: string): Promise<{ success: boolean; message?: string }> {
+    let connection;
+    try {
+        connection = await db();
+        const [existingUsers] = await connection.execute('SELECT login, email FROM usuarios WHERE login = ? OR email = ?', [login, email]);
+        const users = existingUsers as any[];
+
+        if (users.length > 0) {
+            const loginExists = users.some(u => u.login === login);
+            const emailExists = users.some(u => u.email === email);
+
+            if (loginExists && emailExists) {
+                return { success: false, message: 'O login e o e-mail informados já estão em uso.' };
+            }
+            if (loginExists) {
+                return { success: false, message: 'O login informado já está em uso.' };
+            }
+            if (emailExists) {
+                return { success: false, message: 'O e-mail informado já está em uso.' };
+            }
+        }
+        return { success: true };
+    } catch (error) {
+        console.error('Check User Exists Error:', error);
+        return { success: false, message: 'Ocorreu um erro no servidor ao verificar os dados.' };
+    } finally {
+        if (connection) await connection.end();
+    }
+}
+
+
 export async function registerUserAndCompany(data: unknown) {
   const validation = registrationSchema.safeParse(data);
 
@@ -67,7 +98,7 @@ export async function registerUserAndCompany(data: unknown) {
   try {
     connection = await db();
 
-    // Check if user or company already exists
+    // Re-check just in case of a race condition
     const [existingUser] = await connection.execute('SELECT idusuarios FROM usuarios WHERE login = ? OR email = ?', [login, email]);
     if ((existingUser as any[]).length > 0) {
       return { success: false, message: 'Login ou e-mail de usuário já cadastrado.' };
