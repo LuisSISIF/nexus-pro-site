@@ -12,7 +12,7 @@ const CookiesPage = () => {
             Política de Cookies
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-400">
-            Última atualização: 24 de julho de 2024
+            Última atualização: 09 de agosto de 2025
           </p>
 
           <div className="space-y-6">
