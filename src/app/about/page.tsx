@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import Header from '@/components/home/Header';
 import Footer from '@/components/home/Footer';
@@ -5,12 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Rocket, Target, Heart, Users, CheckCircle, Lightbulb, Handshake, MessageSquare } from 'lucide-react';
 import Image from 'next/image';
 import Logo from '@/images/logoRedSemFundo.png';
+import AnimatedSection from '@/components/home/AnimatedSection';
 
 const AboutUsPage = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       <Header />
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 text-gray-800 dark:text-gray-200">
+        <AnimatedSection>
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white font-headline">
             Nós somos a Andromeda Solutions
@@ -131,6 +134,7 @@ const AboutUsPage = () => {
                 Conheça nossos planos
             </a>
         </div>
+        </AnimatedSection>
       </main>
       <Footer />
     </div>

@@ -16,6 +16,7 @@ import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { loginUser } from '@/actions/auth-actions';
 import { useToast } from '@/hooks/use-toast';
+import AnimatedSection from '@/components/home/AnimatedSection';
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Por favor, insira um e-mail válido." }),
@@ -77,7 +78,7 @@ const LoginPage = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
       <Header />
       <main className="flex-grow flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
-        <div className="w-full max-w-md">
+        <AnimatedSection className="w-full max-w-md">
           <Card className="shadow-lg border-gray-200 dark:border-gray-700">
             <CardHeader className="text-center space-y-2">
               <CardTitle className="text-3xl font-bold font-headline">Área do Cliente</CardTitle>
@@ -137,7 +138,7 @@ const LoginPage = () => {
                 </div>
             </CardContent>
           </Card>
-        </div>
+        </AnimatedSection>
       </main>
       <Footer />
     </div>

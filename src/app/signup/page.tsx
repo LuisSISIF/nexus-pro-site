@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState } from 'react';
@@ -22,6 +21,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ContractDialog } from '@/components/signup/ContractDialog';
+import AnimatedSection from '@/components/home/AnimatedSection';
 
 const registrationSchema = z.object({
   // User
@@ -139,7 +139,7 @@ const SignUpPage = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
       <Header />
       <main className="flex-grow flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
-        <div className="w-full max-w-3xl">
+        <AnimatedSection className="w-full max-w-3xl">
           <Card className="shadow-lg border-gray-200 dark:border-gray-700">
             <CardHeader className="text-center space-y-4">
               <CardTitle className="text-3xl font-bold font-headline">Crie sua Conta NexusPro</CardTitle>
@@ -254,7 +254,7 @@ const SignUpPage = () => {
                 </div>
             </CardContent>
           </Card>
-        </div>
+        </AnimatedSection>
       </main>
       <Footer />
     </div>
