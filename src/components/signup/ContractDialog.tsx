@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -21,70 +21,146 @@ interface ContractDialogProps {
 }
 
 const SectionTitle: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <h2 className="text-lg font-semibold mt-4 mb-2 text-foreground">{children}</h2>
+    <h2 className="text-lg font-bold mt-4 mb-2 text-foreground">{children}</h2>
 );
 
-const SubSection: React.FC<{ title: string, children: React.ReactNode }> = ({ title, children }) => (
+const SubSection: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
     <div className="mt-3">
         <h3 className="font-semibold text-foreground">{title}</h3>
         <div className="pl-2 text-muted-foreground">{children}</div>
     </div>
 );
 
+
 const ContractContent = ({ formData, systemVersion }: { formData: RegistrationFormValues, systemVersion: string }) => (
     <div className="space-y-4 text-sm text-muted-foreground">
-        <p>Este contrato rege os termos do seu acesso gratuito de 14 dias ao software NexusPro.</p>
+        <p className="font-semibold text-center">Termos de Uso – Período de Teste Gratuito (14 dias) para o Software NexusPro</p>
         
         <SectionTitle>1. Identificação das Partes</SectionTitle>
         <SubSection title="Licenciante:">
-            <p><strong>ANDROMEDA SOLUTIONS</strong>, CNPJ 53.489.502/0001-94, representada por Luís Henrique Freire de Lima.</p>
+            <p><strong>ANDROMEDA SOLUTIONS</strong>, pessoa jurídica de direito privado, inscrita no CNPJ sob o nº 53.489.502/0001-94, com domicílio fiscal à Rua Varginha, nº 6, Santa Luiza, Machado – MG, CEP 37750-000 (endereço residencial do representante legal, visto que a empresa não possui sede comercial), neste ato representada por seu CEO Luís Henrique Freire de Lima, brasileiro, e-mail andromedasolutions2025@outlook.com, telefone (35) 99861-5203.</p>
         </SubSection>
         <SubSection title="Licenciado/Usuário:">
+            <p>Pessoa física ou jurídica que aceita estes termos para uso do NexusPro no período de teste gratuito.</p>
             <p><strong>Nome:</strong> {formData.fullName}</p>
             <p><strong>CPF:</strong> {formData.cpf}</p>
             <p><strong>Empresa:</strong> {formData.companyName}</p>
         </SubSection>
 
         <SectionTitle>2. Objeto</SectionTitle>
-        <p>Concessão de licença temporária (14 dias), não exclusiva e intransferível de uso do NexusPro.</p>
+        <p>Concessão de licença temporária, não exclusiva e intransferível de uso do software NexusPro, plataforma de gerenciamento e automação de estoque, vendas, finanças, controle de clientes e crédito para comércios de varejo em geral, pelo prazo de 14 (quatorze) dias corridos, iniciando-se no primeiro acesso.</p>
 
-        <SectionTitle>3. Descrição Técnica</SectionTitle>
-        <ul className="list-disc pl-5 space-y-1">
-            <li><strong>Categoria:</strong> ERP especializado para gestão de varejo.</li>
-            <li><strong>Implementação:</strong> Instalação local com banco de dados na nuvem e plataforma web.</li>
-            <li><strong>Requisitos Mínimos:</strong> Core i3, 4GB RAM, Win 10 (64 bits), Internet 5 Mbps.</li>
-        </ul>
+        <SectionTitle>3. Descrição técnica</SectionTitle>
+        <p>a) <strong>Categoria:</strong> ERP especializado para gestão de varejo, com recursos de vendas, estoque, financeiro e relatórios integrados.</p>
+        <p>b) <strong>Implementação:</strong> instalação local + banco de dados em servidor na nuvem + plataforma web para controle financeiro.</p>
+        <SubSection title="c) Requisitos mínimos:">
+             <ul className="list-disc pl-5 space-y-1">
+                <li>Processador Intel Core i3 ou AMD equivalente</li>
+                <li>4 GB RAM</li>
+                <li>10 GB livres no HD/SSD</li>
+                <li>Windows 10 (64 bits)</li>
+                <li>Tela 1366×768</li>
+                <li>Internet 5 Mbps</li>
+                <li>(Opcional) impressora de recibos, etiquetas; leitor de código de barras</li>
+            </ul>
+        </SubSection>
+         <SubSection title="d) Requisitos recomendados:">
+             <ul className="list-disc pl-5 space-y-1">
+                <li>Intel Core i5 (8ª geração) ou AMD Ryzen 5</li>
+                <li>8 GB RAM</li>
+                <li>SSD 20 GB livres</li>
+                <li>Windows 10/11 (64 bits)</li>
+                <li>Tela Full HD 1920×1080</li>
+                <li>Internet 20 Mbps</li>
+                <li>(Opcional) impressora de recibos, etiquetas; leitor de código de barras; gaveta de dinheiro</li>
+            </ul>
+        </SubSection>
 
-        <SectionTitle>4. Limitações do Plano de Teste</SectionTitle>
+        <SectionTitle>4. Limitações do plano de teste</SectionTitle>
         <ul className="list-disc pl-5 space-y-1">
-            <li>Até 2 usuários e 1 loja.</li>
-            <li>Impressão de cupom não fiscal indisponível.</li>
-            <li>Suporte técnico limitado a dúvidas de instalação via e-mail.</li>
-        </ul>
-
-        <SectionTitle>5. Coleta e Tratamento de Dados (LGPD)</SectionTitle>
-        <ul className="list-disc pl-5 space-y-1">
-            <li><strong>Dados Coletados:</strong> Informações de cadastro do usuário e da empresa.</li>
-            <li><strong>Finalidade:</strong> Operacionalização do sistema, cadastro e backup.</li>
-            <li><strong>Base Legal:</strong> Execução de contrato (LGPD art. 7º, V).</li>
-            <li><strong>Segurança:</strong> Criptografia, controle de acesso e servidores em São Paulo-SP.</li>
+            <li>Até 2 usuários simultâneos.</li>
+            <li>Controle de apenas 1 loja.</li>
+            <li>14 dias a contar do cadastro.</li>
+            <li>Impressão de cupom não fiscal indisponível (CNPJ cliente não coletado).</li>
+            <li>Demonstração de crediário limitada a 1 cliente.</li>
+            <li>Suporte via e-mail (retorno em 24–48 h; seg–sex 9h–17h, sáb 9h–12h).</li>
         </ul>
         
-        <SectionTitle>6. Uso Permitido e Proibido</SectionTitle>
-        <p>É permitido avaliar as funcionalidades. É proibido realizar engenharia reversa, cópia, atividades ilícitas ou compartilhamento de credenciais.</p>
-
-        <SectionTitle>7. Suporte e Transição para Plano Pago</SectionTitle>
-        <p>Após o teste, os dados são mantidos por 30 dias para contratação de um plano pago (Essencial, Profissional ou Empresarial), sem necessidade de reinstalação.</p>
+        <SectionTitle>5. Coleta e tratamento de dados</SectionTitle>
+         <ul className="list-disc pl-5 space-y-1">
+            <li><strong>Dados coletados:</strong> nome, CPF, e-mail, telefone, sexo, login e senha de administrador; nome, atividade principal e endereço da empresa.</li>
+            <li><strong>Finalidade:</strong> operacional para uso básico, cadastro de produtos, vendas, estoque, financeiro, funcionários e relatórios; sincronização e backup remoto para bancos online.</li>
+            <li><strong>Base legal:</strong> Execução de contrato (LGPD art. 7º, V) e Cumprimento de obrigação legal (emissão de NF-e).</li>
+            <li><strong>Retenção:</strong> 30 dias pós-teste para migração, depois exclusão.</li>
+            <li><strong>Localização dos servidores:</strong> América do Sul (São Paulo – SP).</li>
+            <li><strong>Segurança:</strong> criptografia de senhas; controle de acesso e permissões; credenciais no banco de dados.</li>
+            <li><strong>Exercício de direitos:</strong> solicitação via e-mail/suporte para acesso, correção ou exclusão.</li>
+        </ul>
         
-        <SectionTitle>8. Instalação e Segurança</SectionTitle>
-        <p>O instalador do NexusPro não possui certificado digital, o que pode gerar alertas de segurança no Windows. Garantimos que o software baixado do nosso site oficial é seguro, verificado e livre de malware.</p>
+        <SectionTitle>6. Uso permitido e proibido</SectionTitle>
+        <p><strong>Permitido:</strong> avaliação das funcionalidades conforme limitações acima.</p>
+        <p><strong>Proibido:</strong></p>
+        <ul className="list-disc pl-5 space-y-1">
+            <li>Engenharia reversa, descompilação, cópia ou redistribuição sem autorização.</li>
+            <li>Atividades ilícitas ou violação de leis.</li>
+            <li>Compartilhamento de credenciais.</li>
+            <li>Hospedagem de dados não relacionados à operação legítima.</li>
+        </ul>
+        <p><strong>Consequências:</strong> suspensão temporária ou rescisão sem reembolso; medidas legais cabíveis.</p>
+        
+        <SectionTitle>7. Suporte técnico</SectionTitle>
+        <ul className="list-disc pl-5 space-y-1">
+            <li><strong>Canais:</strong> e-mail, WhatsApp/chat, telefone (seg–sex 8h–18h, exceto feriados).</li>
+            <li><strong>Tempo de resposta:</strong> e-mail até 48 h úteis; chat/WhatsApp até 2 h úteis (planos pagos); telefone imediato (planos pagos).</li>
+            <li><strong>Limitações no teste:</strong> dúvidas de instalação/configuração inicial apenas.</li>
+            <li><strong>Documentação:</strong> guia rápido, PDFs e vídeos.</li>
+        </ul>
+        
+        <SectionTitle>8. Transição para plano pago</SectionTitle>
+        <p><strong>Planos pagos:</strong></p>
+         <ul className="list-disc pl-5 space-y-1">
+            <li>Essencial (vendas, estoque, financeiro): R$ 80,00/mês</li>
+            <li>Profissional (+ relatórios avançados, integrações): R$ 120,00/mês</li>
+            <li>Empresarial (+ personalizações, suporte prioritário, multiunidade): R$ 190,00/mês</li>
+        </ul>
+        <p>Dados do teste mantidos integralmente; contratação sem reinstalação.</p>
+        <p>Backup diário em nuvem; checagem de integridade após ativação.</p>
+        <p>Ofertas especiais conforme campanhas vigentes.</p>
 
-        <SectionTitle>9. Aceite Eletrônico e Jurisdição</SectionTitle>
-        <p>Ao aceitar estes termos, você firma um contrato com validade jurídica. Fica eleito o foro da Comarca de Machado – MG para dirimir quaisquer controvérsias.</p>
+        <SectionTitle>9. Disponibilidade e manutenção</SectionTitle>
+        <ul className="list-disc pl-5 space-y-1">
+            <li><strong>Uptime banco online:</strong> ≥ 98%, salvo manutenções ou eventos de provedor.</li>
+            <li><strong>Manutenções programadas:</strong> aviso prévio de 24 h, geralmente 22h–5h.</li>
+            <li><strong>Backup diário:</strong> restauração a partir do backup mais recente.</li>
+        </ul>
+
+        <SectionTitle>10. Comunicações</SectionTitle>
+        <ul className="list-disc pl-5 space-y-1">
+            <li><strong>E-mail oficial:</strong> cadastrado pelo cliente no início do teste.</li>
+            <li><strong>Aviso de término:</strong> e-mail e mensagem no sistema com ≥ 3 dias de antecedência.</li>
+            <li><strong>Alterações nos termos:</strong> aviso com ≥ 15 dias.</li>
+            <li><strong>Suporte técnico:</strong> e-mail ou telefone conforme horários acima.</li>
+        </ul>
+
+        <SectionTitle>11. Jurisdição e legislação</SectionTitle>
+        <p>Este termo é regido pelas leis brasileiras. Fica eleito o foro da Comarca de Machado – MG para dirimir quaisquer controvérsias, com exclusão de qualquer outro.</p>
+
+        <SectionTitle>12. Aceite eletrônico</SectionTitle>
+        <p>O usuário declara que leu e aceitou estes termos ao marcar a opção “Li e aceito os termos de uso” no sistema. O sistema registra data, hora e usuário para comprovação. Este aceite possui validade jurídica equiparada à assinatura manuscrita, nos termos da MP 2.200-2/2001.</p>
+        
+        <SectionTitle>13. ASSINATURA DIGITAL E VERIFICAÇÕES DE SEGURANÇA</SectionTitle>
+        <p><strong>13.1. Instalador sem Certificado Digital:</strong> Devido ao recente lançamento do NexusPro, o instalador disponibilizado para download não contém certificado de assinatura digital emitido por autoridade certificadora. Consequentemente, sistemas operacionais como o Windows poderão exibir alertas de “aplicativo possivelmente perigoso” ou “fornecedor não reconhecido” ao executar o instalador.</p>
+        <p><strong>13.2. Garantia de Integridade e Segurança:</strong> Apesar da ausência de assinatura digital, todo pacote de instalação baixado diretamente do site oficial da Andromeda Solutions passa por rigorosos processos de:</p>
+        <ul className="list-disc pl-5 space-y-1">
+            <li>Verificação de integridade (hash de arquivos)</li>
+            <li>Análise anti-malware automatizada</li>
+            <li>Testes de risco em ambiente controlado</li>
+        </ul>
+        <p>Essas medidas asseguram que o instalador esteja livre de softwares maliciosos e que os dados do cliente sejam protegidos em todas as etapas de instalação e uso do sistema.</p>
+        <p><strong>Observação:</strong> recomenda-se executar o instalador apenas a partir do site oficial (https://www.andromedasolutions.com.br) e manter o antivírus atualizado para evitar alertas ou bloqueios indevidos.</p>
         
         <div className="pt-4 mt-4 border-t">
             <p><strong>Versão do Documento:</strong> {systemVersion}</p>
-            <p><strong>Data de Vigência:</strong> 24 de julho de 2024</p>
         </div>
     </div>
 );
@@ -92,7 +168,7 @@ const ContractContent = ({ formData, systemVersion }: { formData: RegistrationFo
 
 export const ContractDialog: React.FC<ContractDialogProps> = ({ isOpen, onOpenChange, onAccept, isLoading, formData }) => {
   const [isAccepted, setIsAccepted] = useState(false);
-  const [systemVersion, setSystemVersion] = useState('[Versão não disponível]');
+  const [systemVersion, setSystemVersion] = useState('[Carregando versão...]');
   const [isContractLoading, setIsContractLoading] = useState(true);
 
   useEffect(() => {
@@ -105,7 +181,8 @@ export const ContractDialog: React.FC<ContractDialogProps> = ({ isOpen, onOpenCh
                  setSystemVersion(versionResult.version);
             }
         } catch (e) {
-            console.error("Failed to fetch system version", e)
+            console.error("Failed to fetch system version", e);
+            setSystemVersion('[Versão indisponível]');
         } finally {
             setIsContractLoading(false);
         }
