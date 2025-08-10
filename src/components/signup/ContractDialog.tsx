@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from '@/components/ui/label';
 import { Loader2, Check } from 'lucide-react';
 import type { RegistrationFormValues } from '@/app/signup/page';
+import { getSystemVersion } from '@/actions/system-actions';
 
 interface ContractDialogProps {
   isOpen: boolean;
@@ -21,6 +22,8 @@ interface ContractDialogProps {
 export const ContractDialog: React.FC<ContractDialogProps> = ({ isOpen, onOpenChange, onAccept, isLoading, formData }) => {
   const [hasScrolledToEnd, setHasScrolledToEnd] = useState(false);
   const [isAccepted, setIsAccepted] = useState(false);
+  const [contractText, setContractText] = useState('Carregando contrato...');
+  const [isContractLoading, setIsContractLoading] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const handleScroll = () => {
@@ -33,15 +36,14 @@ export const ContractDialog: React.FC<ContractDialogProps> = ({ isOpen, onOpenCh
     }
   };
 
-  // Reset states when dialog opens
   useEffect(() => {
-    if (isOpen) {
-      setHasScrolledToEnd(false);
-      setIsAccepted(false);
-    }
-  }, [isOpen]);
+    const fetchContractData = async () => {
+      if (isOpen) {
+        setIsContractLoading(true);
+        const versionResult = await getSystemVersion();
+        const systemVersion = versionResult.success ? versionResult.version : '[Versão não disponível]';
 
-  const contractText = `
+        setContractText(`
 Termos de Uso – Período de Teste Gratuito (14 dias)
 Software NexusPro
 
@@ -151,9 +153,24 @@ Essas medidas asseguram que o instalador esteja livre de softwares maliciosos e 
 Observação: recomenda-se executar o instalador apenas a partir do site oficial (https://www.andromedasolutions.com.br) e manter o antivírus atualizado para evitar alertas ou bloqueios indevidos.
 
 Data de vigência: 09/08/2025
-Versão: consultar no banco o campo versaoAtual da tabela dadossistema
+Versão: ${systemVersion}
 Documento gerado eletronicamente pela Andromeda Solutions.
-`;
+`);
+        setIsContractLoading(false);
+      }
+    };
+
+    fetchContractData();
+  }, [isOpen, formData]);
+
+
+  // Reset states when dialog opens
+  useEffect(() => {
+    if (isOpen) {
+      setHasScrolledToEnd(false);
+      setIsAccepted(false);
+    }
+  }, [isOpen]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -166,14 +183,21 @@ Documento gerado eletronicamente pela Andromeda Solutions.
         </DialogHeader>
 
         <ScrollArea className="h-96 w-full rounded-md border p-4" onScroll={handleScroll} ref={scrollRef}>
-            <pre className="text-xs whitespace-pre-wrap font-sans">{contractText}</pre>
+            {isContractLoading ? (
+                 <div className="flex items-center justify-center h-full">
+                    <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                    <span>Carregando contrato...</span>
+                </div>
+            ) : (
+                <pre className="text-xs whitespace-pre-wrap font-sans">{contractText}</pre>
+            )}
         </ScrollArea>
         
         <DialogFooter className="flex-col sm:flex-col sm:space-x-0 items-start gap-4">
             <div className="flex items-center space-x-2">
                 <Checkbox 
                     id="terms" 
-                    disabled={!hasScrolledToEnd || isLoading}
+                    disabled={!hasScrolledToEnd || isLoading || isContractLoading}
                     checked={isAccepted}
                     onCheckedChange={(checked) => setIsAccepted(checked as boolean)}
                 />
@@ -181,14 +205,14 @@ Documento gerado eletronicamente pela Andromeda Solutions.
                     Li e aceito os termos de uso
                 </Label>
             </div>
-            {!hasScrolledToEnd && (
+            {!hasScrolledToEnd && !isContractLoading && (
                 <p className="text-xs text-yellow-600">Role até o final do contrato para habilitar o aceite.</p>
             )}
 
             <Button 
                 type="button" 
                 onClick={onAccept}
-                disabled={!isAccepted || isLoading} 
+                disabled={!isAccepted || isLoading || isContractLoading} 
                 className="w-full sm:w-auto"
             >
               {isLoading ? (
