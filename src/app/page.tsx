@@ -8,6 +8,7 @@ import Support from '@/components/home/Support';
 import Testimonials from '@/components/home/Testimonials';
 import AnimatedSection from '@/components/home/AnimatedSection';
 import React from 'react';
+import { BackToTopButton } from '@/components/home/BackToTopButton';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <FAQ />
       </AnimatedSection>
       <Footer />
+      <BackToTopButton />
     </div>
   );
 }
