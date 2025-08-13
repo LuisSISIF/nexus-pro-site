@@ -57,7 +57,7 @@ const Hero = () => {
               </a>
             </div>
             
-             <p className="text-sm text-gray-500 dark:text-gray-400">Sem cartão de crédito • Cancele quando quiser</p>
+             <p className="text-sm text-gray-500 dark:text-gray-400">Teste grátis por 10 dias • Sem cartão de crédito • Cancele quando quiser</p>
 
 
           </div>

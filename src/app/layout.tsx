@@ -6,7 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 export const metadata: Metadata = {
   title: "NexusPro - Sistema de Gestão de Estoque e Vendas",
   description:
-    "Controle total de seu estoque e vendas com o sistema NexusPro. Automatize processos, gerencie em tempo real e imprima etiquetas com facilidade. Teste grátis por 14 dias.",
+    "Controle total de seu estoque e vendas com o sistema NexusPro. Automatize processos, gerencie em tempo real e imprima etiquetas com facilidade. Teste grátis por 10 dias.",
 };
 
 export default function RootLayout({

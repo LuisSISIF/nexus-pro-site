@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -144,7 +145,7 @@ const SignUpPage = () => {
             <CardHeader className="text-center space-y-4">
               <CardTitle className="text-3xl font-bold font-headline">Crie sua Conta NexusPro</CardTitle>
               <CardDescription>
-                Comece seu teste gratuito de 14 dias preenchendo os dados abaixo.
+                Comece seu teste gratuito de 10 dias preenchendo os dados abaixo.
               </CardDescription>
             </CardHeader>
             <CardContent>

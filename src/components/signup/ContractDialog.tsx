@@ -41,7 +41,7 @@ const SubClause: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 
 const ContractContent = ({ formData, systemVersion }: { formData: RegistrationFormValues, systemVersion: string }) => (
     <div className="space-y-4 text-xs text-muted-foreground">
-        <p className="font-semibold text-center text-md text-foreground">Termos de Uso – Período de Teste Gratuito (14 dias) para o Software NexusPro</p>
+        <p className="font-semibold text-center text-md text-foreground">Termos de Uso – Período de Teste Gratuito (10 dias) para o Software NexusPro</p>
         
         <SectionTitle>1. IDENTIFICAÇÃO DAS PARTES</SectionTitle>
         <SubClause>
@@ -58,7 +58,7 @@ const ContractContent = ({ formData, systemVersion }: { formData: RegistrationFo
 
         <SectionTitle>2. OBJETO</SectionTitle>
          <SubClause>
-            <ClauseText>2.1. Concessão de licença temporária, não exclusiva e intransferível de uso do software NexusPro, plataforma de gerenciamento e automação de estoque, vendas, finanças, controle de clientes e crédito para comércios de varejo em geral, pelo prazo de 14 (quatorze) dias corridos, iniciando-se no primeiro acesso.</ClauseText>
+            <ClauseText>2.1. Concessão de licença temporária, não exclusiva e intransferível de uso do software NexusPro, plataforma de gerenciamento e automação de estoque, vendas, finanças, controle de clientes e crédito para comércios de varejo em geral, pelo prazo de 10 (dez) dias corridos, iniciando-se no primeiro acesso.</ClauseText>
         </SubClause>
 
         <SectionTitle>3. DESCRIÇÃO TÉCNICA</SectionTitle>
@@ -101,7 +101,7 @@ const ContractContent = ({ formData, systemVersion }: { formData: RegistrationFo
             <ClauseText>4.2. Controle de apenas 1 loja.</ClauseText>
         </SubClause>
         <SubClause>
-            <ClauseText>4.3. 14 dias a contar do cadastro.</ClauseText>
+            <ClauseText>4.3. 10 dias a contar do cadastro.</ClauseText>
         </SubClause>
         <SubClause>
             <ClauseText>4.4. Impressão de cupom não fiscal indisponível (CNPJ cliente não coletado).</ClauseText>
@@ -300,7 +300,7 @@ const ContractContent = ({ formData, systemVersion }: { formData: RegistrationFo
 
         <SectionTitle>20. VIGÊNCIA ESPECÍFICA PARA TESTE</SectionTitle>
         <SubClause>
-            <ClauseText>20.1. A vigência de 14 dias inicia-se no momento exato do registro na plataforma, utilizando o fuso horário de Brasília (GMT-3). O término é automático, e a contagem regressiva será exibida na interface do sistema.</ClauseText>
+            <ClauseText>20.1. A vigência de 10 dias inicia-se no momento exato do registro na plataforma, utilizando o fuso horário de Brasília (GMT-3). O término é automático, e a contagem regressiva será exibida na interface do sistema.</ClauseText>
         </SubClause>
         
         <SectionTitle>21. DISPOSIÇÕES FINAIS COMPLEMENTARES</SectionTitle>
