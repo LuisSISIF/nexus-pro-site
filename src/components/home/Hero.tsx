@@ -36,30 +36,7 @@ const Hero = () => {
                 <span>Suporte via WhatsApp</span>
               </div>
             </div>
-
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-               <Link
-                href="/signup"
-                className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
-              >
-                <Rocket className="w-5 h-5"/>
-                Quero meu Teste Gratuito
-              </Link>
-              <a 
-                href="https://wa.me/5535998615203" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="bg-transparent hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-8 py-4 rounded-lg text-lg font-semibold transition-all flex items-center justify-center space-x-2 border-2 border-blue-600 dark:border-blue-400"
-              >
-                <Calendar className="w-5 h-5" />
-                <span>Agendar uma Demonstração</span>
-              </a>
-            </div>
-            
              <p className="text-sm text-gray-500 dark:text-gray-400">Teste grátis por 10 dias • Sem cartão de crédito • Cancele quando quiser</p>
-
-
           </div>
 
           {/* Dashboard Preview */}

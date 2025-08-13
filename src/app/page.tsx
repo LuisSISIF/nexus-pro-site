@@ -9,6 +9,7 @@ import Testimonials from '@/components/home/Testimonials';
 import AnimatedSection from '@/components/home/AnimatedSection';
 import React from 'react';
 import { BackToTopButton } from '@/components/home/BackToTopButton';
+import CTA from '@/components/home/CTA';
 
 function App() {
   return (
@@ -26,6 +27,9 @@ function App() {
       </AnimatedSection>
       <AnimatedSection>
         <Support />
+      </AnimatedSection>
+      <AnimatedSection>
+        <CTA />
       </AnimatedSection>
       <AnimatedSection>
         <FAQ />
