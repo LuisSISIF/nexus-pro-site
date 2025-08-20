@@ -113,7 +113,7 @@ const Features = () => {
         </motion.div>
 
         {/* Promotional Banner */}
-        <div className="mt-20 bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-8 lg:p-12 text-center shadow-2xl border border-yellow-500/30">
+        <div className="mt-20 bg-gray-900 rounded-2xl p-8 lg:p-12 text-center shadow-2xl border border-yellow-500/30">
             <div className="flex justify-center items-center gap-4 mb-4">
                 <Megaphone className="w-8 h-8 text-yellow-400"/>
                 <h3 className="text-2xl lg:text-3xl font-bold text-yellow-400">
