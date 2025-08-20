@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useRef } from 'react';
-import { Package, ShoppingCart, Users, BarChart3, Cloud, Zap, Megaphone } from 'lucide-react';
+import { Package, ShoppingCart, Users, BarChart3, Cloud, Zap, Megaphone, Video } from 'lucide-react';
 import { motion, useAnimation, useInView } from 'framer-motion';
 
 const Features = () => {
@@ -113,17 +113,18 @@ const Features = () => {
         </motion.div>
 
         {/* Promotional Banner */}
-        <div className="mt-20 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 rounded-2xl p-8 lg:p-12 text-white text-center shadow-2xl">
-          <div className="flex justify-center items-center gap-4 mb-4">
-            <Megaphone className="w-8 h-8"/>
-            <h3 className="text-2xl lg:text-3xl font-bold">
-              Promoção por Tempo Limitado!
-            </h3>
-          </div>
-          <p className="text-lg text-yellow-100 max-w-3xl mx-auto">
-            Contrate qualquer plano e ganhe um <strong>treinamento pessoal completo do sistema</strong>, realizado via Google Meet, para você e sua equipe.
-          </p>
+        <div className="mt-20 bg-blue-600/10 dark:bg-blue-500/10 rounded-2xl p-8 lg:p-12 text-center shadow-lg border border-blue-600/20">
+            <div className="flex justify-center items-center gap-4 mb-4">
+                <Video className="w-8 h-8 text-blue-500"/>
+                <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
+                    Treinamento Pessoal Incluso
+                </h3>
+            </div>
+            <p className="text-lg text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
+                Contrate qualquer plano e ganhe um <strong>treinamento pessoal completo do sistema</strong>, realizado via Google Meet, para você e sua equipe.
+            </p>
         </div>
+
 
         {/* ROI Section */}
         <div className="mt-20 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 lg:p-12 text-white text-center">
