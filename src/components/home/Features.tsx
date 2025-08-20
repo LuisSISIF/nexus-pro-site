@@ -113,14 +113,14 @@ const Features = () => {
         </motion.div>
 
         {/* Promotional Banner */}
-        <div className="mt-20 bg-blue-600/10 dark:bg-blue-500/10 rounded-2xl p-8 lg:p-12 text-center shadow-lg border border-blue-600/20">
+        <div className="mt-20 bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-8 lg:p-12 text-center shadow-2xl border border-yellow-500/30">
             <div className="flex justify-center items-center gap-4 mb-4">
-                <Megaphone className="w-8 h-8 text-blue-500"/>
-                <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
+                <Megaphone className="w-8 h-8 text-yellow-400"/>
+                <h3 className="text-2xl lg:text-3xl font-bold text-yellow-400">
                     Treinamento Pessoal Incluso
                 </h3>
             </div>
-            <p className="text-lg text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
+            <p className="text-lg text-gray-300 max-w-3xl mx-auto">
                 Contrate qualquer plano e ganhe um <strong>treinamento pessoal completo do sistema</strong>, realizado via Google Meet, para você e sua equipe.
             </p>
         </div>
