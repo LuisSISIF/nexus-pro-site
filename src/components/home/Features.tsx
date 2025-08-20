@@ -115,7 +115,7 @@ const Features = () => {
         {/* Promotional Banner */}
         <div className="mt-20 bg-blue-600/10 dark:bg-blue-500/10 rounded-2xl p-8 lg:p-12 text-center shadow-lg border border-blue-600/20">
             <div className="flex justify-center items-center gap-4 mb-4">
-                <Video className="w-8 h-8 text-blue-500"/>
+                <Megaphone className="w-8 h-8 text-blue-500"/>
                 <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
                     Treinamento Pessoal Incluso
                 </h3>
