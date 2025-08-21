@@ -192,70 +192,73 @@ const Pricing = () => {
 
         <h3 className="text-2xl font-semibold text-center text-gray-800 dark:text-gray-200 mb-10">Ou escolha seu plano ideal</h3>
 
-        <motion.div
-          ref={ref}
-          initial="hidden"
-          animate={controls}
-          variants={containerVariants}
-          className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start"
-        >
-          {plans.map((plan, index) => {
-            const Icon = plan.icon;
-            return (
-              <motion.div
-                key={index}
-                variants={plan.popular ? popularItemVariants : itemVariants}
-                className={`bg-white dark:bg-gray-800 rounded-2xl shadow-xl border-2 p-8 relative flex flex-col h-full ${
-                  plan.popular ? 'border-blue-500' : 'border-gray-200 dark:border-gray-700'
-                }`}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <div className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center space-x-1">
-                      <Star className="w-4 h-4 fill-current" />
-                      <span>Mais Popular</span>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+          <motion.div
+            ref={ref}
+            initial="hidden"
+            animate={controls}
+            variants={containerVariants}
+            className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start col-span-1 lg:col-span-3"
+          >
+            {plans.map((plan, index) => {
+              const Icon = plan.icon;
+              return (
+                <motion.div
+                  key={index}
+                  variants={plan.popular ? popularItemVariants : itemVariants}
+                  className={`bg-white dark:bg-gray-800 rounded-2xl shadow-xl border-2 p-8 relative flex flex-col h-full ${
+                    plan.popular ? 'border-blue-500' : 'border-gray-200 dark:border-gray-700'
+                  }`}
+                >
+                  {plan.popular && (
+                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                      <div className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center space-x-1">
+                        <Star className="w-4 h-4 fill-current" />
+                        <span>Mais Popular</span>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="text-center mb-8">
+                    <div className="w-16 h-16 mx-auto bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                       <Icon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{plan.name}</h3>
+                    <p className="text-gray-600 dark:text-gray-300 mb-4">{plan.description}</p>
+
+                    <div className="space-y-2">
+                      <div className="flex items-baseline justify-center">
+                          <>
+                           <span className="text-5xl font-bold text-gray-900 dark:text-white">R$ {plan.price}</span>
+                           <span className="text-gray-500 dark:text-gray-400 ml-2">/mês</span>
+                          </>
+                      </div>
                     </div>
                   </div>
-                )}
 
-                <div className="text-center mb-8">
-                  <div className="w-16 h-16 mx-auto bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
-                     <Icon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                  <div className="space-y-4 mb-8 flex-grow">
+                    {plan.features.map((feature, featureIndex) => (
+                      <div key={featureIndex} className="flex items-start space-x-3">
+                        {feature.includes('(❌)') ?
+                          <X className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" /> :
+                          <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />}
+                        <span className="text-gray-700 dark:text-gray-300">{feature.replace(' (❌)','')}</span>
+                      </div>
+                    ))}
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{plan.name}</h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-4">{plan.description}</p>
-
-                  <div className="space-y-2">
-                    <div className="flex items-baseline justify-center">
-                        <>
-                         <span className="text-5xl font-bold text-gray-900 dark:text-white">R$ {plan.price}</span>
-                         <span className="text-gray-500 dark:text-gray-400 ml-2">/mês</span>
-                        </>
-                    </div>
+                   <div className="mt-auto">
+                      <Button asChild className="w-full text-lg py-6" variant={plan.popular ? 'default' : 'outline'}>
+                          <Link href={`/signup-paid?planId=${plan.id}`}>
+                             Contratar Plano
+                          </Link>
+                      </Button>
                   </div>
-                </div>
+                </motion.div>
+              )
+            })}
+          </motion.div>
+        </div>
 
-                <div className="space-y-4 mb-8 flex-grow">
-                  {plan.features.map((feature, featureIndex) => (
-                    <div key={featureIndex} className="flex items-start space-x-3">
-                      {feature.includes('(❌)') ?
-                        <X className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" /> :
-                        <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />}
-                      <span className="text-gray-700 dark:text-gray-300">{feature.replace(' (❌)','')}</span>
-                    </div>
-                  ))}
-                </div>
-                 <div className="mt-auto">
-                    <Button asChild className="w-full text-lg py-6" variant={plan.popular ? 'default' : 'outline'}>
-                        <Link href={`/signup-paid?planId=${plan.id}`}>
-                           Contratar Plano
-                        </Link>
-                    </Button>
-                </div>
-              </motion.div>
-            )
-          })}
-        </motion.div>
 
         {/* Plan Summaries */}
         <div className="mt-20">
