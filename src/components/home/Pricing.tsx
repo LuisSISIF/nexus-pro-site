@@ -197,7 +197,7 @@ const Pricing = () => {
           initial="hidden"
           animate={controls}
           variants={containerVariants}
-          className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-8 items-start"
+          className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start"
         >
           {plans.map((plan, index) => {
             const Icon = plan.icon;
@@ -260,7 +260,7 @@ const Pricing = () => {
         {/* Plan Summaries */}
         <div className="mt-20">
             <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white text-center mb-10">🛒 Resumo dos Planos</h3>
-            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {planSummaries.map((summary, index) => (
                 <div key={index} className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
                     <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">{summary.title}</h4>

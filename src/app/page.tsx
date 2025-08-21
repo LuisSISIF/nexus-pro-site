@@ -15,25 +15,27 @@ function App() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       <Header />
-      <Hero />
-      <AnimatedSection>
-        <Features />
-      </AnimatedSection>
-      <AnimatedSection>
-        <Testimonials />
-      </AnimatedSection>
-      <AnimatedSection>
-        <Pricing />
-      </AnimatedSection>
-      <AnimatedSection>
-        <Support />
-      </AnimatedSection>
-      <AnimatedSection>
-        <CTA />
-      </AnimatedSection>
-      <AnimatedSection>
-        <FAQ />
-      </AnimatedSection>
+      <main>
+        <Hero />
+        <AnimatedSection>
+          <Features />
+        </AnimatedSection>
+        <AnimatedSection>
+          <Testimonials />
+        </AnimatedSection>
+        <AnimatedSection>
+          <Pricing />
+        </AnimatedSection>
+        <AnimatedSection>
+          <Support />
+        </AnimatedSection>
+        <AnimatedSection>
+          <CTA />
+        </AnimatedSection>
+        <AnimatedSection>
+          <FAQ />
+        </AnimatedSection>
+      </main>
       <Footer />
       <BackToTopButton />
     </div>
