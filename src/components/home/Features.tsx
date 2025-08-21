@@ -2,6 +2,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Package, ShoppingCart, Users, BarChart3, Cloud, Zap, Megaphone, Video, Tag } from 'lucide-react';
 import { motion, useAnimation, useInView } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 const Features = () => {
   const features = [
@@ -45,7 +46,8 @@ const Features = () => {
       icon: Tag,
       title: "Sistema de Controle de Ofertas",
       description: "Crie e gerencie promoções de forma fácil e automatizada para impulsionar suas vendas.",
-      color: "bg-pink-500"
+      color: "bg-pink-500",
+      premium: true,
     }
   ];
 
@@ -102,15 +104,26 @@ const Features = () => {
               <motion.div
                 key={index}
                 variants={itemVariants}
-                className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group"
+                className={cn(
+                  "rounded-xl p-8 shadow-lg border hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group",
+                  feature.premium
+                    ? "bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900 border-pink-500/50"
+                    : "bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700"
+                )}
               >
                 <div className={`w-12 h-12 ${feature.color} rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
                   <IconComponent className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                <h3 className={cn(
+                    "text-xl font-semibold mb-3",
+                     feature.premium ? "text-white" : "text-gray-900 dark:text-white"
+                )}>
                   {feature.title}
                 </h3>
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                <p className={cn(
+                  "leading-relaxed",
+                  feature.premium ? "text-gray-300" : "text-gray-600 dark:text-gray-300"
+                  )}>
                   {feature.description}
                 </p>
               </motion.div>
