@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useRef } from 'react';
-import { Package, ShoppingCart, Users, BarChart3, Cloud, Zap, Megaphone, Video } from 'lucide-react';
+import { Package, ShoppingCart, Users, BarChart3, Cloud, Zap, Megaphone, Video, Tag } from 'lucide-react';
 import { motion, useAnimation, useInView } from 'framer-motion';
 
 const Features = () => {
@@ -40,6 +40,12 @@ const Features = () => {
       title: "Automação Inteligente",
       description: "Processos automatizados que economizam tempo e reduzem erros operacionais",
       color: "bg-yellow-500"
+    },
+     {
+      icon: Tag,
+      title: "Sistema de Controle de Ofertas",
+      description: "Crie e gerencie promoções de forma fácil e automatizada para impulsionar suas vendas.",
+      color: "bg-pink-500"
     }
   ];
 
