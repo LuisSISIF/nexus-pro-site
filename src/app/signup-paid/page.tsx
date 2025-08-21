@@ -68,7 +68,25 @@ const SignUpPaidPage = () => {
     const form = useForm<PaidRegistrationFormValues>({
       resolver: zodResolver(paidRegistrationSchema),
       defaultValues: {
-          // Initialize all fields
+          fullName: '',
+          cpf: '',
+          gender: undefined,
+          login: '',
+          password: '',
+          confirmPassword: '',
+          phone: '',
+          email: '',
+          companyName: '',
+          companyAddress: '',
+          legalRepresentative: '',
+          mainActivity: '',
+          cnpj: '',
+          inscricaoEstadual: '',
+          regimeTributario: undefined,
+          segmentoMercado: '',
+          diaVencimento: undefined,
+          emailComercial: '',
+          instagram: '',
       },
     });
 
