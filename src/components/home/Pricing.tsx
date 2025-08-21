@@ -1,10 +1,26 @@
+
 'use client';
 import React, { useEffect, useRef } from 'react';
-import { Check, Star, X, Briefcase, Building, Store } from 'lucide-react';
+import { Check, Star, X, Briefcase, Building, Store, Rocket } from 'lucide-react';
 import { motion, useAnimation, useInView } from 'framer-motion';
 
 const Pricing = () => {
   const plans = [
+    {
+      name: "Teste Gratuito",
+      price: "0",
+      description: "Para você experimentar",
+      icon: Rocket,
+      features: [
+        "Até 2 usuários simultâneos",
+        "Controle de Crédito (1 cliente demo)",
+        "Acesso a tutoriais",
+        "Impressão de Cupom (❌)",
+        "Gestão de Filiais (❌)",
+      ],
+      popular: false,
+      isTest: true,
+    },
     {
       name: "Essencial",
       price: "80",
@@ -14,9 +30,9 @@ const Pricing = () => {
         "Até 2 usuários simultâneos",
         "Controle de Crédito Simples",
         "Relatórios Básicos (vendas, caixa)",
+        "Controle de Acesso",
         "Acesso a tutoriais",
         "Suporte via E-mail",
-        "Controle de Acesso (❌)",
         "Gestão de Filiais (❌)",
         "Marca personalizada (❌)",
         "Integração E-commerce (❌)",
@@ -88,29 +104,29 @@ const Pricing = () => {
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       transition: { staggerChildren: 0.15 }
     }
   };
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0, scale: 1 },
-    visible: { 
-      y: 0, 
+    visible: {
+      y: 0,
       opacity: 1,
       scale: 1,
       transition: { duration: 0.5 }
     }
   };
-  
+
    const popularItemVariants = {
     hidden: { y: 20, opacity: 0, scale: 1 },
-    visible: { 
-      y: 0, 
+    visible: {
+      y: 0,
       opacity: 1,
       scale: [1, 1.05, 1],
-      transition: { 
+      transition: {
         duration: 0.5,
         scale: {
             delay: 0.6,
@@ -131,7 +147,7 @@ const Pricing = () => {
           <p className="text-xl text-gray-600 dark:text-gray-300">
             Escolha o plano ideal para o seu negócio e comece hoje mesmo
           </p>
-          
+
           <div className="bg-green-50 dark:bg-green-900/50 border border-green-200 dark:border-green-800 rounded-lg p-4 max-w-md mx-auto">
             <p className="text-green-800 dark:text-green-300 font-medium">
               💰 Economize 10% pagando anualmente
@@ -139,12 +155,12 @@ const Pricing = () => {
           </div>
         </div>
 
-        <motion.div 
+        <motion.div
           ref={ref}
           initial="hidden"
           animate={controls}
           variants={containerVariants}
-          className="grid md:grid-cols-1 lg:grid-cols-3 gap-8 items-start"
+          className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 items-start"
         >
           {plans.map((plan, index) => {
             const Icon = plan.icon;
@@ -171,11 +187,17 @@ const Pricing = () => {
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{plan.name}</h3>
                   <p className="text-gray-600 dark:text-gray-300 mb-4">{plan.description}</p>
-                  
+
                   <div className="space-y-2">
                     <div className="flex items-baseline justify-center">
-                      <span className="text-5xl font-bold text-gray-900 dark:text-white">R$ {plan.price}</span>
-                      <span className="text-gray-500 dark:text-gray-400 ml-2">/mês</span>
+                      { (plan as any).isTest ? (
+                        <span className="text-5xl font-bold text-gray-900 dark:text-white">Grátis</span>
+                      ) : (
+                        <>
+                         <span className="text-5xl font-bold text-gray-900 dark:text-white">R$ {plan.price}</span>
+                         <span className="text-gray-500 dark:text-gray-400 ml-2">/mês</span>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -183,8 +205,8 @@ const Pricing = () => {
                 <div className="space-y-4 mb-8 flex-grow">
                   {plan.features.map((feature, featureIndex) => (
                     <div key={featureIndex} className="flex items-start space-x-3">
-                      {feature.includes('(❌)') ? 
-                        <X className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" /> : 
+                      {feature.includes('(❌)') ?
+                        <X className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" /> :
                         <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />}
                       <span className="text-gray-700 dark:text-gray-300">{feature.replace(' (❌)','')}</span>
                     </div>
@@ -215,10 +237,10 @@ const Pricing = () => {
               🎁 Oferta Especial de Lançamento
             </h4>
             <p className="text-blue-800 dark:text-blue-200">
-              Teste grátis por 14 dias + Desconto de 10% no primeiro ano para novos clientes
+              Teste grátis por 10 dias + Desconto de 10% no primeiro ano para novos clientes
             </p>
           </div>
-          
+
           <p className="text-gray-500 dark:text-gray-400 text-sm">
             Todos os planos incluem atualizações gratuitas • Sem taxa de setup • Cancele quando quiser
           </p>
