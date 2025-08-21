@@ -5,7 +5,7 @@ import { db } from '@/lib/db';
 import { getContractData } from './contract-actions';
 
 const ASAAS_API_URL = process.env.ASAAS_API_URL;
-const ASAAS_API_KEY = process.env.ASAAS_API_KEY;
+const ASAAS_API_KEY = "$aact_prod_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OjAxYmE3MWE1LTk3YzMtNDA4Yy1hZjNhLWEyODBiZjc3NzA5ODo6JGFhY2hfZjMyMWZlMDgtM2M2Yi00YzAxLTliNmYtN2VhZDRiMWE4YjEz";
 
 
 interface AsaasPayment {

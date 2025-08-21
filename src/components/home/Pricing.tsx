@@ -25,6 +25,7 @@ const Pricing = () => {
     
   const plans = [
     {
+      id: 3,
       name: "Essencial",
       price: "80",
       description: "Pequenos comércios",
@@ -43,6 +44,7 @@ const Pricing = () => {
       popular: false
     },
     {
+      id: 4,
       name: "Profissional",
       price: "120",
       description: "Lojas de médio porte",
@@ -61,6 +63,7 @@ const Pricing = () => {
       popular: true
     },
     {
+      id: 5,
       name: "Empresarial",
       price: "190",
       description: "Redes com filiais",
@@ -244,7 +247,7 @@ const Pricing = () => {
                 </div>
                  <div className="mt-auto">
                     <Button asChild className="w-full text-lg py-6" variant={plan.popular ? 'default' : 'outline'}>
-                        <Link href="/signup-paid">
+                        <Link href={`/signup-paid?planId=${plan.id}`}>
                            Contratar Plano
                         </Link>
                     </Button>

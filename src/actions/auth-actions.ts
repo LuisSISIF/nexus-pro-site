@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { db } from '@/lib/db';
 import * as crypto from 'crypto';
 import { isValidCPF, isValidCNPJ } from '@/lib/validators';
-import { createAsaasCustomer } from './asaas-actions';
+import { createAsaasCustomer, createAsaasSubscription, createAsaasProrataCharge } from './asaas-actions';
 
 // --- Helper Functions ---
 
@@ -53,6 +53,11 @@ const paidRegistrationSchema = baseRegistrationSchema.extend({
   diaVencimento: z.string({ required_error: "Dia de vencimento é obrigatório." }),
   emailComercial: z.string().email("E-mail comercial inválido."),
   instagram: z.string().optional(),
+  // Plan Data
+  planId: z.number(),
+  planName: z.string(),
+  planPrice: z.number(),
+
 }).refine((data) => data.password === data.confirmPassword, {
   message: "As senhas não coincidem",
   path: ["confirmPassword"],
@@ -179,7 +184,9 @@ export async function registerPaidUserAndCompany(data: unknown) {
       // Company basic data
       companyName, companyAddress, legalRepresentative, mainActivity,
       // Company fiscal/commercial data
-      cnpj, inscricaoEstadual, regimeTributario, segmentoMercado, diaVencimento, emailComercial, instagram
+      cnpj, inscricaoEstadual, regimeTributario, segmentoMercado, diaVencimento, emailComercial, instagram,
+      // Plan data
+      planId, planName, planPrice
   } = validation.data;
   
   let connection;
@@ -197,7 +204,7 @@ export async function registerPaidUserAndCompany(data: unknown) {
     // 2. Hash password
     const hashedPassword = sha256Hash(password);
 
-    // 3. Call the stored procedure to create user and company
+    // 3. Call the stored procedure to create user and company (initially as test plan)
     const [result] = await connection.execute(
         'CALL admFunctionsCadastraTeste(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [
@@ -207,8 +214,6 @@ export async function registerPaidUserAndCompany(data: unknown) {
     );
 
     // 4. Get the newly created company's ID
-    // The procedure doesn't return the ID, so we need to fetch it.
-    // We assume the combination of name and legal rep is unique enough for this context.
     const [companyRows] = await connection.execute(
       'SELECT idempresa FROM empresa WHERE nome_empresa = ? AND representanteEmpresa = ? ORDER BY idempresa DESC LIMIT 1',
       [companyName, legalRepresentative]
@@ -220,25 +225,8 @@ export async function registerPaidUserAndCompany(data: unknown) {
     }
     const companyId = newCompany.idempresa;
 
-    // 5. Update company with additional fiscal/commercial data
+    // 5. Create customer in Asaas
     const cleanedCnpj = cnpj.replace(/[^\d]/g, '');
-    const updateQuery = `
-      UPDATE empresa SET 
-        cnpj_empresa = ?, 
-        inscricaoEstadual = ?, 
-        regimeTributario = ?, 
-        segmentoMercado = ?, 
-        diaVencimento = ?, 
-        emailComercial = ?, 
-        instagram = ? 
-      WHERE idempresa = ?
-    `;
-    await connection.execute(updateQuery, [
-      cleanedCnpj, inscricaoEstadual, parseInt(regimeTributario), segmentoMercado,
-      parseInt(diaVencimento), emailComercial, instagram || '', companyId,
-    ]);
-
-    // 6. Create customer in Asaas
     const asaasResult = await createAsaasCustomer({
       name: companyName,
       cpfCnpj: cleanedCnpj,
@@ -251,14 +239,56 @@ export async function registerPaidUserAndCompany(data: unknown) {
       await connection.rollback(); 
       return { success: false, message: `Falha ao criar cliente no gateway de pagamento: ${asaasResult.message}` };
     }
-    
-    // 7. Update company with Asaas customer ID
-    await connection.execute('UPDATE empresa SET idAsaas = ? WHERE idempresa = ?', [asaasResult.customerId, companyId]);
+    const asaasCustomerId = asaasResult.customerId;
 
-    // If all steps succeed, commit the transaction
+    // 6. Create Asaas Subscription and Prorata Charge
+    const subscriptionResult = await createAsaasSubscription({
+        customerId: asaasCustomerId,
+        planPrice: planPrice,
+        planName: planName,
+        dueDateDay: parseInt(diaVencimento),
+    });
+    if (!subscriptionResult.success) {
+        await connection.rollback();
+        return { success: false, message: `Falha ao criar assinatura: ${subscriptionResult.message}` };
+    }
+
+    const prorataResult = await createAsaasProrataCharge({
+        customerId: asaasCustomerId,
+        planPrice: planPrice,
+        planName: planName,
+        dueDateDay: parseInt(diaVencimento),
+    });
+    if (!prorataResult.success) {
+        await connection.rollback();
+        return { success: false, message: `Falha ao criar cobrança proporcional: ${prorataResult.message}` };
+    }
+
+    // 7. Update company with all data
+    const updateQuery = `
+      UPDATE empresa SET 
+        idPlano = ?,
+        cnpj_empresa = ?, 
+        inscricaoEstadual = ?, 
+        regimeTributario = ?, 
+        segmentoMercado = ?, 
+        diaVencimento = ?, 
+        emailComercial = ?, 
+        instagram = ?,
+        idAsaas = ?,
+        pagamentoMes = 'Pendente',
+        periodoTesteInicio = NULL,
+        periodoTesteFim = NULL
+      WHERE idempresa = ?
+    `;
+    await connection.execute(updateQuery, [
+      planId, cleanedCnpj, inscricaoEstadual, parseInt(regimeTributario), segmentoMercado,
+      parseInt(diaVencimento), emailComercial, instagram || '', asaasCustomerId, companyId,
+    ]);
+
     await connection.commit();
 
-    return { success: true, message: 'Cadastro e cliente de faturamento criados com sucesso!' }; 
+    return { success: true, message: 'Cadastro, faturamento e assinatura criados com sucesso!' }; 
 
   } catch (error) {
     if (connection) await connection.rollback();
