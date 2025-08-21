@@ -210,7 +210,7 @@ export async function registerPaidUserAndCompany(data: unknown) {
     // The procedure doesn't return the ID, so we need to fetch it.
     // We assume the combination of name and legal rep is unique enough for this context.
     const [companyRows] = await connection.execute(
-      'SELECT idempresa FROM empresa WHERE nome_empresa = ? AND rep_legal = ? ORDER BY idempresa DESC LIMIT 1',
+      'SELECT idempresa FROM empresa WHERE nome_empresa = ? AND representanteEmpresa = ? ORDER BY idempresa DESC LIMIT 1',
       [companyName, legalRepresentative]
     );
     const newCompany = (companyRows as any[])[0];
