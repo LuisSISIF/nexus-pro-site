@@ -344,5 +344,3 @@ export async function loginUser(data: unknown) {
     if (connection) await connection.end();
   }
 }
-
-    
