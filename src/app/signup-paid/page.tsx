@@ -24,6 +24,7 @@ import AnimatedSection from '@/components/home/AnimatedSection';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { PaidContractDialog } from '@/components/signup/PaidContractDialog';
+import { Label } from '@/components/ui/label';
 
 
 const allPlans = [
