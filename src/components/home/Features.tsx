@@ -1,3 +1,4 @@
+
 'use client';
 import React, { useEffect, useRef } from 'react';
 import { Package, ShoppingCart, Users, BarChart3, Cloud, Zap, Megaphone, Video, Tag, DollarSign } from 'lucide-react';
@@ -20,7 +21,7 @@ const Features = () => {
     },
      {
       icon: DollarSign,
-      title: "Controle de Finanças",
+      title: "Gestão Financeira",
       description: "Gerencie contas a pagar e a receber de forma integrada e mantenha seu fluxo de caixa saudável.",
       color: "bg-teal-500",
     },
@@ -35,7 +36,8 @@ const Features = () => {
       icon: Users,
       title: "Gerenciamento de Clientes",
       description: "Mantenha um cadastro completo de clientes, histórico de compras e controle de crédito.",
-      color: "bg-purple-500"
+      color: "bg-purple-500",
+      premium: true,
     },
     {
       icon: BarChart3,
