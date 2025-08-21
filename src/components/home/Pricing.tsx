@@ -3,13 +3,14 @@
 import React, { useEffect, useRef } from 'react';
 import { Check, Star, X, Briefcase, Building, Store, Rocket } from 'lucide-react';
 import { motion, useAnimation, useInView } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 const Pricing = () => {
-  const plans = [
-    {
+    const freePlan = {
       name: "Teste Gratuito",
       price: "0",
-      description: "Para você experimentar",
+      description: "Para você experimentar por 10 dias",
       icon: Rocket,
       features: [
         "Até 2 usuários simultâneos",
@@ -20,7 +21,9 @@ const Pricing = () => {
       ],
       popular: false,
       isTest: true,
-    },
+    };
+    
+  const plans = [
     {
       name: "Essencial",
       price: "80",
@@ -141,26 +144,57 @@ const Pricing = () => {
     <section id="pricing" className="py-20 bg-white dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-4 mb-16">
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
+          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white font-headline">
             Planos que Cabem no Seu Orçamento
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300">
-            Escolha o plano ideal para o seu negócio e comece hoje mesmo
+            Comece com um teste gratuito ou escolha o plano ideal para seu negócio
           </p>
-
-          <div className="bg-green-50 dark:bg-green-900/50 border border-green-200 dark:border-green-800 rounded-lg p-4 max-w-md mx-auto">
-            <p className="text-green-800 dark:text-green-300 font-medium">
-              💰 Economize 10% pagando anualmente
-            </p>
-          </div>
         </div>
+
+        {/* Free Trial Banner */}
+        <h3 className="text-2xl font-semibold text-center text-gray-800 dark:text-gray-200 mb-6">Experimente o NexusPro</h3>
+         <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-lg p-8 mb-12 border border-blue-200 dark:border-blue-700">
+           <div className="grid md:grid-cols-2 gap-8 items-center">
+             <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
+                        <Rocket className="w-6 h-6 text-white" />
+                    </div>
+                    <h4 className="text-2xl font-bold text-gray-900 dark:text-white">Teste Gratuito</h4>
+                </div>
+                <p className="text-gray-600 dark:text-gray-300">{freePlan.description}</p>
+                <div className="space-y-3 pt-2">
+                  {freePlan.features.map((feature, featureIndex) => (
+                    <div key={featureIndex} className="flex items-start space-x-3">
+                      {feature.includes('(❌)') ?
+                        <X className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" /> :
+                        <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />}
+                      <span className="text-gray-700 dark:text-gray-300">{feature.replace(' (❌)','')}</span>
+                    </div>
+                  ))}
+                </div>
+             </div>
+             <div className="text-center flex flex-col items-center justify-center bg-white/50 dark:bg-gray-700/50 rounded-lg p-8">
+                <p className="text-6xl font-bold text-gray-900 dark:text-white">Grátis</p>
+                <p className="text-gray-500 dark:text-gray-400 mb-6">por 10 dias, sem compromisso.</p>
+                 <Button asChild size="lg" className="w-full">
+                    <Link href="/signup">
+                        Começar Agora
+                    </Link>
+                </Button>
+             </div>
+           </div>
+        </div>
+
+        <h3 className="text-2xl font-semibold text-center text-gray-800 dark:text-gray-200 mb-10">Ou escolha seu plano ideal</h3>
 
         <motion.div
           ref={ref}
           initial="hidden"
           animate={controls}
           variants={containerVariants}
-          className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 items-start"
+          className="grid md:grid-cols-1 lg:grid-cols-3 gap-8 items-start"
         >
           {plans.map((plan, index) => {
             const Icon = plan.icon;
@@ -190,14 +224,10 @@ const Pricing = () => {
 
                   <div className="space-y-2">
                     <div className="flex items-baseline justify-center">
-                      { (plan as any).isTest ? (
-                        <span className="text-5xl font-bold text-gray-900 dark:text-white">Grátis</span>
-                      ) : (
                         <>
                          <span className="text-5xl font-bold text-gray-900 dark:text-white">R$ {plan.price}</span>
                          <span className="text-gray-500 dark:text-gray-400 ml-2">/mês</span>
                         </>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -211,6 +241,13 @@ const Pricing = () => {
                       <span className="text-gray-700 dark:text-gray-300">{feature.replace(' (❌)','')}</span>
                     </div>
                   ))}
+                </div>
+                 <div className="mt-auto">
+                    <Button asChild className="w-full text-lg py-6" variant={plan.popular ? 'default' : 'outline'}>
+                        <Link href="/signup">
+                           Contratar Plano
+                        </Link>
+                    </Button>
                 </div>
               </motion.div>
             )
@@ -232,17 +269,17 @@ const Pricing = () => {
 
         {/* Additional Info */}
         <div className="mt-16 text-center space-y-4">
-          <div className="bg-blue-50 dark:bg-blue-900/50 rounded-xl p-6 max-w-2xl mx-auto">
-            <h4 className="text-lg font-semibold text-blue-900 dark:text-blue-300 mb-2">
-              🎁 Oferta Especial de Lançamento
+          <div className="bg-green-50 dark:bg-green-900/50 rounded-xl p-4 max-w-2xl mx-auto">
+            <h4 className="text-lg font-semibold text-green-900 dark:text-green-300 mb-2">
+              💰 Pagamento Anual
             </h4>
-            <p className="text-blue-800 dark:text-blue-200">
-              Teste grátis por 10 dias + Desconto de 10% no primeiro ano para novos clientes
+            <p className="text-green-800 dark:text-green-200">
+              Economize 10% em qualquer plano pago optando pelo ciclo de pagamento anual.
             </p>
           </div>
 
           <p className="text-gray-500 dark:text-gray-400 text-sm">
-            Todos os planos incluem atualizações gratuitas • Sem taxa de setup • Cancele quando quiser
+            Todos os planos pagos incluem atualizações gratuitas • Sem taxa de setup • Cancele quando quiser
           </p>
         </div>
       </div>
