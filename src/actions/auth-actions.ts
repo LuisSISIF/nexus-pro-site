@@ -4,7 +4,8 @@
 import { z } from 'zod';
 import { db } from '@/lib/db';
 import * as crypto from 'crypto';
-import { isValidCPF } from '@/lib/validators';
+import { isValidCPF, isValidCNPJ } from '@/lib/validators';
+import { createAsaasCustomer } from './asaas-actions';
 
 // --- Helper Functions ---
 
@@ -37,6 +38,17 @@ const registrationSchema = z.object({
 }).refine((data) => data.password === data.confirmPassword, {
   message: "As senhas não coincidem",
   path: ["confirmPassword"], 
+});
+
+const paidRegistrationSchema = registrationSchema.extend({
+  // Additional Company Data
+  cnpj: z.string().refine(isValidCNPJ, "CNPJ inválido."),
+  inscricaoEstadual: z.string().min(1, "Inscrição Estadual é obrigatória."),
+  regimeTributario: z.string({ required_error: "Regime Tributário é obrigatório." }),
+  segmentoMercado: z.string().min(3, "Segmento de mercado é obrigatório."),
+  diaVencimento: z.string({ required_error: "Dia de vencimento é obrigatório." }),
+  emailComercial: z.string().email("E-mail comercial inválido."),
+  instagram: z.string().optional(),
 });
 
 const loginSchema = z.object({
@@ -143,6 +155,118 @@ export async function registerUserAndCompany(data: unknown) {
     if (connection) await connection.end();
   }
 }
+
+export async function registerPaidUserAndCompany(data: unknown) {
+  const validation = paidRegistrationSchema.safeParse(data);
+
+  if (!validation.success) {
+    console.error('Validation Error:', validation.error.flatten().fieldErrors);
+    const firstError = Object.values(validation.error.flatten().fieldErrors)[0]?.[0];
+    return { success: false, message: firstError || 'Dados de cadastro inválidos. Verifique os campos.' };
+  }
+  
+  const { 
+      // User data
+      login, password, fullName, email, cpf, gender, phone,
+      // Company basic data
+      companyName, companyAddress, legalRepresentative, mainActivity,
+      // Company fiscal/commercial data
+      cnpj, inscricaoEstadual, regimeTributario, segmentoMercado, diaVencimento, emailComercial, instagram
+  } = validation.data;
+  
+  let connection;
+  try {
+    connection = await db();
+    await connection.beginTransaction();
+
+    // 1. Re-check for existing user
+    const [existingUser] = await connection.execute('SELECT idusuarios FROM usuarios WHERE login = ? OR email = ?', [login, email]);
+    if ((existingUser as any[]).length > 0) {
+      await connection.rollback();
+      return { success: false, message: 'Login ou e-mail de usuário já cadastrado.' };
+    }
+
+    // 2. Hash password
+    const hashedPassword = sha256Hash(password);
+
+    // 3. Call the stored procedure to create user and company
+    const [result] = await connection.execute(
+        'CALL admFunctionsCadastraTeste(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [
+            companyName, companyAddress, legalRepresentative, mainActivity,
+            login, hashedPassword, email, fullName, phone, cpf, gender
+        ]
+    );
+
+    // 4. Get the newly created company's ID
+    // The procedure doesn't return the ID, so we need to fetch it.
+    // We assume the combination of name and legal rep is unique enough for this context.
+    const [companyRows] = await connection.execute(
+      'SELECT idempresa FROM empresa WHERE nome_empresa = ? AND rep_legal = ? ORDER BY idempresa DESC LIMIT 1',
+      [companyName, legalRepresentative]
+    );
+    const newCompany = (companyRows as any[])[0];
+    if (!newCompany || !newCompany.idempresa) {
+        await connection.rollback();
+        return { success: false, message: 'Falha ao recuperar a empresa recém-criada.' };
+    }
+    const companyId = newCompany.idempresa;
+
+    // 5. Update company with additional fiscal/commercial data
+    const cleanedCnpj = cnpj.replace(/[^\d]/g, '');
+    const updateQuery = `
+      UPDATE empresa SET 
+        cnpj_empresa = ?, 
+        inscricaoEstadual = ?, 
+        regimeTributario = ?, 
+        segmentoMercado = ?, 
+        diaVencimento = ?, 
+        emailComercial = ?, 
+        instagram = ? 
+      WHERE idempresa = ?
+    `;
+    await connection.execute(updateQuery, [
+      cleanedCnpj, inscricaoEstadual, parseInt(regimeTributario), segmentoMercado,
+      parseInt(diaVencimento), emailComercial, instagram || '', companyId,
+    ]);
+
+    // 6. Create customer in Asaas
+    const asaasResult = await createAsaasCustomer({
+      name: companyName,
+      cpfCnpj: cleanedCnpj,
+      email: emailComercial,
+      phone: phone, 
+      address: companyAddress,
+    });
+
+    if (!asaasResult.success || !asaasResult.customerId) {
+      await connection.rollback(); 
+      return { success: false, message: `Falha ao criar cliente no gateway de pagamento: ${asaasResult.message}` };
+    }
+    
+    // 7. Update company with Asaas customer ID
+    await connection.execute('UPDATE empresa SET idAsaas = ? WHERE idempresa = ?', [asaasResult.customerId, companyId]);
+
+    // If all steps succeed, commit the transaction
+    await connection.commit();
+
+    return { success: true, message: 'Cadastro e cliente de faturamento criados com sucesso!' }; 
+
+  } catch (error) {
+    if (connection) await connection.rollback();
+    console.error('Paid Registration Error:', error);
+    if (error instanceof Error && 'code' in error && (error as any).code.includes('CONN')) {
+      return { success: false, message: 'Não foi possível conectar ao banco de dados.' };
+    }
+    if (error instanceof Error && (error as any).sqlMessage) {
+       return { success: false, message: `Erro no banco de dados: ${(error as any).sqlMessage}` };
+    }
+    return { success: false, message: 'Ocorreu um erro no servidor ao tentar realizar o cadastro.' };
+  } finally {
+    if (connection) await connection.end();
+  }
+}
+
 
 export async function loginUser(data: unknown) {
   const validation = loginSchema.safeParse(data);

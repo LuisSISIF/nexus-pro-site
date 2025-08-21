@@ -244,7 +244,7 @@ const Pricing = () => {
                 </div>
                  <div className="mt-auto">
                     <Button asChild className="w-full text-lg py-6" variant={plan.popular ? 'default' : 'outline'}>
-                        <Link href="/signup">
+                        <Link href="/signup-paid">
                            Contratar Plano
                         </Link>
                     </Button>
