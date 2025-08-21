@@ -80,9 +80,9 @@ const paidRegistrationSchema = baseRegistrationSchema.extend({
   emailComercial: z.string().email("E-mail comercial inválido."),
   instagram: z.string().optional(),
   // Plan Data
-  planId: z.number(),
-  planName: z.string(),
-  planPrice: z.number(),
+  planId: z.number({ required_error: "Plano é obrigatório."}),
+  planName: z.string({ required_error: "Nome do plano é obrigatório."}),
+  planPrice: z.number({ required_error: "Preço do plano é obrigatório."}),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "As senhas não coincidem",
   path: ["confirmPassword"], 
@@ -104,15 +104,6 @@ const SignUpPaidContent = () => {
         return allPlans.find(p => p.id === Number(planId)) || allPlans[1];
     });
 
-
-    useEffect(() => {
-        const planId = searchParams.get('planId');
-        const plan = allPlans.find(p => p.id === Number(planId));
-        if (plan) {
-            setSelectedPlan(plan);
-        }
-    }, [searchParams]);
-
     const form = useForm<PaidRegistrationFormValues>({
       resolver: zodResolver(paidRegistrationSchema),
       defaultValues: {
@@ -121,8 +112,24 @@ const SignUpPaidContent = () => {
           companyName: '', companyAddress: '', legalRepresentative: '', mainActivity: '',
           cnpj: '', inscricaoEstadual: '', regimeTributario: undefined,
           segmentoMercado: '', diaVencimento: undefined, emailComercial: '', instagram: '',
+          planId: undefined, planName: '', planPrice: undefined,
       },
     });
+
+    useEffect(() => {
+        const planId = searchParams.get('planId');
+        const plan = allPlans.find(p => p.id === Number(planId)) || allPlans[1];
+        setSelectedPlan(plan);
+    }, [searchParams]);
+
+    useEffect(() => {
+        if (selectedPlan) {
+            form.setValue('planId', selectedPlan.id);
+            form.setValue('planName', selectedPlan.name);
+            form.setValue('planPrice', selectedPlan.price);
+        }
+    }, [selectedPlan, form]);
+
 
     const regimesTributarios = [
         { id: 1, nome: 'Lucro Real' }, { id: 2, nome: 'Lucro Presumido' },
@@ -143,16 +150,9 @@ const SignUpPaidContent = () => {
             setLoading(false);
             return;
         }
-
-        const fullData = {
-            ...values,
-            planId: selectedPlan.id,
-            planName: selectedPlan.name,
-            planPrice: selectedPlan.price
-        };
         
         try {
-            const result = await registerPaidUserAndCompany(fullData);
+            const result = await registerPaidUserAndCompany(values);
             if (result.success) {
                 toast({
                     title: "Cadastro realizado com sucesso!",

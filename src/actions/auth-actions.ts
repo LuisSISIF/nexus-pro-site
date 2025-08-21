@@ -54,9 +54,9 @@ const paidRegistrationSchema = baseRegistrationSchema.extend({
   emailComercial: z.string().email("E-mail comercial inválido."),
   instagram: z.string().optional(),
   // Plan Data
-  planId: z.number(),
-  planName: z.string(),
-  planPrice: z.number(),
+  planId: z.number({ required_error: "Plano é obrigatório."}),
+  planName: z.string({ required_error: "Nome do plano é obrigatório."}),
+  planPrice: z.number({ required_error: "Preço do plano é obrigatório."}),
 
 }).refine((data) => data.password === data.confirmPassword, {
   message: "As senhas não coincidem",
@@ -344,3 +344,5 @@ export async function loginUser(data: unknown) {
     if (connection) await connection.end();
   }
 }
+
+    
