@@ -79,6 +79,10 @@ const paidRegistrationSchema = baseRegistrationSchema.extend({
   diaVencimento: z.string({ required_error: "Dia de vencimento é obrigatório." }),
   emailComercial: z.string().email("E-mail comercial inválido."),
   instagram: z.string().optional(),
+  // Plan Data
+  planId: z.number(),
+  planName: z.string(),
+  planPrice: z.number(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "As senhas não coincidem",
   path: ["confirmPassword"], 
@@ -164,6 +168,21 @@ const SignUpPaidContent = () => {
             setLoading(false);
         }
     };
+    
+    const getPlanCardStyle = (planId?: number | null): string => {
+        if (!planId) return "shadow-lg bg-card";
+        switch (planId) {
+            case 3: // Essencial
+                 return "shadow-lg bg-[#374151] text-white";
+            case 4: // Profissional
+                 return "shadow-lg bg-[#065F46] text-white";
+            case 5: // Empresarial
+                 return "shadow-lg bg-[#1E3A8A] text-white";
+            default:
+                return "shadow-lg bg-card";
+        }
+    };
+
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
@@ -189,15 +208,16 @@ const SignUpPaidContent = () => {
                                     onClick={() => setSelectedPlan(plan)}
                                     className={cn(
                                         "cursor-pointer transition-all duration-300",
-                                        isSelected ? 'border-primary ring-2 ring-primary' : 'border-gray-200 dark:border-gray-700 hover:border-primary/50'
+                                        getPlanCardStyle(plan.id),
+                                        isSelected ? 'ring-2 ring-offset-2 ring-primary dark:ring-amber-400' : 'hover:scale-105'
                                     )}>
                                     <CardHeader className="flex-row gap-4 items-center space-y-0">
-                                         <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                                            <Icon className="w-5 h-5 text-primary" />
+                                         <div className="w-10 h-10 bg-white/20 dark:bg-gray-700/50 rounded-full flex items-center justify-center">
+                                            <Icon className="w-5 h-5 text-white" />
                                         </div>
                                         <div>
-                                            <CardTitle className="text-lg">{plan.name}</CardTitle>
-                                            <CardDescription>R$ {plan.price}/mês</CardDescription>
+                                            <CardTitle className="text-lg text-white">{plan.name}</CardTitle>
+                                            <CardDescription className="text-white/80">R$ {plan.price}/mês</CardDescription>
                                         </div>
                                     </CardHeader>
                                 </Card>
@@ -295,3 +315,5 @@ const SignUpPaidPage = () => (
 );
 
 export default SignUpPaidPage;
+
+    
