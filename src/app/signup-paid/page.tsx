@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { ArrowRight, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, Loader2, AlertCircle, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -24,7 +24,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import AnimatedSection from '@/components/home/AnimatedSection';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-const paidRegistrationSchema = z.object({
+const baseRegistrationSchema = z.object({
   // User
   fullName: z.string().min(3, "Nome completo é obrigatório"),
   cpf: z.string().refine(isValidCPF, "CPF inválido"),
@@ -40,8 +40,10 @@ const paidRegistrationSchema = z.object({
   companyAddress: z.string().min(10, "Endereço completo é obrigatório"),
   legalRepresentative: z.string().min(3, "Representante legal é obrigatório"),
   mainActivity: z.string().min(3, "Atividade principal é obrigatória"),
-  
-  // Fiscal/Commercial
+});
+
+const paidRegistrationSchema = baseRegistrationSchema.extend({
+  // Additional Company Data
   cnpj: z.string().refine(isValidCNPJ, "CNPJ inválido."),
   inscricaoEstadual: z.string().min(1, "Inscrição Estadual é obrigatória."),
   regimeTributario: z.string({ required_error: "Regime Tributário é obrigatório." }),
@@ -49,7 +51,6 @@ const paidRegistrationSchema = z.object({
   diaVencimento: z.string({ required_error: "Dia de vencimento é obrigatório." }),
   emailComercial: z.string().email("E-mail comercial inválido."),
   instagram: z.string().optional(),
-
 }).refine((data) => data.password === data.confirmPassword, {
   message: "As senhas não coincidem",
   path: ["confirmPassword"], 
@@ -144,6 +145,14 @@ const SignUpPaidPage = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
+                <Alert variant="default" className="mb-8 bg-blue-50 border-blue-200 dark:bg-blue-900/30 dark:border-blue-700">
+                  <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  <AlertTitle className="text-blue-800 dark:text-blue-300">Cadastro Completo</AlertTitle>
+                  <AlertDescription className="text-blue-700 dark:text-blue-300">
+                    Este formulário coleta todos os dados necessários (pessoais, empresariais e fiscais) para o funcionamento completo do sistema, incluindo faturamento e emissão de documentos.
+                  </AlertDescription>
+                </Alert>
+
                <Form {...form}>
                 <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-8">
                     
@@ -297,3 +306,5 @@ const SignUpPaidPage = () => {
 };
 
 export default SignUpPaidPage;
+
+    
