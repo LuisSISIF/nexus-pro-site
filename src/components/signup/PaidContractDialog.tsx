@@ -78,7 +78,7 @@ const planDetails: Record<number, { features: string[], support: string }> = {
             "Treinamento incluso",
         ],
         support: "O suporte para o Plano Empresarial é prioritário, incluindo canais via WhatsApp, E-mail e acesso remoto quando necessário."
-    ]
+    }
 };
 
 const ContractContent = ({ formData, systemVersion, plan }: { formData: PaidRegistrationFormValues, systemVersion: string, plan: PaidContractDialogProps['plan'] }) => (
