@@ -105,10 +105,10 @@ const Features = () => {
                 key={index}
                 variants={itemVariants}
                 className={cn(
-                  "rounded-xl p-8 shadow-lg border hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group",
+                  "rounded-xl p-8 border hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group",
                   feature.premium
-                    ? "bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900 border-pink-500/50"
-                    : "bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700"
+                    ? "bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900 border-pink-500/50 shadow-lg shadow-pink-500/20"
+                    : "bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 shadow-lg"
                 )}
               >
                 <div className={`w-12 h-12 ${feature.color} rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
