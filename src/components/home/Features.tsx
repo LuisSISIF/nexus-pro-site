@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useRef } from 'react';
-import { Package, ShoppingCart, Users, BarChart3, Cloud, Zap, Megaphone, Video, Tag } from 'lucide-react';
+import { Package, ShoppingCart, Users, BarChart3, Cloud, Zap, Megaphone, Video, Tag, DollarSign } from 'lucide-react';
 import { motion, useAnimation, useInView } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -9,45 +9,51 @@ const Features = () => {
     {
       icon: Package,
       title: "Controle Inteligente de Estoque",
-      description: "Monitore produtos em tempo real, alertas de estoque baixo e reposição automática",
+      description: "Monitore produtos em tempo real, alertas de estoque baixo e reposição automática.",
       color: "bg-blue-500"
     },
     {
       icon: ShoppingCart,
       title: "Gestão de Vendas Simplificada",
-      description: "PDV completo, múltiplas formas de pagamento e controle de clientes integrado",
+      description: "PDV completo, múltiplas formas de pagamento e emissão de cupons não fiscais.",
       color: "bg-green-500"
     },
-    {
-      icon: Users,
-      title: "Gerenciamento de Clientes",
-      description: "Gestão completa de clientes e controle de créditos",
-      color: "bg-purple-500"
-    },
-    {
-      icon: BarChart3,
-      title: "Relatórios e Insights",
-      description: "Análises detalhadas de vendas, estoque e performance para decisões estratégicas",
-      color: "bg-orange-500"
-    },
-    {
-      icon: Cloud,
-      title: "Sistema na Nuvem",
-      description: "Acesse de qualquer lugar, dados sempre seguros e backup automático",
-      color: "bg-indigo-500"
-    },
-    {
-      icon: Zap,
-      title: "Automação Inteligente",
-      description: "Processos automatizados que economizam tempo e reduzem erros operacionais",
-      color: "bg-yellow-500"
-    },
      {
+      icon: DollarSign,
+      title: "Controle de Finanças",
+      description: "Gerencie contas a pagar e a receber de forma integrada e mantenha seu fluxo de caixa saudável.",
+      color: "bg-teal-500",
+    },
+    {
       icon: Tag,
       title: "Sistema de Controle de Ofertas",
       description: "Crie e gerencie promoções de forma fácil e automatizada para impulsionar suas vendas.",
       color: "bg-pink-500",
       premium: true,
+    },
+     {
+      icon: Users,
+      title: "Gerenciamento de Clientes",
+      description: "Mantenha um cadastro completo de clientes, histórico de compras e controle de crédito.",
+      color: "bg-purple-500"
+    },
+    {
+      icon: BarChart3,
+      title: "Relatórios e Insights",
+      description: "Análises detalhadas para decisões estratégicas sobre vendas, estoque e performance.",
+      color: "bg-orange-500"
+    },
+    {
+      icon: Cloud,
+      title: "Sistema na Nuvem",
+      description: "Acesse de qualquer lugar, com dados sempre seguros e backup automático.",
+      color: "bg-indigo-500"
+    },
+    {
+      icon: Zap,
+      title: "Automação Inteligente",
+      description: "Processos automatizados que economizam seu tempo e reduzem erros operacionais.",
+      color: "bg-yellow-500"
     }
   ];
 
@@ -65,7 +71,7 @@ const Features = () => {
     hidden: { opacity: 0 },
     visible: { 
       opacity: 1, 
-      transition: { staggerChildren: 0.15 }
+      transition: { staggerChildren: 0.1 }
     }
   };
 
@@ -96,7 +102,7 @@ const Features = () => {
           initial="hidden"
           animate={controls}
           variants={containerVariants}
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
         >
           {features.map((feature, index) => {
             const IconComponent = feature.icon;
@@ -111,7 +117,10 @@ const Features = () => {
                     : "bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 shadow-lg"
                 )}
               >
-                <div className={`w-12 h-12 ${feature.color} rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
+                <div className={cn(
+                  "w-12 h-12 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform",
+                   feature.color
+                )}>
                   <IconComponent className="w-6 h-6 text-white" />
                 </div>
                 <h3 className={cn(
