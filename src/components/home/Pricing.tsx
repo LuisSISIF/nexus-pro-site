@@ -158,7 +158,7 @@ const Pricing = () => {
         {/* Free Trial Banner */}
         <h3 className="text-2xl font-semibold text-center text-gray-800 dark:text-gray-200 mb-6">Experimente o NexusPro</h3>
          <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-lg p-8 mb-12 border border-blue-200 dark:border-blue-700">
-           <div className="grid md:grid-cols-2 gap-8 items-center">
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
              <div className="space-y-4">
                 <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
