@@ -18,7 +18,8 @@ function sha256Hash(password: string): string {
 
 // --- Schemas ---
 
-const registrationSchema = z.object({
+// Base schema without refinement, so it can be extended.
+const baseRegistrationSchema = z.object({
   // User
   fullName: z.string().min(3, "Nome completo é obrigatório"),
   cpf: z.string().refine(isValidCPF, "CPF inválido"),
@@ -34,13 +35,16 @@ const registrationSchema = z.object({
   companyAddress: z.string().min(10, "Endereço completo é obrigatório"),
   legalRepresentative: z.string().min(3, "Representante legal é obrigatório"),
   mainActivity: z.string().min(3, "Atividade principal é obrigatória"),
+});
 
-}).refine((data) => data.password === data.confirmPassword, {
+// Final free registration schema with password confirmation refinement.
+const registrationSchema = baseRegistrationSchema.refine((data) => data.password === data.confirmPassword, {
   message: "As senhas não coincidem",
   path: ["confirmPassword"], 
 });
 
-const paidRegistrationSchema = registrationSchema.extend({
+// Paid registration schema extends the base and adds its own refinement.
+const paidRegistrationSchema = baseRegistrationSchema.extend({
   // Additional Company Data
   cnpj: z.string().refine(isValidCNPJ, "CNPJ inválido."),
   inscricaoEstadual: z.string().min(1, "Inscrição Estadual é obrigatória."),
@@ -49,7 +53,11 @@ const paidRegistrationSchema = registrationSchema.extend({
   diaVencimento: z.string({ required_error: "Dia de vencimento é obrigatório." }),
   emailComercial: z.string().email("E-mail comercial inválido."),
   instagram: z.string().optional(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "As senhas não coincidem",
+  path: ["confirmPassword"],
 });
+
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Por favor, insira um e-mail válido." }),
