@@ -13,7 +13,7 @@ import CTA from '@/components/home/CTA';
 
 function App() {
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 overflow-x-hidden">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       <Header />
       <Hero />
       <AnimatedSection>
