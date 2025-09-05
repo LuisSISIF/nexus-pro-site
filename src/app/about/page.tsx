@@ -123,6 +123,48 @@ const AboutUsPage = () => {
             </div>
         </div>
 
+        <div className="mb-20">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12 font-headline">Nosso Diferencial</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <Card className="bg-white dark:bg-gray-800/50">
+                    <CardHeader>
+                        <Lightbulb className="w-8 h-8 text-yellow-500 mb-2"/>
+                        <CardTitle>Inovação na Prática</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p>Não apenas seguimos tendências, nós as criamos. O NexusPro incorpora o que há de mais moderno em tecnologia de gestão.</p>
+                    </CardContent>
+                </Card>
+                 <Card className="bg-white dark:bg-gray-800/50">
+                    <CardHeader>
+                        <Handshake className="w-8 h-8 text-green-500 mb-2"/>
+                        <CardTitle>Parceria Verdadeira</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p>Seu sucesso é o nosso. Oferecemos um relacionamento próximo e um suporte que vai além do técnico, entendendo seu negócio.</p>
+                    </CardContent>
+                </Card>
+                 <Card className="bg-white dark:bg-gray-800/50">
+                    <CardHeader>
+                        <Users className="w-8 h-8 text-blue-500 mb-2"/>
+                        <CardTitle>Foco no Pequeno e Médio</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p>O sistema foi pensado para a realidade do varejo brasileiro, resolvendo dores que grandes sistemas ignoram.</p>
+                    </CardContent>
+                </Card>
+                 <Card className="bg-white dark:bg-gray-800/50">
+                    <CardHeader>
+                        <CheckCircle className="w-8 h-8 text-purple-500 mb-2"/>
+                        <CardTitle>Simplicidade e Poder</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p>Combinamos uma interface limpa e fácil de usar com funcionalidades robustas que realmente fazem a diferença na sua gestão.</p>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+
         <div className="text-center bg-blue-600 text-white rounded-lg py-10 px-6">
             <h2 className="text-3xl font-bold mb-4 font-headline">Vamos crescer juntos?</h2>
             <p className="text-lg text-blue-100 max-w-2xl mx-auto mb-6">
