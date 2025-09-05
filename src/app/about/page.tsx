@@ -1,9 +1,10 @@
+
 'use client';
 import React from 'react';
 import Header from '@/components/home/Header';
 import Footer from '@/components/home/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Rocket, Target, Heart, Users, CheckCircle, Lightbulb, Handshake, MessageSquare } from 'lucide-react';
+import { Rocket, Target, Heart, Users, CheckCircle, Lightbulb, Handshake, MessageSquare, ShieldCheck, GitBranch } from 'lucide-react';
 import Image from 'next/image';
 import Logo from '@/images/logoRedSemFundo.png';
 import AnimatedSection from '@/components/home/AnimatedSection';
@@ -78,32 +79,32 @@ const AboutUsPage = () => {
         </div>
         
         <div className="mb-20">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12 font-headline">Nosso Diferencial</h2>
-            <div className="grid md:grid-cols-3 gap-8">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12 font-headline">Nosso Compromisso com seu Sucesso</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                  <Card className="bg-white dark:bg-gray-800/50">
                     <CardHeader>
                         <div className="flex items-center gap-4">
                              <div className="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-lg bg-primary/10">
-                                <Lightbulb className="h-6 w-6 text-primary" />
+                                <GitBranch className="h-6 w-6 text-primary" />
                             </div>
-                            <CardTitle>Foco no Usuário</CardTitle>
+                            <CardTitle>Evolução Contínua</CardTitle>
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <p>Não criamos funcionalidades complexas que ninguém usa. Ouvimos nossos clientes e desenvolvemos soluções que resolvem problemas reais, de forma simples e direta.</p>
+                        <p>O NexusPro não é um produto estático. Temos um roadmap claro de evolução, com atualizações constantes que trazem novas funcionalidades e melhorias, garantindo que seu sistema esteja sempre à frente.</p>
                     </CardContent>
                 </Card>
                 <Card className="bg-white dark:bg-gray-800/50">
                     <CardHeader>
                          <div className="flex items-center gap-4">
                              <div className="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-lg bg-primary/10">
-                                <Handshake className="h-6 w-6 text-primary" />
+                                <ShieldCheck className="h-6 w-6 text-primary" />
                             </div>
-                            <CardTitle>Parceria Verdadeira</CardTitle>
+                            <CardTitle>Segurança em Primeiro Lugar</CardTitle>
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <p>Seu sucesso é o nosso sucesso. Mais do que um software, oferecemos uma parceria para ajudar seu negócio a prosperar, com suporte contínuo e evoluções constantes.</p>
+                        <p>Entendemos a importância dos seus dados. Por isso, utilizamos as melhores práticas de segurança, com servidores robustos, criptografia e backups diários para garantir a total proteção das suas informações.</p>
                     </CardContent>
                 </Card>
                  <Card className="bg-white dark:bg-gray-800/50">
@@ -112,11 +113,11 @@ const AboutUsPage = () => {
                              <div className="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-lg bg-primary/10">
                                 <MessageSquare className="h-6 w-6 text-primary" />
                             </div>
-                            <CardTitle>Suporte Humanizado</CardTitle>
+                            <CardTitle>Suporte que Resolve</CardTitle>
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <p>Sem robôs ou respostas automáticas. Quando você precisa de ajuda, fala com pessoas de verdade, prontas para entender seu problema e resolver de forma ágil.</p>
+                        <p>Oferecemos um suporte humanizado e eficiente, incluindo a possibilidade de atendimento presencial para implementação e treinamento, um diferencial que garante o máximo aproveitamento do sistema.</p>
                     </CardContent>
                 </Card>
             </div>
