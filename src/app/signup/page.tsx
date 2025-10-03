@@ -74,6 +74,21 @@ const SignUpPage = () => {
           mainActivity: "",
       },
     });
+    
+    const formatCPF = (value: string) => {
+      const numericValue = value.replace(/\D/g, '');
+      const cpf = numericValue.slice(0, 11);
+
+      if (cpf.length > 9) {
+        return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+      } else if (cpf.length > 6) {
+        return cpf.replace(/(\d{3})(\d{3})(\d{0,3})/, '$1.$2.$3');
+      } else if (cpf.length > 3) {
+        return cpf.replace(/(\d{3})(\d{0,3})/, '$1.$2');
+      }
+      return cpf;
+    };
+
 
     const onFormSubmit = async (values: RegistrationFormValues) => {
         setLoading(true);
@@ -182,7 +197,20 @@ const SignUpPage = () => {
                             <FormItem><FormLabel>Nome Completo</FormLabel><FormControl><Input placeholder="Seu nome completo" {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
                         <FormField control={form.control} name="cpf" render={({ field }) => (
-                            <FormItem><FormLabel>CPF</FormLabel><FormControl><Input placeholder="000.000.000-00" {...field} /></FormControl><FormMessage /></FormItem>
+                            <FormItem>
+                                <FormLabel>CPF</FormLabel>
+                                <FormControl>
+                                    <Input 
+                                        placeholder="000.000.000-00" 
+                                        {...field}
+                                        onChange={(e) => {
+                                            const formatted = formatCPF(e.target.value);
+                                            field.onChange(formatted);
+                                        }}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
                         )} />
                     </div>
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
