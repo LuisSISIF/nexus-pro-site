@@ -1,6 +1,8 @@
+
 // Funções de validação para CPF e CNPJ
 
 export const isValidCPF = (cpf: string): boolean => {
+  if (!cpf) return true; // Allows for empty field, required rule is handled by Zod
   cpf = cpf.replace(/[^\d]+/g, '');
   if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
   let sum = 0;

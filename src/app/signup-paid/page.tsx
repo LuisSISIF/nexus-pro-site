@@ -55,7 +55,7 @@ const allPlans = [
 const baseRegistrationSchema = z.object({
   // User
   fullName: z.string().min(3, "Nome completo é obrigatório"),
-  cpf: z.string().refine(isValidCPF, "CPF inválido"),
+  cpf: z.string().min(1, "CPF é obrigatório.").refine(isValidCPF, "CPF inválido"),
   gender: z.enum(["male", "female", "other"], { required_error: "Gênero é obrigatório" }),
   login: z.string().min(3, "Login deve ter pelo menos 3 caracteres"),
   password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
