@@ -75,6 +75,8 @@ const SignUpPage = () => {
       },
     });
     
+    const { trigger } = form;
+
     const formatCPF = (value: string) => {
       const numericValue = value.replace(/\D/g, '');
       const cpf = numericValue.slice(0, 11);
@@ -203,6 +205,7 @@ const SignUpPage = () => {
                                     <Input 
                                         placeholder="000.000.000-00" 
                                         {...field}
+                                        onBlur={() => trigger('cpf')}
                                         onChange={(e) => {
                                             const formatted = formatCPF(e.target.value);
                                             field.onChange(formatted);

@@ -118,6 +118,8 @@ const SignUpPaidContent = () => {
       },
     });
 
+    const { trigger } = form;
+
     useEffect(() => {
         const planId = searchParams.get('planId');
         const plan = allPlans.find(p => p.id === Number(planId)) || allPlans[1];
@@ -300,6 +302,7 @@ const SignUpPaidContent = () => {
                                                     <Input
                                                         placeholder="000.000.000-00"
                                                         {...field}
+                                                        onBlur={() => trigger('cpf')}
                                                         onChange={(e) => {
                                                             const formatted = formatCPF(e.target.value);
                                                             field.onChange(formatted);
@@ -371,5 +374,3 @@ const SignUpPaidPage = () => (
 );
 
 export default SignUpPaidPage;
-
-    
