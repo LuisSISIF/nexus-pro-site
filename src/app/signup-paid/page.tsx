@@ -333,7 +333,7 @@ const SignUpPaidContent = () => {
                             
                             <Button type="submit" className="w-full text-lg py-6 mt-8" disabled={loading}>
                                 {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <ArrowRight className="mr-2 h-5 w-5" />}
-                                {loading ? 'Verificando...' : 'Continuar para Contrato'}
+                                {loading ? 'Verificando...' : 'Continuar para Plataforma'}
                             </Button>
                         </form>
                     </Form>
