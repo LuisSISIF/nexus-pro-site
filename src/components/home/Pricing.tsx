@@ -94,7 +94,7 @@ const Pricing = () => {
     },
     {
       title: "🟣 Empresarial (R$ 190/mês)",
-      description: "Solução robusta para redes com múltiplas unidades, controle por setores, número ilimitado de usuários e recursos em expansão voltados à gestão avançada."
+      description: "Solução robusta para redes com múltiplas unidades, controle por setores, número maior de usuários e recursos em expansão voltados à gestão avançada."
     }
   ];
 
