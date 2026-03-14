@@ -2,7 +2,7 @@ import React from 'react';
 import { Play, CheckCircle, Calendar, Rocket, Video } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import Sistema from '@/images/telaSistema.png';
+import Sistema from '@/images/imagem_Venda.png';
 
 const Hero = () => {
   return (
