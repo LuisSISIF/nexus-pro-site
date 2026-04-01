@@ -177,7 +177,7 @@ ${supportData.userName || ''}`;
                         title="Contato via WhatsApp"
                         description="Suporte rápido para dúvidas e solicitações financeiras urgentes. (Exclusivo para planos elegíveis)."
                         buttonText="Falar no WhatsApp"
-                        href="https://wa.me/5535998615203"
+                        href="https://wa.me/5519996983542"
                         target="_blank"
                     />
                 )}

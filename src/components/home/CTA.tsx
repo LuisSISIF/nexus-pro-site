@@ -23,7 +23,7 @@ const CTA = () => {
                         Quero meu Teste Gratuito
                     </Link>
                     <a
-                        href="https://wa.me/5535998615203"
+                        href="https://wa.me/5519996983542"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="bg-transparent hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-8 py-4 rounded-lg text-lg font-semibold transition-all flex items-center justify-center space-x-2 border-2 border-blue-600 dark:border-blue-400"

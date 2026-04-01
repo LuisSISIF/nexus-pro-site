@@ -48,7 +48,7 @@ const Support = () => {
                     <div className="bg-white dark:bg-gray-700 rounded-xl p-8 shadow-sm border border-gray-200 dark:border-gray-600">
                         <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Fale Conosco</h3>
                          <div className="space-y-4">
-                            <a href="https://wa.me/5535998615203" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                            <a href="https://wa.me/5519996983542" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                                 <WhatsAppIcon className="w-6 h-6 text-green-500" />
                                 <div>
                                     <p className="font-semibold">WhatsApp</p>
@@ -62,7 +62,7 @@ const Support = () => {
                                     <p className="text-sm">andromedasolutions2025@hotmail.com</p>
                                 </div>
                             </a>
-                             <a href="tel:+5535998615203" className="flex items-center space-x-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                             <a href="tel:+5519996983542" className="flex items-center space-x-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                                 <Phone className="w-6 h-6 text-blue-500" />
                                 <div>
                                     <p className="font-semibold">Telefone</p>
