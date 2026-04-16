@@ -15,19 +15,23 @@ const FAQ = () => {
     },
     {
       question: "Como funciona o período de teste grátis de 14 dias?",
-      answer: "Você terá acesso total a todas as funcionalidades do plano Profissional por 14 dias. Não pedimos cartão de crédito no cadastro. É uma cortesia para você comprovar a economia de tempo."
+      answer: "Você terá acesso total a todas as funcionalidades do plano Profissional por 14 dias. Não pedimos cartão de crédito no cadastro. É uma cortesia para você comprovar a economia de tempo e eficiência do sistema antes de qualquer compromisso financeiro."
     },
     {
       question: "O sistema de gestão de estoque funciona offline?",
-      answer: "A interface de vendas é instalada no seu computador para maior estabilidade, enquanto os dados são sincronizados automaticamente com a nuvem quando há internet, garantindo backups em tempo real."
+      answer: "Sim! A interface de vendas é instalada localmente no seu computador para garantir estabilidade total mesmo se a internet oscilar. Os dados são sincronizados automaticamente com a nuvem quando há conexão, garantindo backups em tempo real."
     },
     {
       question: "Quais as formas de pagamento para os planos pagos?",
-      answer: "Aceitamos Cartão de Crédito (recorrente), PIX e Boleto Bancário. Pagamentos anuais possuem 10% de desconto adicional."
+      answer: "As formas de pagamento aceitas são apenas PIX ou Boleto Bancário. Pagamentos anuais possuem 10% de desconto adicional."
     },
     {
       question: "Preciso pagar taxa de implantação ou setup?",
-      answer: "Não! No NexusPro não cobramos taxa de setup. A implantação e o treinamento inicial são gratuitos para ajudar você a começar a lucrar o quanto antes."
+      answer: "Não! No NexusPro não cobramos taxa de setup. A implantação e o treinamento inicial básico são gratuitos para ajudar você a começar a lucrar e organizar sua empresa o quanto antes."
+    },
+    {
+      question: "Como é oferecido o suporte técnico?",
+      answer: "Oferecemos suporte humanizado via WhatsApp, E-mail e, dependendo do plano, através de Acesso Remoto. Nosso time de especialistas está pronto para resolver suas dúvidas em horário comercial de forma ágil."
     }
   ];
 
@@ -59,7 +63,7 @@ const FAQ = () => {
         {/* Rich Snippet Content Placeholder */}
         <div className="mt-20 p-8 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-100 dark:border-blue-900/50">
             <h4 className="font-bold mb-4">Ainda tem dúvidas?</h4>
-            <p className="text-sm text-gray-500 mb-6">Nosso time comercial está disponível para uma consultoria gratuita de 15 minutos sobre o seu negócio.</p>
+            <p className="text-sm text-gray-500 mb-6">Nosso time comercial está disponível para uma consultoria gratuita de 15 minutos sobre como o NexusPro se adapta ao seu negócio.</p>
             <a href="https://wa.me/5535998615203" target="_blank" className="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold inline-block hover:bg-blue-700 transition-colors">Falar com Consultor</a>
         </div>
       </div>
