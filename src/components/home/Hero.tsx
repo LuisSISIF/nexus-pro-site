@@ -91,7 +91,7 @@ const Hero = () => {
           <div className="aspect-video w-full">
             {isPlayerOpen && (
               <iframe
-                src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`}
+                src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&rel=0`}
                 title="Demonstração NexusPro"
                 className="w-full h-full"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
