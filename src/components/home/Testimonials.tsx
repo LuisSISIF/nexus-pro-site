@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Star, Quote, ArrowUpRight } from 'lucide-react';
 
@@ -92,13 +93,6 @@ const Testimonials = () => {
                 <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Garantia de Resultado</h4>
                 <p className="text-sm text-gray-600 dark:text-gray-300">10 dias grátis, sem compromisso</p>
             </div>
-        </div>
-
-        <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 grayscale opacity-50 contrast-125">
-            <div className="flex items-center justify-center font-bold text-2xl">ASAAS</div>
-            <div className="flex items-center justify-center font-bold text-2xl">Sebrae-fã</div>
-            <div className="flex items-center justify-center font-bold text-2xl">BoletoFacil</div>
-            <div className="flex items-center justify-center font-bold text-2xl">NuvemShop</div>
         </div>
       </div>
     </section>
