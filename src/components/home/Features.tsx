@@ -118,7 +118,7 @@ const Features = () => {
             </div>
             <div className="bg-gray-900 rounded-3xl p-10 text-white border border-yellow-500/30">
                 <Headphones className="w-12 h-12 mb-6 text-yellow-400" />
-                <h3 className="text-3xl font-bold mb-4 font-headline text-white">Suporte Humanizado 24/7</h3>
+                <h3 className="text-3xl font-bold mb-4 font-headline text-white">Suporte Humanizado e Ágil</h3>
                 <p className="text-gray-400 text-lg mb-8">
                     Chega de robôs. Nossos especialistas estão prontos para te atender via WhatsApp, Telefone ou Acesso Remoto.
                 </p>

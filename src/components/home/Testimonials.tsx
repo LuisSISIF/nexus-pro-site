@@ -70,8 +70,31 @@ const Testimonials = () => {
           ))}
         </div>
 
+        <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white dark:bg-gray-700 rounded-lg p-6 text-center shadow-sm">
+                <div className="w-12 h-12 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span className="text-2xl">🔒</span>
+                </div>
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Dados Seguros</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Certificado SSL e criptografia de ponta</p>
+            </div>
+            <div className="bg-white dark:bg-gray-700 rounded-lg p-6 text-center shadow-sm">
+                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span className="text-2xl">⚡</span>
+                </div>
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Suporte Prioritário</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Atendimento humanizado via WhatsApp e e-mail</p>
+            </div>
+            <div className="bg-white dark:bg-gray-700 rounded-lg p-6 text-center shadow-sm">
+                <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/50 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span className="text-2xl">🎯</span>
+                </div>
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Garantia de Resultado</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-300">10 dias grátis, sem compromisso</p>
+            </div>
+        </div>
+
         <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 grayscale opacity-50 contrast-125">
-            {/* Aqui entrariam logos de empresas famosas ou integrações */}
             <div className="flex items-center justify-center font-bold text-2xl">ASAAS</div>
             <div className="flex items-center justify-center font-bold text-2xl">Sebrae-fã</div>
             <div className="flex items-center justify-center font-bold text-2xl">BoletoFacil</div>
