@@ -7,7 +7,7 @@ import Script from "next/script";
 export const metadata: Metadata = {
   title: "Sistema de Gestão Empresarial para PMEs Brasil: Estoque e Vendas | NexusPro",
   description:
-    "Software de gestão empresarial completo para PMEs no Brasil. Economize até 30h por mês na gestão de estoque e aumente suas vendas em 47%. Teste grátis por 14 dias sem cartão.",
+    "Software de gestão empresarial completo para PMEs no Brasil. Economize até 30h por mês na gestão de estoque e aumente suas vendas em 47%. Teste grátis por 10 dias sem cartão.",
   keywords: "Sistema de Gestão Empresarial PMEs Brasil, software gestão estoque, sistema de vendas PDV, controle financeiro empresarial, automação comercial varejo",
 };
 

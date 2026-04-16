@@ -14,8 +14,8 @@ const FAQ = () => {
       answer: "Sim, o NexusPro é um software de gestão empresarial completo desenvolvido especificamente para as necessidades operacionais de Pequenas e Médias Empresas no Brasil."
     },
     {
-      question: "Como funciona o período de teste grátis de 14 dias?",
-      answer: "Você terá acesso total a todas as funcionalidades do plano Profissional por 14 dias. Não pedimos cartão de crédito no cadastro. É uma cortesia para você comprovar a economia de tempo e eficiência do sistema antes de qualquer compromisso financeiro."
+      question: "Como funciona o período de teste grátis de 10 dias?",
+      answer: "Você terá acesso total a todas as funcionalidades do plano Profissional por 10 dias. Não pedimos cartão de crédito no cadastro. É uma cortesia para você comprovar a economia de tempo e eficiência do sistema antes de qualquer compromisso financeiro."
     },
     {
       question: "Como funciona a conexão do sistema com a nuvem?",

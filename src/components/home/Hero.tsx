@@ -8,14 +8,12 @@ import placeholderData from '@/app/lib/placeholder-images.json';
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
 
 const Hero = () => {
   const [isPlayerOpen, setIsPlayerOpen] = useState(false);
 
-  // ID do vídeo atualizado conforme solicitado
+  // ID do vídeo do YouTube
   const videoId = "yxlD53vXaSw";
 
   return (
@@ -43,7 +41,7 @@ const Hero = () => {
                 href="/signup"
                 className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-5 rounded-xl text-lg font-bold transition-all transform hover:scale-105 shadow-xl shadow-blue-500/20 flex items-center justify-center gap-2"
               >
-                Teste Grátis por 14 Dias
+                Teste Grátis por 10 Dias
               </Link>
               <button 
                 onClick={() => setIsPlayerOpen(true)}

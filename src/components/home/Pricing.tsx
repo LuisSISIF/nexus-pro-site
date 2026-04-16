@@ -1,7 +1,6 @@
 'use client';
-import React, { useEffect, useRef } from 'react';
-import { Check, Star, X, Briefcase, Building, Store, Rocket, ArrowRight } from 'lucide-react';
-import { motion, useAnimation, useInView } from 'framer-motion';
+import React from 'react';
+import { Check, X, Briefcase, Building, Store, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -45,7 +44,7 @@ const Pricing = () => {
             Planos Transparentes, <span className="text-blue-600">Sem Surpresas</span>
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300">
-            Comece com o Teste Grátis de 14 dias. Mude de plano a qualquer momento.
+            Comece com o Teste Grátis de 10 dias. Mude de plano a qualquer momento.
           </p>
         </div>
 

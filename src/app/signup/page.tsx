@@ -9,8 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { ArrowRight, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
-import Link from 'next/link';
+import { ArrowRight, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -19,7 +18,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { registerUserAndCompany, checkUserExists } from '@/actions/auth-actions';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ContractDialog } from '@/components/signup/ContractDialog';
 import AnimatedSection from '@/components/home/AnimatedSection';
 
@@ -119,7 +117,7 @@ const SignUpPage = () => {
           <Card className="shadow-lg border-gray-200 dark:border-gray-700">
             <CardHeader className="text-center space-y-4">
               <CardTitle className="text-3xl font-bold font-headline">Crie sua Conta NexusPro</CardTitle>
-              <CardDescription>Comece seu teste gratuito de 14 dias.</CardDescription>
+              <CardDescription>Comece seu teste gratuito de 10 dias.</CardDescription>
             </CardHeader>
             <CardContent>
                <Form {...form}>
