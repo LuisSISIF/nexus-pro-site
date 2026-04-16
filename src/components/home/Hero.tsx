@@ -77,7 +77,7 @@ const Hero = () => {
                 className="rounded-xl shadow-lg w-full h-auto"
                 width={1200}
                 height={800}
-                data-ai-hint="software dashboard"
+                data-ai-hint={placeholderData.hero_interface.hint}
                 priority
               />
             </div>
