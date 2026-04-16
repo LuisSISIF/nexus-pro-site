@@ -44,7 +44,7 @@ const LgpdPage = () => {
 
                   <div>
                     <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-2">Etapa 2: Finalização do Cadastro e Contratação do Plano</h3>
-                    <p className="mb-2">Após o período de teste, para ativar todas as funcionalidades do sistema, como o faturamento de mensalidades e a conformidade fiscal, solicitamos informações complementares. Estes dados são cruciais para o funcionamento pleno do NexusPro:</p>
+                    <p className="mb-2">Após o período de teste, para ativar todas as funcionalidades do sistema, como o faturamento de mensalidades, solicitamos informações complementares. Estes dados são cruciais para o funcionamento pleno do NexusPro:</p>
                      <ul className="list-disc list-inside mt-2 space-y-1">
                       <li><strong>Dados Fiscais da Empresa:</strong> CNPJ, Inscrição Estadual e Regime Tributário.</li>
                       <li><strong>Dados Comerciais e de Faturamento:</strong> E-mail comercial, dia de vencimento para a mensalidade e segmento de mercado.</li>

@@ -1,4 +1,3 @@
-
 'use client';
 import React from 'react';
 import Header from '@/components/home/Header';
@@ -6,6 +5,7 @@ import Footer from '@/components/home/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Rocket, Target, Heart, Users, CheckCircle, Lightbulb, Handshake, MessageSquare, ShieldCheck, GitBranch } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import placeholderData from '@/app/lib/placeholder-images.json';
 import AnimatedSection from '@/components/home/AnimatedSection';
 
@@ -31,7 +31,7 @@ const AboutUsPage = () => {
                 A Andromeda Solutions nasceu de uma necessidade real observada no comércio: a falta de sistemas que fossem ao mesmo tempo poderosos e simples de usar.
               </p>
               <p className="leading-relaxed">
-                O <strong>NexusPro</strong> é o resultado dessa missão: um ERP completo, construído para ser intuitivo e um verdadeiro parceiro estratégico para PMEs.
+                O <strong>NexusPro</strong> é o resultado dessa missão: um Sistema de Gestão Empresarial completo, construído para ser intuitivo e um verdadeiro parceiro estratégico para PMEs.
               </p>
             </div>
             <div className="flex justify-center">

@@ -23,7 +23,7 @@ const Hero = () => {
                 Economize até <span className="text-blue-600 dark:text-blue-400">30h por mês</span> na gestão do seu estoque
               </h1>
               <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-xl mx-auto lg:mx-0 font-body">
-                O NexusPro é o ERP para PMEs que automatiza o controle de vendas e estoque, permitindo que você foque no que importa: <strong className="text-gray-900 dark:text-white">vender mais</strong>.
+                O NexusPro é o Sistema de Gestão Empresarial para PMEs que automatiza o controle de vendas e estoque, permitindo que você foque no que importa: <strong className="text-gray-900 dark:text-white">vender mais</strong>.
               </p>
             </div>
 
@@ -61,7 +61,7 @@ const Hero = () => {
             <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-2 border border-gray-100 dark:border-gray-700 transform lg:rotate-2 hover:rotate-0 transition-all duration-500">
               <Image 
                 src={placeholderData.hero_interface.url}
-                alt="Interface do Software ERP de Gestão de Estoque NexusPro" 
+                alt="Interface do Sistema de Gestão Empresarial NexusPro" 
                 className="rounded-xl shadow-lg w-full h-auto"
                 width={1200}
                 height={800}

@@ -32,7 +32,7 @@ const CTA = () => {
                         <span>Agendar uma Demonstração</span>
                     </a>
                 </div>
-                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-6">Teste grátis por 10 dias • Sem cartão de crédito • Cancele quando quiser</p>
+                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-6">Teste grátis por 14 dias • Sem cartão de crédito • Cancele quando quiser</p>
             </div>
         </section>
     )

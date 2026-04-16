@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState } from 'react';
@@ -120,7 +119,7 @@ const SignUpPage = () => {
           <Card className="shadow-lg border-gray-200 dark:border-gray-700">
             <CardHeader className="text-center space-y-4">
               <CardTitle className="text-3xl font-bold font-headline">Crie sua Conta NexusPro</CardTitle>
-              <CardDescription>Comece seu teste gratuito de 10 dias.</CardDescription>
+              <CardDescription>Comece seu teste gratuito de 14 dias.</CardDescription>
             </CardHeader>
             <CardContent>
                <Form {...form}>
@@ -154,6 +153,7 @@ const SignUpPage = () => {
                                         placeholder="000.000.000-00" 
                                         {...field}
                                         onChange={(e) => field.onChange(formatCPF(e.target.value))}
+                                        onBlur={() => form.trigger('cpf')}
                                     />
                                 </FormControl>
                                 <FormMessage />

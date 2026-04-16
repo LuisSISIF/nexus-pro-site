@@ -10,16 +10,16 @@ import {
 const FAQ = () => {
   const faqs = [
     {
-      question: "O NexusPro é um ERP para PMEs Brasil?",
-      answer: "Sim, o NexusPro é um software de gestão completo desenvolvido especificamente para as necessidades tributárias e operacionais de Pequenas e Médias Empresas no Brasil."
+      question: "O NexusPro é um Sistema de Gestão Empresarial para PMEs Brasil?",
+      answer: "Sim, o NexusPro é um software de gestão empresarial completo desenvolvido especificamente para as necessidades operacionais de Pequenas e Médias Empresas no Brasil."
     },
     {
       question: "Como funciona o período de teste grátis de 14 dias?",
       answer: "Você terá acesso total a todas as funcionalidades do plano Profissional por 14 dias. Não pedimos cartão de crédito no cadastro. É uma cortesia para você comprovar a economia de tempo e eficiência do sistema antes de qualquer compromisso financeiro."
     },
     {
-      question: "O sistema de gestão de estoque funciona offline?",
-      answer: "Sim! A interface de vendas é instalada localmente no seu computador para garantir estabilidade total mesmo se a internet oscilar. Os dados são sincronizados automaticamente com a nuvem quando há conexão, garantindo backups em tempo real."
+      question: "Como funciona a conexão do sistema com a nuvem?",
+      answer: "O NexusPro opera com sincronização em tempo real com servidores de alta disponibilidade. Isso garante que seus dados estejam sempre seguros, com backups automáticos e acessíveis de onde você estiver, exigindo uma conexão ativa com a internet para garantir a integridade total das informações."
     },
     {
       question: "Quais as formas de pagamento para os planos pagos?",

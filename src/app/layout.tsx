@@ -5,10 +5,10 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "ERP para PMEs Brasil: Gestão de Estoque e Vendas | NexusPro",
+  title: "Sistema de Gestão Empresarial para PMEs Brasil: Estoque e Vendas | NexusPro",
   description:
-    "Software ERP completo para PMEs no Brasil. Economize até 30h por mês na gestão de estoque e aumente suas vendas em 47%. Teste grátis por 14 dias sem cartão.",
-  keywords: "ERP para PMEs Brasil, software gestão estoque, sistema de vendas PDV, controle financeiro empresarial, automação comercial varejo",
+    "Software de gestão empresarial completo para PMEs no Brasil. Economize até 30h por mês na gestão de estoque e aumente suas vendas em 47%. Teste grátis por 14 dias sem cartão.",
+  keywords: "Sistema de Gestão Empresarial PMEs Brasil, software gestão estoque, sistema de vendas PDV, controle financeiro empresarial, automação comercial varejo",
 };
 
 export default function RootLayout({

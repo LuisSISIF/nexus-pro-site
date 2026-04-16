@@ -9,7 +9,7 @@ const Features = () => {
   const features = [
     {
       icon: Package,
-      title: "Controle de Estoque ERP",
+      title: "Controle de Estoque Inteligente",
       description: "Elimine perdas e rupturas com alertas de reposição automática e inventário em tempo real.",
       color: "bg-blue-500",
       benefit: "Reduza perdas em até 25%"

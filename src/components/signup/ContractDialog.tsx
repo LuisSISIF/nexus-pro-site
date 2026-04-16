@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -41,7 +40,7 @@ const SubClause: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 
 const ContractContent = ({ formData, systemVersion }: { formData: RegistrationFormValues, systemVersion: string }) => (
     <div className="space-y-4 text-xs text-muted-foreground">
-        <p className="font-semibold text-center text-md text-foreground">Termos de Uso – Período de Teste Gratuito (10 dias) para o Software NexusPro</p>
+        <p className="font-semibold text-center text-md text-foreground">Termos de Uso – Período de Teste Gratuito (14 dias) para o Software NexusPro</p>
         
         <SectionTitle>1. IDENTIFICAÇÃO DAS PARTES</SectionTitle>
         <SubClause>
@@ -58,12 +57,12 @@ const ContractContent = ({ formData, systemVersion }: { formData: RegistrationFo
 
         <SectionTitle>2. OBJETO</SectionTitle>
          <SubClause>
-            <ClauseText>2.1. Concessão de licença temporária, não exclusiva e intransferível de uso do software NexusPro, plataforma de gerenciamento e automação de estoque, vendas, finanças, controle de clientes e crédito para comércios de varejo em geral, pelo prazo de 10 (dez) dias corridos, iniciando-se no primeiro acesso.</ClauseText>
+            <ClauseText>2.1. Concessão de licença temporária, não exclusiva e intransferível de uso do software NexusPro, plataforma de gerenciamento e automação de estoque, vendas, finanças, controle de clientes e crédito para comércios de varejo em geral, pelo prazo de 14 (quatorze) dias corridos, iniciando-se no primeiro acesso.</ClauseText>
         </SubClause>
 
         <SectionTitle>3. DESCRIÇÃO TÉCNICA</SectionTitle>
         <SubClause>
-            <ClauseText>3.1. <strong>Categoria:</strong> ERP especializado para gestão de varejo, com recursos de vendas, estoque, financeiro e relatórios integrados.</ClauseText>
+            <ClauseText>3.1. <strong>Categoria:</strong> Sistema de Gestão Empresarial especializado para varejo, com recursos de vendas, estoque, financeiro e relatórios integrados.</ClauseText>
         </SubClause>
         <SubClause>
             <ClauseText>3.2. <strong>Implementação:</strong> instalação local + banco de dados em servidor na nuvem + plataforma web para controle financeiro.</ClauseText>
@@ -101,7 +100,7 @@ const ContractContent = ({ formData, systemVersion }: { formData: RegistrationFo
             <ClauseText>4.2. Controle de apenas 1 loja.</ClauseText>
         </SubClause>
         <SubClause>
-            <ClauseText>4.3. 10 dias a contar do cadastro.</ClauseText>
+            <ClauseText>4.3. 14 dias a contar do cadastro.</ClauseText>
         </SubClause>
         <SubClause>
             <ClauseText>4.4. Impressão de cupom não fiscal indisponível (CNPJ cliente não coletado).</ClauseText>
@@ -121,7 +120,7 @@ const ContractContent = ({ formData, systemVersion }: { formData: RegistrationFo
             <ClauseText>5.2. <strong>Finalidade:</strong> operacional para uso básico, cadastro de produtos, vendas, estoque, financeiro, funcionários e relatórios; sincronização e backup remoto para bancos online.</ClauseText>
         </SubClause>
         <SubClause>
-            <ClauseText>5.3. <strong>Base legal:</strong> Execução de contrato (LGPD art. 7º, V) e Cumprimento de obrigação legal (emissão de NF-e).</ClauseText>
+            <ClauseText>5.3. <strong>Base legal:</strong> Execução de contrato (LGPD art. 7º, V) e Cumprimento de obrigação legal.</ClauseText>
         </SubClause>
         <SubClause>
             <ClauseText>5.4. <strong>Retenção:</strong> 30 dias pós-teste para migração, depois exclusão.</ClauseText>
@@ -130,7 +129,7 @@ const ContractContent = ({ formData, systemVersion }: { formData: RegistrationFo
             <ClauseText>5.5. <strong>Localização dos servidores:</strong> América do Sul (São Paulo – SP).</ClauseText>
         </SubClause>
         <SubClause>
-            <ClauseText>5.6. <strong>Segurança:</strong> criptografia de senhas; controle de acesso e permissões; credenciais no banco de dados.</ClauseText>
+            <ClauseText>5.6. <strong>Security:</strong> criptografia de senhas; controle de acesso e permissões; credenciais no banco de dados.</ClauseText>
         </SubClause>
         <SubClause>
             <ClauseText>5.7. <strong>Exercício de direitos:</strong> solicitação via e-mail/suporte para acesso, correção ou exclusão.</ClauseText>
@@ -300,7 +299,7 @@ const ContractContent = ({ formData, systemVersion }: { formData: RegistrationFo
 
         <SectionTitle>20. VIGÊNCIA ESPECÍFICA PARA TESTE</SectionTitle>
         <SubClause>
-            <ClauseText>20.1. A vigência de 10 dias inicia-se no momento exato do registro na plataforma, utilizando o fuso horário de Brasília (GMT-3). O término é automático, e a contagem regressiva será exibida na interface do sistema.</ClauseText>
+            <ClauseText>20.1. A vigência de 14 dias inicia-se no momento exato do registro na plataforma, utilizando o fuso horário de Brasília (GMT-3). O término é automático, e a contagem regressiva será exibida na interface do sistema.</ClauseText>
         </SubClause>
         
         <SectionTitle>21. DISPOSIÇÕES FINAIS COMPLEMENTARES</SectionTitle>
