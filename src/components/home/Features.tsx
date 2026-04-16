@@ -1,11 +1,42 @@
 'use client';
-import React, { useEffect, useRef } from 'react';
-import { Package, ShoppingCart, Users, BarChart3, Cloud, Zap, Megaphone, DollarSign, ArrowRight, ShieldCheck, Headphones } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { 
+  Package, 
+  ShoppingCart, 
+  Users, 
+  BarChart3, 
+  DollarSign, 
+  ArrowRight, 
+  ShieldCheck, 
+  Headphones, 
+  Zap, 
+  Boxes, 
+  Calculator, 
+  Wallet, 
+  FileText, 
+  Tag, 
+  RefreshCcw, 
+  Lock, 
+  Archive,
+  Search
+} from 'lucide-react';
 import { motion, useAnimation, useInView } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const Features = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const features = [
     {
       icon: Package,
@@ -37,6 +68,69 @@ const Features = () => {
     }
   ];
 
+  const modalFeatures = [
+    {
+      title: "Venda PDV",
+      description: "Vendas rápidas com múltiplos pagamentos e promoções aplicadas na hora.",
+      icon: Zap,
+      color: "text-yellow-500"
+    },
+    {
+      title: "Controle de Estoque",
+      description: "Entradas, saídas e contagens com atualização precisa e em tempo real.",
+      icon: Boxes,
+      color: "text-blue-500"
+    },
+    {
+      title: "Controle de Finanças",
+      description: "Organize contas a pagar e acompanhe sua saúde financeira com clareza.",
+      icon: DollarSign,
+      color: "text-green-600"
+    },
+    {
+      title: "Controle de Caixa Diário",
+      description: "Controle o movimento do dia por forma de pagamento com segurança e logs.",
+      icon: Wallet,
+      color: "text-teal-500"
+    },
+    {
+      title: "Relatórios Completos",
+      description: "Veja tudo o que aconteceu por setor, período e resultado de forma analítica.",
+      icon: FileText,
+      color: "text-orange-500"
+    },
+    {
+      title: "Controle de Clientes",
+      description: "Ofereça crediário VIP e acompanhe contas a receber com total praticidade.",
+      icon: Users,
+      color: "text-purple-500"
+    },
+    {
+      title: "Promoções",
+      description: "Crie descontos e campanhas personalizadas para datas especiais e eventos.",
+      icon: Tag,
+      color: "text-pink-500"
+    },
+    {
+      title: "Devoluções",
+      description: "Gerencie trocas e devoluções de forma simples, sem bagunçar seu estoque.",
+      icon: RefreshCcw,
+      color: "text-red-500"
+    },
+    {
+      title: "Controle de Acessos",
+      description: "Defina permissões por perfil e proteja dados sensíveis da sua empresa.",
+      icon: Lock,
+      color: "text-indigo-500"
+    },
+    {
+      title: "Controle de Patrimônios",
+      description: "Organize os bens da empresa vinculados por setor ou usuário responsável.",
+      icon: Archive,
+      color: "text-amber-600"
+    }
+  ];
+
   const controls = useAnimation();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
@@ -59,7 +153,7 @@ const Features = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
           {features.map((feature, index) => (
             <div
               key={index}
@@ -81,8 +175,52 @@ const Features = () => {
           ))}
         </div>
 
-        {/* Onboarding em 3 Passos - Micro-compromisso */}
-        <div className="mt-32">
+        <div className="flex justify-center mb-32">
+          <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+            <DialogTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 px-10 py-6 text-lg font-bold rounded-xl gap-2 group"
+              >
+                <Search className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                Ver todas as funcionalidades
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-4xl max-h-[90vh] p-0 overflow-hidden border-none shadow-2xl">
+              <DialogHeader className="p-8 bg-blue-600 text-white">
+                <DialogTitle className="text-3xl font-headline font-bold">Funcionalidades NexusPro</DialogTitle>
+                <DialogDescription className="text-blue-100 text-lg">
+                  Uma solução completa desenhada para a eficiência do seu negócio.
+                </DialogDescription>
+              </DialogHeader>
+              <ScrollArea className="p-8 max-h-[calc(90vh-140px)]">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {modalFeatures.map((f, i) => (
+                    <div key={i} className="flex gap-4 p-4 rounded-xl border border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                      <div className={cn("flex-shrink-0 w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center", f.color)}>
+                        <f.icon className="w-6 h-6" />
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="font-bold text-gray-900 dark:text-white">{f.title}</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{f.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-8 p-6 bg-blue-50 dark:bg-blue-900/20 rounded-2xl text-center border border-blue-100 dark:border-blue-800">
+                  <p className="text-blue-800 dark:text-blue-300 font-medium mb-4">Pronto para ver isso na prática?</p>
+                  <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white font-bold">
+                    <Link href="/signup">Iniciar meu teste de 10 dias</Link>
+                  </Button>
+                </div>
+              </ScrollArea>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        {/* Onboarding em 3 Passos */}
+        <div>
             <h3 className="text-3xl font-bold text-center mb-16 font-headline">Começar é mais simples do que você imagina</h3>
             <div className="grid md:grid-cols-3 gap-12 max-w-5xl mx-auto relative">
                 <div className="hidden md:block absolute top-10 left-0 right-0 h-0.5 bg-blue-100 dark:bg-gray-800 -z-10"></div>
