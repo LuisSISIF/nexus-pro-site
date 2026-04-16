@@ -23,7 +23,7 @@ const FAQ = () => {
     },
     {
       question: "Quais as formas de pagamento para os planos pagos?",
-      answer: "As formas de pagamento aceitas são apenas PIX ou Boleto Bancário. Pagamentos anuais possuem 10% de desconto adicional."
+      answer: "As formas de pagamento aceitas são PIX ou Boleto Bancário. Pagamentos anuais possuem 10% de desconto adicional."
     },
     {
       question: "Preciso pagar taxa de implantação ou setup?",
