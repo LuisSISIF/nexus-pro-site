@@ -1,12 +1,23 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { CircleCheckBig, PlayCircle, Star, Users } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import placeholderData from '@/app/lib/placeholder-images.json';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const Hero = () => {
+  const [isPlayerOpen, setIsPlayerOpen] = useState(false);
+
+  // Substitua este ID pelo ID do seu vídeo no YouTube
+  const videoId = "wAfyiC7Wx6Y";
+
   return (
     <section className="relative bg-gradient-to-br from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 pt-20 pb-32 overflow-hidden border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -34,8 +45,11 @@ const Hero = () => {
               >
                 Teste Grátis por 14 Dias
               </Link>
-              <button className="w-full sm:w-auto flex items-center justify-center gap-2 text-gray-600 dark:text-gray-300 font-bold hover:text-blue-600 transition-colors px-8 py-5">
-                <PlayCircle className="w-6 h-6" />
+              <button 
+                onClick={() => setIsPlayerOpen(true)}
+                className="w-full sm:w-auto flex items-center justify-center gap-2 text-gray-600 dark:text-gray-300 font-bold hover:text-blue-600 transition-colors px-8 py-5 group"
+              >
+                <PlayCircle className="w-6 h-6 group-hover:scale-110 transition-transform" />
                 Ver Demonstração (60s)
               </button>
             </div>
@@ -72,6 +86,23 @@ const Hero = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal do Player de Vídeo */}
+      <Dialog open={isPlayerOpen} onOpenChange={setIsPlayerOpen}>
+        <DialogContent className="sm:max-w-4xl p-0 overflow-hidden bg-black border-none ring-0">
+          <div className="aspect-video w-full">
+            {isPlayerOpen && (
+              <iframe
+                src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`}
+                title="Demonstração NexusPro"
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
