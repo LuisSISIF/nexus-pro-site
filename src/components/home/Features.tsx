@@ -1,61 +1,39 @@
-
 'use client';
 import React, { useEffect, useRef } from 'react';
-import { Package, ShoppingCart, Users, BarChart3, Cloud, Zap, Megaphone, Video, Tag, DollarSign } from 'lucide-react';
+import { Package, ShoppingCart, Users, BarChart3, Cloud, Zap, Megaphone, DollarSign, ArrowRight, ShieldCheck, Headphones } from 'lucide-react';
 import { motion, useAnimation, useInView } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 const Features = () => {
   const features = [
     {
       icon: Package,
-      title: "Controle Inteligente de Estoque",
-      description: "Monitore produtos em tempo real, alertas de estoque baixo e reposição automática.",
-      color: "bg-blue-500"
+      title: "Controle de Estoque ERP",
+      description: "Elimine perdas e rupturas com alertas de reposição automática e inventário em tempo real.",
+      color: "bg-blue-500",
+      benefit: "Reduza perdas em até 25%"
     },
     {
       icon: ShoppingCart,
-      title: "Gestão de Vendas Simplificada",
-      description: "PDV completo, múltiplas formas de pagamento e emissão de cupons não fiscais.",
-      color: "bg-green-500"
+      title: "PDV Ágil e Sem Fila",
+      description: "Finalize vendas em segundos com múltiplas formas de pagamento e emissão de cupons.",
+      color: "bg-green-500",
+      benefit: "Vendas 40% mais rápidas"
     },
-     {
+    {
       icon: DollarSign,
-      title: "Gestão Financeira",
-      description: "Gerencie contas a pagar e a receber de forma integrada e mantenha seu fluxo de caixa saudável.",
+      title: "Fluxo de Caixa Blindado",
+      description: "Gerencie contas a pagar e receber sem planilhas complexas. Tudo integrado ao seu lucro.",
       color: "bg-teal-500",
+      benefit: "Visibilidade total do lucro"
     },
     {
-      icon: Tag,
-      title: "Sistema de Controle de Ofertas",
-      description: "Crie e gerencie promoções de forma fácil e automatizada para impulsionar suas vendas.",
-      color: "bg-pink-500",
-      premium: true,
-    },
-     {
       icon: Users,
-      title: "Gerenciamento de Clientes",
-      description: "Mantenha um cadastro completo de clientes, histórico de compras e controle de crédito.",
+      title: "CRM e Fidelidade",
+      description: "Conheça quem compra de você. Histórico de compras e controle de crédito para seus melhores clientes.",
       color: "bg-purple-500",
-      premium: true,
-    },
-    {
-      icon: BarChart3,
-      title: "Relatórios e Insights",
-      description: "Análises detalhadas para decisões estratégicas sobre vendas, estoque e performance.",
-      color: "bg-orange-500"
-    },
-    {
-      icon: Cloud,
-      title: "Sistema na Nuvem",
-      description: "Acesse de qualquer lugar, com dados sempre seguros e backup automático.",
-      color: "bg-indigo-500"
-    },
-    {
-      icon: Zap,
-      title: "Automação Inteligente",
-      description: "Processos automatizados que economizam seu tempo e reduzem erros operacionais.",
-      color: "bg-yellow-500"
+      benefit: "Aumente o LTV do cliente"
     }
   ];
 
@@ -69,112 +47,85 @@ const Features = () => {
     }
   }, [isInView, controls]);
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1, 
-      transition: { staggerChildren: 0.1 }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { 
-      y: 0, 
-      opacity: 1,
-      transition: { duration: 0.5 }
-    }
-  };
-
-
   return (
-    <section id="features" className="py-20 bg-white dark:bg-gray-900">
+    <section id="features" className="py-24 bg-white dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center space-y-4 mb-16">
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
-            Funcionalidades que Transformam Seu Negócio
+        <div className="text-center space-y-4 mb-20">
+          <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white font-headline">
+            Tudo o que sua PME precisa para <span className="text-blue-600">escalar</span>
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Descubra como o NexusPro pode automatizar seus processos e aumentar suas vendas
+            Desenvolvido para resolver as dores reais do lojista brasileiro, focando em produtividade e lucro.
           </p>
         </div>
 
-        <motion.div 
-          ref={ref}
-          initial="hidden"
-          animate={controls}
-          variants={containerVariants}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
-        >
-          {features.map((feature, index) => {
-            const IconComponent = feature.icon;
-            return (
-              <motion.div
-                key={index}
-                variants={itemVariants}
-                className={cn(
-                  "rounded-xl p-8 border hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group",
-                  feature.premium
-                    ? "bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900 border-pink-500/50 shadow-lg shadow-pink-500/20"
-                    : "bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 shadow-lg"
-                )}
-              >
-                <div className={cn(
-                  "w-12 h-12 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform",
-                   feature.color
-                )}>
-                  <IconComponent className="w-6 h-6 text-white" />
-                </div>
-                <h3 className={cn(
-                    "text-xl font-semibold mb-3",
-                     feature.premium ? "text-white" : "text-gray-900 dark:text-white"
-                )}>
-                  {feature.title}
-                </h3>
-                <p className={cn(
-                  "leading-relaxed",
-                  feature.premium ? "text-gray-300" : "text-gray-600 dark:text-gray-300"
-                  )}>
-                  {feature.description}
-                </p>
-              </motion.div>
-            );
-          })}
-        </motion.div>
-
-        {/* Promotional Banner */}
-        <div className="mt-20 bg-gray-900 rounded-2xl p-8 lg:p-12 text-center shadow-2xl shadow-yellow-500/20 border border-yellow-500/30">
-            <div className="flex justify-center items-center gap-4 mb-4">
-                <Megaphone className="w-8 h-8 text-yellow-400"/>
-                <h3 className="text-2xl lg:text-3xl font-bold text-yellow-400">
-                    Treinamento Pessoal Incluso
-                </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {features.map((feature, index) => (
+            <div
+              key={index}
+              className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-8 border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-300 flex flex-col h-full"
+            >
+              <div className={cn("w-14 h-14 rounded-xl flex items-center justify-center mb-6 shadow-lg", feature.color)}>
+                <feature.icon className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white font-headline">
+                {feature.title}
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-6 flex-grow">
+                {feature.description}
+              </p>
+              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                <span className="text-sm font-bold text-blue-600 dark:text-blue-400">{feature.benefit}</span>
+              </div>
             </div>
-            <p className="text-lg text-gray-300 max-w-3xl mx-auto">
-                Contrate qualquer plano e ganhe um <strong>treinamento pessoal completo do sistema</strong>, realizado via Google Meet, para você e sua equipe.
-            </p>
+          ))}
         </div>
 
+        {/* Onboarding em 3 Passos - Micro-compromisso */}
+        <div className="mt-32">
+            <h3 className="text-3xl font-bold text-center mb-16 font-headline">Começar é mais simples do que você imagina</h3>
+            <div className="grid md:grid-cols-3 gap-12 max-w-5xl mx-auto relative">
+                <div className="hidden md:block absolute top-10 left-0 right-0 h-0.5 bg-blue-100 dark:bg-gray-800 -z-10"></div>
+                <div className="bg-white dark:bg-gray-900 p-6 text-center space-y-4">
+                    <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto text-xl font-bold shadow-lg">1</div>
+                    <h4 className="font-bold text-lg">Cadastro Rápido</h4>
+                    <p className="text-sm text-gray-500">Apenas 30 segundos para criar sua conta. Sem burocracia.</p>
+                </div>
+                <div className="bg-white dark:bg-gray-900 p-6 text-center space-y-4">
+                    <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto text-xl font-bold shadow-lg">2</div>
+                    <h4 className="font-bold text-lg">Migração Assistida</h4>
+                    <p className="text-sm text-gray-500">Nossa equipe importa seus produtos de planilhas ou sistemas antigos.</p>
+                </div>
+                <div className="bg-white dark:bg-gray-900 p-6 text-center space-y-4">
+                    <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto text-xl font-bold shadow-lg">3</div>
+                    <h4 className="font-bold text-lg">Venda e Lucre</h4>
+                    <p className="text-sm text-gray-500">Treinamento de 15min via Meet e você já está pronto para faturar.</p>
+                </div>
+            </div>
+        </div>
 
-        {/* ROI Section */}
-        <div className="mt-20 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 lg:p-12 text-white text-center">
-          <h3 className="text-2xl lg:text-3xl font-bold mb-4">
-            Resultados Comprovados
-          </h3>
-          <div className="grid md:grid-cols-3 gap-8 mt-8">
-            <div>
-              <div className="text-4xl font-bold text-yellow-300">47%</div>
-              <div className="text-blue-100">Aumento médio nas vendas</div>
+        {/* Garantia e Suporte */}
+        <div className="mt-32 grid md:grid-cols-2 gap-8">
+            <div className="bg-blue-600 rounded-3xl p-10 text-white flex flex-col justify-center">
+                <ShieldCheck className="w-12 h-12 mb-6 text-blue-200" />
+                <h3 className="text-3xl font-bold mb-4 font-headline text-white">Garantia Incondicional</h3>
+                <p className="text-blue-100 text-lg mb-8">
+                    Não se adaptou? Cancelamos sua assinatura sem perguntas. Seus dados são seus e você pode exportá-los quando quiser.
+                </p>
+                <Link href="/signup" className="bg-white text-blue-600 px-6 py-3 rounded-lg font-bold w-fit hover:bg-blue-50 transition-colors">
+                    Iniciar agora sem riscos
+                </Link>
             </div>
-            <div>
-              <div className="text-4xl font-bold text-yellow-300">60%</div>
-              <div className="text-blue-100">Redução de tempo em processos</div>
+            <div className="bg-gray-900 rounded-3xl p-10 text-white border border-yellow-500/30">
+                <Headphones className="w-12 h-12 mb-6 text-yellow-400" />
+                <h3 className="text-3xl font-bold mb-4 font-headline text-white">Suporte Humanizado 24/7</h3>
+                <p className="text-gray-400 text-lg mb-8">
+                    Chega de robôs. Nossos especialistas estão prontos para te atender via WhatsApp, Telefone ou Acesso Remoto.
+                </p>
+                <a href="https://wa.me/5535998615203" target="_blank" className="flex items-center gap-2 text-yellow-400 font-bold hover:underline">
+                    Falar com especialista agora <ArrowRight className="w-4 h-4" />
+                </a>
             </div>
-            <div>
-              <div className="text-4xl font-bold text-yellow-300">95%</div>
-              <div className="text-blue-100">Satisfação dos clientes</div>
-            </div>
-          </div>
         </div>
       </div>
     </section>
