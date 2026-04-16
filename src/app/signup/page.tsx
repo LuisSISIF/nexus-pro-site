@@ -25,22 +25,18 @@ import { ContractDialog } from '@/components/signup/ContractDialog';
 import AnimatedSection from '@/components/home/AnimatedSection';
 
 const registrationSchema = z.object({
-  // User
   fullName: z.string().min(3, "Nome completo é obrigatório"),
-  cpf: z.string().min(1, "CPF é obrigatório.").refine(isValidCPF, "CPF inválido"),
+  cpf: z.string().min(1, "CPF é obrigatório").refine((val) => isValidCPF(val), { message: "CPF inválido" }),
   gender: z.enum(["male", "female", "other"], { required_error: "Gênero é obrigatório" }),
   login: z.string().min(3, "Login deve ter pelo menos 3 caracteres"),
   password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
   confirmPassword: z.string().min(6),
   phone: z.string().min(10, "Telefone inválido"),
   email: z.string().email("E-mail inválido"),
-  
-  // Company
   companyName: z.string().min(2, "Nome da empresa é obrigatório"),
   companyAddress: z.string().min(10, "Endereço completo é obrigatório"),
   legalRepresentative: z.string().min(3, "Representante legal é obrigatório"),
   mainActivity: z.string().min(3, "Atividade principal é obrigatória"),
-
 }).refine((data) => data.password === data.confirmPassword, {
   message: "As senhas não coincidem",
   path: ["confirmPassword"], 
@@ -59,10 +55,10 @@ const SignUpPage = () => {
     
     const form = useForm<RegistrationFormValues>({
       resolver: zodResolver(registrationSchema),
+      mode: 'onBlur',
       defaultValues: {
           fullName: "",
           cpf: "",
-          gender: undefined,
           login: "",
           password: "",
           confirmPassword: "",
@@ -74,40 +70,23 @@ const SignUpPage = () => {
           mainActivity: "",
       },
     });
-    
-    const { trigger } = form;
 
     const formatCPF = (value: string) => {
-      const numericValue = value.replace(/\D/g, '');
-      const cpf = numericValue.slice(0, 11);
-
-      if (cpf.length > 9) {
-        return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-      } else if (cpf.length > 6) {
-        return cpf.replace(/(\d{3})(\d{3})(\d{0,3})/, '$1.$2.$3');
-      } else if (cpf.length > 3) {
-        return cpf.replace(/(\d{3})(\d{0,3})/, '$1.$2');
-      }
-      return cpf;
+      const v = value.replace(/\D/g, '').slice(0, 11);
+      if (v.length <= 3) return v;
+      if (v.length <= 6) return `${v.slice(0, 3)}.${v.slice(3)}`;
+      if (v.length <= 9) return `${v.slice(0, 3)}.${v.slice(3, 6)}.${v.slice(6)}`;
+      return `${v.slice(0, 3)}.${v.slice(3, 6)}.${v.slice(6, 9)}-${v.slice(9)}`;
     };
-
 
     const onFormSubmit = async (values: RegistrationFormValues) => {
         setLoading(true);
-        // Step 1: Check if user exists
         const userCheck = await checkUserExists(values.login, values.email);
-        
         if (!userCheck.success) {
-            toast({
-                variant: "destructive",
-                title: "Erro de Cadastro",
-                description: userCheck.message,
-            });
+            toast({ variant: "destructive", title: "Erro de Cadastro", description: userCheck.message });
             setLoading(false);
             return;
         }
-
-        // Step 2: If user doesn't exist, open contract
         setFormData(values);
         setIsContractOpen(true);
         setLoading(false);
@@ -117,40 +96,20 @@ const SignUpPage = () => {
         if (!formData) return;
         setLoading(true);
         setIsContractOpen(false);
-
         try {
             const result = await registerUserAndCompany(formData);
             if (result.success) {
-                toast({
-                    title: "Cadastro realizado com sucesso!",
-                    description: "Sua conta foi criada. Redirecionando para o login...",
-                });
-                // Delay redirection for a better user experience
-                setTimeout(() => {
-                    router.push('/login');
-                }, 2000); 
+                toast({ title: "Cadastro realizado!", description: "Redirecionando para o login..." });
+                setTimeout(() => router.push('/login'), 2000); 
             } else {
-                toast({
-                    variant: "destructive",
-                    title: "Erro no cadastro",
-                    description: result.message,
-                });
+                toast({ variant: "destructive", title: "Erro no cadastro", description: result.message });
                 setLoading(false);
             }
         } catch (error) {
-            toast({
-                variant: "destructive",
-                title: "Erro inesperado",
-                description: "Ocorreu um erro ao processar seu cadastro. Tente novamente.",
-            });
+            toast({ variant: "destructive", title: "Erro inesperado", description: "Tente novamente." });
             setLoading(false);
-        } finally {
-            // Keep loading true on success to show loading state during redirection
-            // setLoading(false); 
-            setFormData(null);
         }
     };
-
 
   return (
     <>
@@ -161,42 +120,31 @@ const SignUpPage = () => {
           <Card className="shadow-lg border-gray-200 dark:border-gray-700">
             <CardHeader className="text-center space-y-4">
               <CardTitle className="text-3xl font-bold font-headline">Crie sua Conta NexusPro</CardTitle>
-              <CardDescription>
-                Comece seu teste gratuito de 10 dias preenchendo os dados abaixo.
-              </CardDescription>
+              <CardDescription>Comece seu teste gratuito de 10 dias.</CardDescription>
             </CardHeader>
             <CardContent>
-                <Alert variant="default" className="mb-6 bg-yellow-50 border-yellow-200 dark:bg-yellow-900/30 dark:border-yellow-700">
-                  <AlertCircle className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
-                  <AlertTitle className="text-yellow-800 dark:text-yellow-300">Atenção</AlertTitle>
-                  <AlertDescription className="text-yellow-700 dark:text-yellow-300">
-                    O plano de teste possui funcionalidades que podem ser limitadas ou estar indisponíveis no plano gratuito.
-                  </AlertDescription>
-                </Alert>
-
                <Form {...form}>
                 <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-6">
-                    
-                    <p className="font-semibold text-gray-800 dark:text-gray-200 border-t pt-4 text-lg">Dados da Empresa</p>
+                    <p className="font-semibold border-t pt-4 text-lg">Dados da Empresa</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField control={form.control} name="companyName" render={({ field }) => (
-                            <FormItem><FormLabel>Nome da Empresa</FormLabel><FormControl><Input placeholder="Nome do seu negócio" {...field} /></FormControl><FormMessage /></FormItem>
+                            <FormItem><FormLabel>Nome da Empresa</FormLabel><FormControl><Input placeholder="Seu negócio" {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
                         <FormField control={form.control} name="legalRepresentative" render={({ field }) => (
-                            <FormItem><FormLabel>Representante Legal</FormLabel><FormControl><Input placeholder="Quem representa a empresa" {...field} /></FormControl><FormMessage /></FormItem>
+                            <FormItem><FormLabel>Representante Legal</FormLabel><FormControl><Input placeholder="Nome completo" {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
                     </div>
-                     <FormField control={form.control} name="mainActivity" render={({ field }) => (
-                        <FormItem><FormLabel>Atividade Principal</FormLabel><FormControl><Input placeholder="Ex: Comércio varejista, etc" {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormField control={form.control} name="mainActivity" render={({ field }) => (
+                        <FormItem><FormLabel>Atividade Principal</FormLabel><FormControl><Input placeholder="Ex: Varejo" {...field} /></FormControl><FormMessage /></FormItem>
                     )} />
-                     <FormField control={form.control} name="companyAddress" render={({ field }) => (
-                        <FormItem><FormLabel>Endereço Completo</FormLabel><FormControl><Textarea placeholder="Rua Exemplo, 123, Bairro, Cidade - UF, CEP" {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormField control={form.control} name="companyAddress" render={({ field }) => (
+                        <FormItem><FormLabel>Endereço Completo</FormLabel><FormControl><Textarea placeholder="Rua, Número, Bairro, Cidade - UF" {...field} /></FormControl><FormMessage /></FormItem>
                     )} />
                     
-                    <p className="font-semibold text-gray-800 dark:text-gray-200 border-t pt-4 text-lg">Dados do Usuário Administrador</p>
+                    <p className="font-semibold border-t pt-4 text-lg">Dados do Administrador</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField control={form.control} name="fullName" render={({ field }) => (
-                            <FormItem><FormLabel>Nome Completo</FormLabel><FormControl><Input placeholder="Seu nome completo" {...field} /></FormControl><FormMessage /></FormItem>
+                            <FormItem><FormLabel>Nome Completo</FormLabel><FormControl><Input placeholder="Seu nome" {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
                         <FormField control={form.control} name="cpf" render={({ field }) => (
                             <FormItem>
@@ -205,11 +153,7 @@ const SignUpPage = () => {
                                     <Input 
                                         placeholder="000.000.000-00" 
                                         {...field}
-                                        onBlur={() => trigger('cpf')}
-                                        onChange={(e) => {
-                                            const formatted = formatCPF(e.target.value);
-                                            field.onChange(formatted);
-                                        }}
+                                        onChange={(e) => field.onChange(formatCPF(e.target.value))}
                                     />
                                 </FormControl>
                                 <FormMessage />
@@ -218,25 +162,23 @@ const SignUpPage = () => {
                     </div>
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField control={form.control} name="phone" render={({ field }) => (
-                          <FormItem><FormLabel>Telefone / WhatsApp</FormLabel><FormControl>
-                            <Input placeholder="(00) 90000-0000" {...field} />
-                          </FormControl><FormMessage /></FormItem>
+                          <FormItem><FormLabel>Telefone / WhatsApp</FormLabel><FormControl><Input placeholder="(00) 00000-0000" {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
                         <FormField control={form.control} name="email" render={({ field }) => (
                             <FormItem><FormLabel>E-mail</FormLabel><FormControl><Input type="email" placeholder="seu-email@exemplo.com" {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
                     </div>
                      <FormField control={form.control} name="gender" render={({ field }) => (
-                      <FormItem><FormLabel>Sexo</FormLabel><FormControl><RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex items-center gap-6 pt-2">
-                        <div className="flex items-center space-x-2"><RadioGroupItem value="male" id="male" /><Label htmlFor="male" className="font-normal">Masculino</Label></div>
-                        <div className="flex items-center space-x-2"><RadioGroupItem value="female" id="female" /><Label htmlFor="female" className="font-normal">Feminino</Label></div>
-                        <div className="flex items-center space-x-2"><RadioGroupItem value="other" id="other" /><Label htmlFor="other" className="font-normal">Outro</Label></div>
+                      <FormItem><FormLabel>Sexo</FormLabel><FormControl><RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex gap-6 pt-2">
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="male" id="male" /><Label htmlFor="male">Masculino</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="female" id="female" /><Label htmlFor="female">Feminino</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="other" id="other" /><Label htmlFor="other">Outro</Label></div>
                       </RadioGroup></FormControl><FormMessage /></FormItem>
                     )} />
 
-                    <p className="font-semibold text-gray-800 dark:text-gray-200 border-t pt-4 text-lg">Dados de Acesso</p>
+                    <p className="font-semibold border-t pt-4 text-lg">Dados de Acesso</p>
                     <FormField control={form.control} name="login" render={({ field }) => (
-                        <FormItem><FormLabel>Login de Acesso</FormLabel><FormControl><Input placeholder="Crie um nome de usuário para acessar o sistema" {...field} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>Login de Acesso</FormLabel><FormControl><Input placeholder="Usuário para login" {...field} /></FormControl><FormMessage /></FormItem>
                     )} />
 
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -245,8 +187,8 @@ const SignUpPage = () => {
                           <FormLabel>Senha</FormLabel>
                           <FormControl>
                             <div className="relative">
-                              <Input type={showPassword ? "text" : "password"} placeholder="Crie uma senha forte" {...field} />
-                              <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setShowPassword(prev => !prev)}>
+                              <Input type={showPassword ? "text" : "password"} placeholder="Senha forte" {...field} />
+                              <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2" onClick={() => setShowPassword(!showPassword)}>
                                 {showPassword ? <EyeOff className="h-4 w-4"/> : <Eye className="h-4 w-4"/>}
                               </Button>
                             </div>
@@ -260,7 +202,7 @@ const SignUpPage = () => {
                            <FormControl>
                             <div className="relative">
                               <Input type={showConfirmPassword ? "text" : "password"} placeholder="Repita a senha" {...field} />
-                               <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setShowConfirmPassword(prev => !prev)}>
+                               <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
                                 {showConfirmPassword ? <EyeOff className="h-4 w-4"/> : <Eye className="h-4 w-4"/>}
                               </Button>
                             </div>
@@ -272,34 +214,17 @@ const SignUpPage = () => {
 
                     <Button type="submit" className="w-full text-lg py-6" disabled={loading}>
                         {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <ArrowRight className="mr-2 h-5 w-5" />}
-                        {loading ? 'Verificando...' : 'Continuar para Plataforma'}
+                        {loading ? 'Verificando...' : 'Finalizar e Ver Termos'}
                       </Button>
                 </form>
                </Form>
-                 <div className="mt-6 text-center text-sm">
-                    <p className="text-gray-600 dark:text-gray-400">
-                        Já tem uma conta?{' '}
-                        <Link href="/login" className="font-medium text-blue-600 hover:underline dark:text-blue-400">
-                            Faça login aqui.
-                        </Link>
-                    </p>
-                </div>
             </CardContent>
           </Card>
         </AnimatedSection>
       </main>
       <Footer />
     </div>
-
-    {formData && (
-        <ContractDialog
-            isOpen={isContractOpen}
-            onOpenChange={setIsContractOpen}
-            onAccept={handleContractAccept}
-            isLoading={loading}
-            formData={formData}
-        />
-    )}
+    {formData && <ContractDialog isOpen={isContractOpen} onOpenChange={setIsContractOpen} onAccept={handleContractAccept} isLoading={loading} formData={formData} />}
     </>
   );
 };

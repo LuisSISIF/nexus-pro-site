@@ -1,6 +1,4 @@
 
-// Funções de validação para CPF e CNPJ
-
 export const isValidCPF = (cpf: string): boolean => {
   if (!cpf) return true; // Allows for empty field, required rule is handled by Zod
   cpf = cpf.replace(/[^\d]+/g, '');
@@ -20,6 +18,7 @@ export const isValidCPF = (cpf: string): boolean => {
 };
 
 export const isValidCNPJ = (cnpj: string): boolean => {
+  if (!cnpj) return true;
   cnpj = cnpj.replace(/[^\d]+/g, '');
   if (cnpj.length !== 14 || /^(\d)\1+$/.test(cnpj)) return false;
   
@@ -47,11 +46,4 @@ export const isValidCNPJ = (cnpj: string): boolean => {
   if (result !== parseInt(digits.charAt(1))) return false;
 
   return true;
-};
-
-export const isValidRG = (rg: string): boolean => {
-  // A validação de RG é complexa devido aos diferentes formatos por estado.
-  // Esta é uma verificação básica de formato.
-  rg = rg.replace(/[^\d.X-]/gi, '');
-  return rg.length >= 7; // Ex: XX.XXX.XXX-X ou formatos mais curtos
 };

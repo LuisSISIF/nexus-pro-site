@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Phone, Mail, MapPin, Instagram } from 'lucide-react';
 import Image from 'next/image';
@@ -22,12 +23,11 @@ const Footer = () => {
     <footer className="bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Company Info */}
           <div className="space-y-4">
-            <a href="/" className="flex items-center space-x-2">
-              <Image src={Logo} alt="Andromeda Solutions Logo" width={32} height={32} className="h-8 w-auto" data-ai-hint="logo" />
+            <Link href="/NexusPro" className="flex items-center space-x-2">
+              <Image src={Logo} alt="Andromeda Solutions Logo" width={32} height={32} className="h-8 w-auto" />
               <span className="text-xl font-bold">Andromeda Solutions</span>
-            </a>
+            </Link>
             <p className="text-gray-300 leading-relaxed">
               Transformando a gestão de estoque e vendas com tecnologia inovadora e suporte excepcional.
             </p>
@@ -38,17 +38,16 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Contact */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Contato</h3>
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <Phone className="w-5 h-5 text-blue-400" />
-                <a href="tel:+5519996983542" className="text-gray-300 hover:text-white transition-colors">(35) 99861-5203</a>
+                <a href="tel:+5535998615203" className="text-gray-300 hover:text-white transition-colors">(35) 99861-5203</a>
               </div>
                <div className="flex items-center space-x-3">
                 <WhatsAppIcon className="w-5 h-5 text-green-400" />
-                <a href="https://wa.me/5519996983542" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white">WhatsApp</a>
+                <a href="https://wa.me/5535998615203" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white">WhatsApp</a>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="w-5 h-5 text-blue-400" />
@@ -61,32 +60,30 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Links Rápidos</h3>
             <div className="space-y-2">
-              <a href="/#features" className="block text-gray-300 hover:text-white transition-colors">Funcionalidades</a>
-              <a href="/#pricing" className="block text-gray-300 hover:text-white transition-colors">Preços</a>
-              <a href="/#testimonials" className="block text-gray-300 hover:text-white transition-colors">Depoimentos</a>
-              <a href="/#support" className="block text-gray-300 hover:text-white transition-colors">Suporte</a>
-              <a href="/#faq" className="block text-gray-300 hover:text-white transition-colors">FAQ</a>
-              <a href="/about" className="block text-gray-300 hover:text-white transition-colors">Sobre Nós</a>
+              <Link href="/NexusPro#features" className="block text-gray-300 hover:text-white transition-colors">Funcionalidades</Link>
+              <Link href="/NexusPro#pricing" className="block text-gray-300 hover:text-white transition-colors">Preços</Link>
+              <Link href="/NexusPro#testimonials" className="block text-gray-300 hover:text-white transition-colors">Depoimentos</Link>
+              <Link href="/NexusPro#support" className="block text-gray-300 hover:text-white transition-colors">Suporte</Link>
+              <Link href="/NexusPro#faq" className="block text-gray-300 hover:text-white transition-colors">FAQ</Link>
+              <Link href="/about" className="block text-gray-300 hover:text-white transition-colors">Sobre Nós</Link>
             </div>
           </div>
 
-          {/* Legal */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Legal</h3>
             <div className="space-y-2">
-              <a href="/privacy-policy" className="block text-gray-300 hover:text-white transition-colors">Política de Privacidade</a>
-              <a href="/terms-of-use" className="block text-gray-300 hover:text-white transition-colors">Termos de Uso</a>
-              <a href="/lgpd" className="block text-gray-300 hover:text-white transition-colors">LGPD</a>
-              <a href="/cookies" className="block text-gray-300 hover:text-white transition-colors">Cookies</a>
+              <Link href="/privacy-policy" className="block text-gray-300 hover:text-white transition-colors">Política de Privacidade</Link>
+              <Link href="/terms-of-use" className="block text-gray-300 hover:text-white transition-colors">Termos de Uso</Link>
+              <Link href="/lgpd" className="block text-gray-300 hover:text-white transition-colors">LGPD</Link>
+              <Link href="/cookies" className="block text-gray-300 hover:text-white transition-colors">Cookies</Link>
+              <Link href="/congratulations" className="block text-blue-400 hover:text-blue-300 transition-colors font-medium">Surpresa ✨</Link>
             </div>
           </div>
         </div>
 
-        {/* Copyright */}
         <div className="mt-16 pt-8 border-t border-gray-800 text-center text-gray-400">
           <p>© 2025 Andromeda Solutions. Todos os direitos reservados.</p>
         </div>

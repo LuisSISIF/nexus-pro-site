@@ -1,0 +1,11 @@
+
+{
+  "hero_interface": {
+    "url": "https://picsum.photos/seed/42/1200/800",
+    "hint": "software interface"
+  },
+  "about_logo": {
+    "url": "https://picsum.photos/seed/andromeda/400/400",
+    "hint": "company logo"
+  }
+}
