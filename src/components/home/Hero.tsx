@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -70,11 +71,11 @@ const Hero = () => {
 
           <div className="relative">
             <div className="absolute -inset-4 bg-gradient-to-r from-blue-500 to-indigo-600 opacity-20 blur-3xl rounded-full"></div>
-            <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-2 border border-gray-100 dark:border-gray-700 transform lg:rotate-2 hover:rotate-0 transition-all duration-500">
+            <div className="relative transform lg:scale-125 transition-all duration-500">
               <Image 
                 src={heroImage}
                 alt="Interface do Sistema de Gestão Empresarial NexusPro" 
-                className="rounded-xl shadow-lg w-full h-auto"
+                className="w-full h-auto"
                 priority
               />
             </div>
