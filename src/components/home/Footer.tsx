@@ -79,7 +79,6 @@ const Footer = () => {
               <Link href="/terms-of-use" className="block text-gray-300 hover:text-white transition-colors">Termos de Uso</Link>
               <Link href="/lgpd" className="block text-gray-300 hover:text-white transition-colors">LGPD</Link>
               <Link href="/cookies" className="block text-gray-300 hover:text-white transition-colors">Cookies</Link>
-              <Link href="/congratulations" className="block text-blue-400 hover:text-blue-300 transition-colors font-medium">Surpresa ✨</Link>
             </div>
           </div>
         </div>
