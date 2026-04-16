@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { CircleCheckBig, PlayCircle, Star, Users } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import placeholderData from '@/app/lib/placeholder-images.json';
+import heroImage from '@/images/imagem Hero.png';
 import {
   Dialog,
   DialogContent,
@@ -72,12 +72,9 @@ const Hero = () => {
             <div className="absolute -inset-4 bg-gradient-to-r from-blue-500 to-indigo-600 opacity-20 blur-3xl rounded-full"></div>
             <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-2 border border-gray-100 dark:border-gray-700 transform lg:rotate-2 hover:rotate-0 transition-all duration-500">
               <Image 
-                src={placeholderData.hero_interface.url}
+                src={heroImage}
                 alt="Interface do Sistema de Gestão Empresarial NexusPro" 
                 className="rounded-xl shadow-lg w-full h-auto"
-                width={1200}
-                height={800}
-                data-ai-hint={placeholderData.hero_interface.hint}
                 priority
               />
             </div>
