@@ -1,13 +1,12 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Youtube } from 'lucide-react';
 
 const tutorials = [
   {
-    title: 'Tutorial NexusPro #1 | Download e Instalação do Sistema',
-    videoId: 'wAfyiC7Wx6Y',
-    description: 'Aprenda o passo a passo para baixar e instalar o NexusPro em seu computador Windows de forma rápida e segura.',
+    title: 'Demonstração NexusPro | Gestão Completa de Vendas e Estoque',
+    videoId: 'yxlD53vXaSw',
+    description: 'Conheça em detalhes como o NexusPro pode transformar a gestão do seu negócio com rapidez e simplicidade.',
   },
 ];
 

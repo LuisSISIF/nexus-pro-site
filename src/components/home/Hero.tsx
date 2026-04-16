@@ -15,8 +15,8 @@ import {
 const Hero = () => {
   const [isPlayerOpen, setIsPlayerOpen] = useState(false);
 
-  // Substitua este ID pelo ID do seu vídeo no YouTube
-  const videoId = "wAfyiC7Wx6Y";
+  // ID do vídeo atualizado conforme solicitado
+  const videoId = "yxlD53vXaSw";
 
   return (
     <section className="relative bg-gradient-to-br from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 pt-20 pb-32 overflow-hidden border-b">
