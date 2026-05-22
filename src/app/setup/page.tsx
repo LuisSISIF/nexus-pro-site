@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -10,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Rocket, Loader2, Save, MapPin, Building, ShieldCheck, Phone, UserCircle, LogIn } from 'lucide-react';
+import { Rocket, Loader2, Save, MapPin, Building, ShieldCheck, Phone, UserCircle, LogIn, FileText } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -18,6 +19,8 @@ import { useToast } from '@/hooks/use-toast';
 import { completeSetup } from '@/actions/setup-actions';
 import { checkUserExists } from '@/actions/auth-actions';
 import AnimatedSection from '@/components/home/AnimatedSection';
+import { ContractDialog } from '@/components/signup/ContractDialog';
+import { PaidContractDialog } from '@/components/signup/PaidContractDialog';
 
 const setupSchema = z.object({
   companyName: z.string().min(2, "Nome da empresa é obrigatório"),
@@ -40,6 +43,8 @@ export default function SetupPage() {
     const { toast } = useToast();
     const [loading, setLoading] = useState(false);
     const [preUser, setPreUser] = useState<any>(null);
+    const [isContractOpen, setIsContractOpen] = useState(false);
+    const [pendingValues, setPendingValues] = useState<SetupFormValues | null>(null);
 
     useEffect(() => {
         const stored = localStorage.getItem('preUser');
@@ -74,22 +79,37 @@ export default function SetupPage() {
         }
     }, [preUser, form]);
 
-    const onSubmit = async (values: SetupFormValues) => {
+    const handleFormSubmit = async (values: SetupFormValues) => {
         setLoading(true);
         try {
+            // Verifica se o login está disponível antes de abrir o contrato
             const loginCheck = await checkUserExists(values.login, values.emailComercial);
-            if (!loginCheck.success && loginCheck.message?.includes('login')) {
+            if (!loginCheck.success && loginCheck.message?.toLowerCase().includes('login')) {
                 toast({ 
                     variant: "destructive", 
                     title: "Login indisponível", 
-                    description: "Este nome de usuário já está sendo usado por outro cliente. Por favor, escolha outro." 
+                    description: "Este nome de usuário já está sendo usado. Por favor, escolha outro." 
                 });
                 setLoading(false);
                 return;
             }
 
+            setPendingValues(values);
+            setIsContractOpen(true);
+        } catch (error) {
+            toast({ variant: "destructive", title: "Erro", description: "Falha ao validar dados." });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleAcceptContract = async () => {
+        if (!pendingValues || !preUser) return;
+
+        setLoading(true);
+        try {
             const result = await completeSetup({
-                ...values,
+                ...pendingValues,
                 preUserId: preUser.id,
                 planId: preUser.planId || 2,
                 cnpj: preUser.cnpj,
@@ -102,19 +122,28 @@ export default function SetupPage() {
                 localStorage.removeItem('preUser');
                 localStorage.setItem('companyId', result.companyId.toString());
                 localStorage.setItem('userId', result.userId.toString());
-                toast({ title: "Configuração Concluída!", description: "Sua conta NexusPro foi ativada. Bem-vindo ao sistema!" });
-                router.push('/dashboard');
+                toast({ title: "Configuração Concluída!", description: "Sua conta NexusPro foi ativada. Bem-vindo!" });
+                router.push('/onboarding');
             } else {
                 toast({ variant: "destructive", title: "Erro na configuração", description: result.message });
             }
         } catch (error) {
-            toast({ variant: "destructive", title: "Erro inesperado", description: "Falha ao processar os dados de configuração." });
+            toast({ variant: "destructive", title: "Erro inesperado", description: "Falha ao finalizar configuração." });
         } finally {
             setLoading(false);
+            setIsContractOpen(false);
         }
     };
 
     if (!preUser) return null;
+
+    const isPaidPlan = preUser.planId && preUser.planId > 2;
+    const planPrices: Record<number, { price: number, name: string }> = {
+        3: { price: 80, name: 'Essencial' },
+        4: { price: 120, name: 'Profissional' },
+        5: { price: 190, name: 'Empresarial' }
+    };
+    const currentPlanInfo = isPaidPlan ? planPrices[preUser.planId] : { price: 0, name: 'Teste Grátis' };
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
@@ -136,8 +165,7 @@ export default function SetupPage() {
                         </CardHeader>
                         <CardContent className="p-8">
                             <Form {...form}>
-                                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
-                                    {/* Seção Empresa */}
+                                <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-10">
                                     <div className="space-y-6">
                                         <div className="flex items-center gap-2 border-l-4 border-blue-600 pl-3">
                                             <Building className="w-5 h-5 text-blue-600" />
@@ -173,7 +201,6 @@ export default function SetupPage() {
                                         )} />
                                     </div>
 
-                                    {/* Seção Fiscal */}
                                     <div className="space-y-6">
                                         <div className="flex items-center gap-2 border-l-4 border-blue-600 pl-3">
                                             <ShieldCheck className="w-5 h-5 text-blue-600" />
@@ -233,7 +260,6 @@ export default function SetupPage() {
                                         </div>
                                     </div>
 
-                                    {/* Seção Contato e Acesso */}
                                     <div className="space-y-6">
                                         <div className="flex items-center gap-2 border-l-4 border-blue-600 pl-3">
                                             <UserCircle className="w-5 h-5 text-blue-600" />
@@ -280,8 +306,8 @@ export default function SetupPage() {
                                     </div>
 
                                     <Button type="submit" className="w-full text-xl py-8 bg-blue-600 hover:bg-blue-700 shadow-2xl transition-all hover:scale-[1.01]" disabled={loading}>
-                                        {loading ? <Loader2 className="animate-spin mr-2" /> : <Save className="mr-2" />}
-                                        {loading ? 'Finalizando...' : 'Finalizar Configuração e Entrar'}
+                                        {loading ? <Loader2 className="animate-spin mr-2" /> : <FileText className="mr-2" />}
+                                        {loading ? 'Validando...' : 'Visualizar Termos e Finalizar'}
                                     </Button>
                                 </form>
                             </Form>
@@ -290,6 +316,42 @@ export default function SetupPage() {
                 </AnimatedSection>
             </main>
             <Footer />
+
+            {/* Modal de Contrato - Seletivo conforme o plano */}
+            {isPaidPlan ? (
+                <PaidContractDialog 
+                    isOpen={isContractOpen}
+                    onOpenChange={setIsContractOpen}
+                    onAccept={handleAcceptContract}
+                    isLoading={loading}
+                    plan={{ ...currentPlanInfo, id: preUser.planId }}
+                    formData={{
+                        fullName: preUser.nome,
+                        cnpj: preUser.cnpj,
+                        cpf: preUser.cpf,
+                        companyName: pendingValues?.companyName || '',
+                        email: preUser.email,
+                        password: '', // Não exibimos a senha no contrato
+                        confirmPassword: ''
+                    }}
+                />
+            ) : (
+                <ContractDialog 
+                    isOpen={isContractOpen}
+                    onOpenChange={setIsContractOpen}
+                    onAccept={handleAcceptContract}
+                    isLoading={loading}
+                    formData={{
+                        fullName: preUser.nome,
+                        cnpj: preUser.cnpj,
+                        cpf: preUser.cpf,
+                        companyName: pendingValues?.companyName || '',
+                        email: preUser.email,
+                        password: '',
+                        confirmPassword: ''
+                    }}
+                />
+            )}
         </div>
     );
 }
