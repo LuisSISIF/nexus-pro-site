@@ -33,7 +33,7 @@ export async function completeSetup(data: SetupData) {
         // 1. Busca a senha do pré-usuário para migrar para a tabela definitiva
         const [preRows] = await connection.execute('SELECT senha FROM preUsers WHERE id = ?', [data.preUserId]);
         const preUser = (preRows as any[])[0];
-        if (!preUser) throw new Error("Registro de pré-cadastro não encontrado.");
+        if (!preUser) throw new Error("Registro de pré-cadastro não encontrado ou já processado.");
 
         const hashedPassword = preUser.senha;
 
@@ -56,9 +56,11 @@ export async function completeSetup(data: SetupData) {
         if (!newCompany) throw new Error("Falha ao recuperar ID da nova empresa criada.");
         const companyId = newCompany.idempresa;
 
-        // 4. Se for plano pago (id > 2), processa a integração com o Asaas
+        // 4. Lógica Seletiva do Asaas (Apenas para Planos Pagos)
         let asaasCustomerId = null;
-        if (data.planId > 2) {
+        const isPaid = data.planId > 2;
+
+        if (isPaid) {
             const asaasResult = await createAsaasCustomer({
                 name: data.companyName,
                 cpfCnpj: data.cnpj,
@@ -103,7 +105,7 @@ export async function completeSetup(data: SetupData) {
             }
         }
 
-        // 5. Atualiza os dados fiscais, comerciais e vincula o Asaas na tabela empresa
+        // 5. Atualiza dados fiscais e configura o plano (Teste ou Pago)
         const updateQuery = `
             UPDATE empresa SET 
                 idPlano = ?,
@@ -116,25 +118,36 @@ export async function completeSetup(data: SetupData) {
                 idAsaas = ?,
                 pagamentoMes = ?,
                 periodoTesteInicio = ?,
-                periodoTesteFim = ?
+                periodoTesteFim = ?,
+                instagram = ''
             WHERE idempresa = ?
         `;
 
-        const isPaid = data.planId > 2;
-        const testStart = isPaid ? null : new Date();
-        const testEnd = isPaid ? null : new Date(new Date().setDate(new Date().getDate() + 10));
+        // Lógica de datas do período de teste
+        const today = new Date();
+        const testStart = isPaid ? null : today;
+        const testEnd = isPaid ? null : new Date(new Date().setDate(today.getDate() + 10));
 
         await connection.execute(updateQuery, [
-            data.planId, data.cnpj, data.inscricaoEstadual, parseInt(data.regimeTributario),
-            data.segmentoMercado, parseInt(data.diaVencimento), data.emailComercial,
-            asaasCustomerId, isPaid ? 'Pendente' : null, testStart, testEnd, companyId
+            data.planId, 
+            data.cnpj.replace(/[^\d]/g, ''), 
+            data.inscricaoEstadual, 
+            parseInt(data.regimeTributario),
+            data.segmentoMercado, 
+            parseInt(data.diaVencimento), 
+            data.emailComercial,
+            asaasCustomerId, 
+            isPaid ? 'Pendente' : 'Pago', // No teste, marcamos como "Pago" pois não há boleto
+            testStart, 
+            testEnd, 
+            companyId
         ]);
 
-        // 6. Busca o ID do usuário criado para permitir o login automático/redirecionamento
+        // 6. Busca o ID do usuário real criado pela procedure
         const [userRows] = await connection.execute('SELECT idusuarios FROM usuarios WHERE idempresa = ? AND login = ?', [companyId, data.login]);
         const userId = (userRows as any[])[0]?.idusuarios;
 
-        // 7. REMOÇÃO CRUCIAL: Deleta o pré-usuário pois o cadastro agora é definitivo
+        // 7. REMOÇÃO DO PRÉ-USUÁRIO (Crucial para concluir o ciclo)
         await connection.execute('DELETE FROM preUsers WHERE id = ?', [data.preUserId]);
 
         await connection.commit();

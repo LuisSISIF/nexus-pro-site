@@ -119,9 +119,14 @@ export default function SetupPage() {
             });
 
             if (result.success) {
+                // Limpa os dados temporários do navegador
                 localStorage.removeItem('preUser');
+                localStorage.removeItem('selectedPlanId');
+                
+                // Salva os dados de acesso reais
                 localStorage.setItem('companyId', result.companyId.toString());
                 localStorage.setItem('userId', result.userId.toString());
+                
                 toast({ title: "Configuração Concluída!", description: "Sua conta NexusPro foi ativada. Bem-vindo!" });
                 router.push('/onboarding');
             } else {
@@ -330,9 +335,7 @@ export default function SetupPage() {
                         cnpj: preUser.cnpj,
                         cpf: preUser.cpf,
                         companyName: pendingValues?.companyName || '',
-                        email: preUser.email,
-                        password: '', // Não exibimos a senha no contrato
-                        confirmPassword: ''
+                        email: preUser.email
                     }}
                 />
             ) : (
@@ -346,9 +349,7 @@ export default function SetupPage() {
                         cnpj: preUser.cnpj,
                         cpf: preUser.cpf,
                         companyName: pendingValues?.companyName || '',
-                        email: preUser.email,
-                        password: '',
-                        confirmPassword: ''
+                        email: preUser.email
                     }}
                 />
             )}
