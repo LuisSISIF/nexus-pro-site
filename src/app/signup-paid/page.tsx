@@ -80,8 +80,10 @@ const SignUpPaidContent = () => {
                 return;
             }
 
-            const result = await registerPreUser({ ...values, planId: selectedPlan.id });
+            const result = await registerPreUser(values);
             if (result.success) {
+                // Salva o ID do plano no localStorage para o setup
+                localStorage.setItem('selectedPlanId', selectedPlan.id.toString());
                 toast({ title: "Inscrição Iniciada!", description: "Agora faça login com seu e-mail para configurar sua empresa." });
                 router.push('/login');
             } else {

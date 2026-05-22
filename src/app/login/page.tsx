@@ -42,9 +42,15 @@ const LoginPage = () => {
       const result = await loginUser(values);
       if (result.success) {
         if (typeof window !== 'undefined') {
-            // Se for pré-usuário, guardamos os dados básicos para o setup
             if (result.needsSetup) {
-                localStorage.setItem('preUser', JSON.stringify(result.user));
+                // Recupera o ID do plano que foi salvo no momento do cadastro
+                const savedPlanId = localStorage.getItem('selectedPlanId') || '2';
+                
+                localStorage.setItem('preUser', JSON.stringify({
+                    ...result.user,
+                    planId: Number(savedPlanId)
+                }));
+                
                 toast({ title: "Bem-vindo!", description: "Vamos configurar seu sistema NexusPro." });
                 router.push('/setup');
                 return;

@@ -64,7 +64,6 @@ const SignUpPage = () => {
     const onSubmit = async (values: RegistrationFormValues) => {
         setLoading(true);
         try {
-            // Verifica apenas o e-mail inicial, o login será verificado no setup
             const userCheck = await checkUserExists(values.email, values.email);
             if (!userCheck.success) {
                 toast({ variant: "destructive", title: "Ops!", description: userCheck.message });
@@ -72,8 +71,10 @@ const SignUpPage = () => {
                 return;
             }
 
-            const result = await registerPreUser({ ...values, planId: 2 });
+            const result = await registerPreUser(values);
             if (result.success) {
+                // Salva o ID do plano escolhido no localStorage para ser usado no setup
+                localStorage.setItem('selectedPlanId', '2'); 
                 toast({ title: "Quase lá!", description: "Pré-cadastro realizado. Faça login para configurar seu sistema." });
                 router.push('/login');
             } else {
