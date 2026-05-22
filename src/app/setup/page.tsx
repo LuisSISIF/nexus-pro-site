@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Rocket, Loader2, Save, MapPin, Building, ShieldCheck, Phone, UserCircle } from 'lucide-react';
+import { Rocket, Loader2, Save, MapPin, Building, ShieldCheck, Phone, UserCircle, LogIn } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -61,7 +61,6 @@ export default function SetupPage() {
         }
     });
 
-    // Auto-preenche o representante se já tivermos o nome do pré-usuário
     useEffect(() => {
         if (preUser && !form.getValues('legalRepresentative')) {
             form.setValue('legalRepresentative', preUser.nome);
@@ -72,10 +71,10 @@ export default function SetupPage() {
     const onSubmit = async (values: SetupFormValues) => {
         setLoading(true);
         try {
-            // Verifica se o novo login escolhido já existe
+            // Verifica se o login escolhido já existe na tabela de usuários definitivos
             const loginCheck = await checkUserExists(values.login, values.emailComercial);
             if (!loginCheck.success && loginCheck.message?.includes('login')) {
-                toast({ variant: "destructive", title: "Login indisponível", description: "Este nome de usuário já está sendo usado. Escolha outro." });
+                toast({ variant: "destructive", title: "Login indisponível", description: "Este nome de usuário já está sendo usado por outro cliente. Por favor, escolha outro." });
                 setLoading(false);
                 return;
             }
@@ -88,20 +87,19 @@ export default function SetupPage() {
                 cpf: preUser.cpf,
                 nomeAdmin: preUser.nome,
                 emailAdmin: preUser.email,
-                // A senha não é passada aqui por segurança, o setup-action buscará do preUser no banco
             });
 
             if (result.success) {
                 localStorage.removeItem('preUser');
                 localStorage.setItem('companyId', result.companyId.toString());
                 localStorage.setItem('userId', result.userId.toString());
-                toast({ title: "Tudo pronto!", description: "Sua empresa foi configurada com sucesso." });
+                toast({ title: "Configuração Concluída!", description: "Sua conta NexusPro foi ativada. Bem-vindo ao sistema!" });
                 router.push('/dashboard');
             } else {
                 toast({ variant: "destructive", title: "Erro na configuração", description: result.message });
             }
         } catch (error) {
-            toast({ variant: "destructive", title: "Erro inesperado", description: "Falha ao finalizar configuração." });
+            toast({ variant: "destructive", title: "Erro inesperado", description: "Falha ao processar os dados de configuração." });
         } finally {
             setLoading(false);
         }
@@ -118,14 +116,14 @@ export default function SetupPage() {
                         <div className="inline-flex p-3 bg-blue-600 rounded-2xl mb-4 text-white shadow-xl">
                             <Rocket className="w-8 h-8" />
                         </div>
-                        <h1 className="text-4xl font-bold font-headline">Primeiro Acesso</h1>
-                        <p className="text-muted-foreground text-lg">Olá {preUser.nome}, vamos configurar os detalhes da sua empresa.</p>
+                        <h1 className="text-4xl font-bold font-headline">Finalizar Configuração</h1>
+                        <p className="text-muted-foreground text-lg">Olá {preUser.nome}, complete os dados da sua empresa para liberar o acesso ao NexusPro.</p>
                     </div>
 
                     <Card className="shadow-2xl border-none">
-                        <CardHeader className="border-b">
-                            <CardTitle>Configurações Gerais</CardTitle>
-                            <CardDescription>Estes dados serão usados para faturamento e personalização do sistema.</CardDescription>
+                        <CardHeader className="border-b bg-gray-50/50 dark:bg-gray-800/50">
+                            <CardTitle className="text-2xl">Dados da Empresa e Acesso</CardTitle>
+                            <CardDescription>Estes dados serão utilizados para faturamento e login definitivo no sistema.</CardDescription>
                         </CardHeader>
                         <CardContent className="p-8">
                             <Form {...form}>
@@ -134,7 +132,7 @@ export default function SetupPage() {
                                     <div className="space-y-6">
                                         <div className="flex items-center gap-2 border-l-4 border-blue-600 pl-3">
                                             <Building className="w-5 h-5 text-blue-600" />
-                                            <h3 className="text-xl font-bold">Sobre o Negócio</h3>
+                                            <h3 className="text-xl font-bold">Informações do Negócio</h3>
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <FormField control={form.control} name="companyName" render={({ field }) => (
@@ -145,7 +143,7 @@ export default function SetupPage() {
                                             )} />
                                         </div>
                                         <FormField control={form.control} name="companyAddress" render={({ field }) => (
-                                            <FormItem><FormLabel>Endereço Completos</FormLabel><FormControl><div className="relative"><MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground"/><Textarea className="pl-10" placeholder="Rua, Número, Bairro, Cidade - UF" {...field} /></div></FormControl><FormMessage /></FormItem>
+                                            <FormItem><FormLabel>Endereço Completo</FormLabel><FormControl><div className="relative"><MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground"/><Textarea className="pl-10" placeholder="Rua, Número, Bairro, Cidade - UF" {...field} /></div></FormControl><FormMessage /></FormItem>
                                         )} />
                                     </div>
 
@@ -168,7 +166,7 @@ export default function SetupPage() {
                                                 <FormItem><FormLabel>Segmento de Mercado</FormLabel><FormControl><Input placeholder="Ex: Vestuário" {...field} /></FormControl><FormMessage /></FormItem>
                                             )} />
                                             <FormField control={form.control} name="diaVencimento" render={({ field }) => (
-                                                <FormItem><FormLabel>Vencimento Desejado</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="5">Dia 5</SelectItem><SelectItem value="10">Dia 10</SelectItem><SelectItem value="15">Dia 15</SelectItem><SelectItem value="20">Dia 20</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+                                                <FormItem><FormLabel>Dia de Vencimento Desejado</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="5">Dia 5</SelectItem><SelectItem value="10">Dia 10</SelectItem><SelectItem value="15">Dia 15</SelectItem><SelectItem value="20">Dia 20</SelectItem></SelectContent></Select><FormMessage /></FormItem>
                                             )} />
                                         </div>
                                     </div>
@@ -177,7 +175,7 @@ export default function SetupPage() {
                                     <div className="space-y-6">
                                         <div className="flex items-center gap-2 border-l-4 border-blue-600 pl-3">
                                             <UserCircle className="w-5 h-5 text-blue-600" />
-                                            <h3 className="text-xl font-bold">Contato e Acesso</h3>
+                                            <h3 className="text-xl font-bold">Credenciais de Acesso</h3>
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <FormField control={form.control} name="legalRepresentative" render={({ field }) => (
@@ -189,10 +187,20 @@ export default function SetupPage() {
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <FormField control={form.control} name="emailComercial" render={({ field }) => (
-                                                <FormItem><FormLabel>E-mail Comercial (para faturas)</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage /></FormItem>
+                                                <FormItem><FormLabel>E-mail Comercial (para cobrança)</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage /></FormItem>
                                             )} />
                                             <FormField control={form.control} name="login" render={({ field }) => (
-                                                <FormItem><FormLabel>Escolha seu Nome de Usuário (Login)</FormLabel><FormControl><Input placeholder="ex: joao.loja" {...field} /></FormControl><FormMessage /></FormItem>
+                                                <FormItem>
+                                                    <FormLabel>Escolha seu Nome de Usuário (Login)</FormLabel>
+                                                    <FormControl>
+                                                        <div className="relative">
+                                                            <LogIn className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                                                            <Input className="pl-10" placeholder="Este será seu login de acesso" {...field} />
+                                                        </div>
+                                                    </FormControl>
+                                                    <FormDescription>Mínimo 3 caracteres. Você usará este nome para entrar no sistema.</FormDescription>
+                                                    <FormMessage />
+                                                </FormItem>
                                             )} />
                                         </div>
                                     </div>

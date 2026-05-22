@@ -40,10 +40,10 @@ export async function checkUserExists(login: string, email: string): Promise<{ s
     try {
         connection = await db();
         
-        // 1. Verifica em usuários reais
+        // 1. Verifica em usuários reais (pode ser login ou e-mail)
         const [users] = await connection.execute('SELECT login, email FROM usuarios WHERE login = ? OR email = ?', [login, email]);
         
-        // 2. Verifica em pré-usuários (apenas e-mail, pois não há coluna login em preUsers)
+        // 2. Verifica em pré-usuários (apenas e-mail)
         const [preRows] = await connection.execute('SELECT email FROM preUsers WHERE email = ?', [email]);
         const preUsers = preRows as any[];
         
@@ -82,7 +82,7 @@ export async function registerPreUser(data: any) {
     try {
         connection = await db();
         
-        // Inserção exata seguindo o schema: id, nome, cnpj, cpf, email, senha
+        // Inserção no preUsers (sem login e planId conforme schema atual)
         await connection.execute(
             'INSERT INTO preUsers (nome, cnpj, cpf, email, senha) VALUES (?, ?, ?, ?, ?)',
             [nome, cleanedCnpj, cleanedCpf, email, hashedPassword]
@@ -91,7 +91,7 @@ export async function registerPreUser(data: any) {
         return { success: true, message: 'Pré-cadastro realizado com sucesso!' };
     } catch (error) {
         console.error('Pre-Registration Error:', error);
-        return { success: false, message: 'Falha ao realizar cadastro. Tente novamente mais tarde.' };
+        return { success: false, message: 'Falha ao realizar cadastro. Verifique se o e-mail já está em uso.' };
     } finally {
         if (connection) await connection.end();
     }
@@ -108,7 +108,7 @@ export async function loginUser(data: unknown) {
   try {
     connection = await db();
 
-    // 1. Tenta login como Pré-Usuário (Apenas E-mail e Senha)
+    // 1. TENTATIVA DE LOGIN COMO PRÉ-USUÁRIO (Onde o acesso é sempre pelo e-mail)
     const [preRows] = await connection.execute(
         'SELECT id, nome, email, cnpj, cpf FROM preUsers WHERE email = ? AND senha = ?',
         [email, hashedPassword]
@@ -129,7 +129,8 @@ export async function loginUser(data: unknown) {
         };
     }
 
-    // 2. Tenta login Normal
+    // 2. TENTATIVA DE LOGIN NORMAL (Para usuários que já completaram o setup)
+    // Aqui verificamos tanto por e-mail quanto por login (o que foi definido no setup)
     const [rows] = await connection.execute(
         'SELECT * FROM usuarios WHERE (email = ? OR login = ?) AND senha = ? AND admUser = 1',
         [email, email, hashedPassword]
