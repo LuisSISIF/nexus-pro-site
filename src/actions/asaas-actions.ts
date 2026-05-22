@@ -112,6 +112,10 @@ export async function createAsaasCustomer(data: {
     
     const { name, cpfCnpj, email, phone, address } = data;
 
+    // LIMPEZA CRUCIAL PARA O ASAAS
+    const cleanCpfCnpj = cpfCnpj.replace(/[^\d]/g, '');
+    const cleanPhone = phone.replace(/[^\d]/g, '');
+
     try {
         const response = await fetch(`${ASAAS_API_URL}/customers`, {
             method: 'POST',
@@ -121,9 +125,9 @@ export async function createAsaasCustomer(data: {
             },
             body: JSON.stringify({
                 name,
-                cpfCnpj,
+                cpfCnpj: cleanCpfCnpj,
                 email,
-                mobilePhone: phone,
+                mobilePhone: cleanPhone,
                 address,
             }),
         });
