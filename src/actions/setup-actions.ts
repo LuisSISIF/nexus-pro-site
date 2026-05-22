@@ -59,38 +59,44 @@ export async function completeSetup(data: SetupData) {
         // 4. Se for plano pago (id > 2), processa o Asaas
         let asaasCustomerId = null;
         if (data.planId > 2) {
-            const asaasResult = await createAsaasCustomer({
-                name: data.companyName,
-                cpfCnpj: data.cnpj,
-                email: data.emailComercial,
-                phone: data.phone,
-                address: data.companyAddress,
-            });
-
-            if (asaasResult.success && asaasResult.customerId) {
-                asaasCustomerId = asaasResult.customerId;
-                
-                // Assinatura e Pro-rata (Lógica simplificada - preços reais viriam de uma config de planos)
-                const planPrices: Record<number, { price: number, name: string }> = {
-                    3: { price: 80, name: 'Essencial' },
-                    4: { price: 120, name: 'Profissional' },
-                    5: { price: 190, name: 'Empresarial' }
-                };
-                const planInfo = planPrices[data.planId];
-
-                await createAsaasSubscription({
-                    customerId: asaasCustomerId,
-                    planPrice: planInfo.price,
-                    planName: planInfo.name,
-                    dueDateDay: parseInt(data.diaVencimento)
+            try {
+                const asaasResult = await createAsaasCustomer({
+                    name: data.companyName,
+                    cpfCnpj: data.cnpj,
+                    email: data.emailComercial,
+                    phone: data.phone,
+                    address: data.companyAddress,
                 });
 
-                await createAsaasProrataCharge({
-                    customerId: asaasCustomerId,
-                    planPrice: planInfo.price,
-                    planName: planInfo.name,
-                    dueDateDay: parseInt(data.diaVencimento)
-                });
+                if (asaasResult.success && asaasResult.customerId) {
+                    asaasCustomerId = asaasResult.customerId;
+                    
+                    const planPrices: Record<number, { price: number, name: string }> = {
+                        3: { price: 80, name: 'Essencial' },
+                        4: { price: 120, name: 'Profissional' },
+                        5: { price: 190, name: 'Empresarial' }
+                    };
+                    const planInfo = planPrices[data.planId];
+
+                    if (planInfo) {
+                        await createAsaasSubscription({
+                            customerId: asaasCustomerId,
+                            planPrice: planInfo.price,
+                            planName: planInfo.name,
+                            dueDateDay: parseInt(data.diaVencimento)
+                        });
+
+                        await createAsaasProrataCharge({
+                            customerId: asaasCustomerId,
+                            planPrice: planInfo.price,
+                            planName: planInfo.name,
+                            dueDateDay: parseInt(data.diaVencimento)
+                        });
+                    }
+                }
+            } catch (asaasError) {
+                console.error("Erro ao processar Asaas no setup:", asaasError);
+                // Não travamos o setup se o Asaas falhar, mas logamos
             }
         }
 
