@@ -30,14 +30,14 @@ export async function completeSetup(data: SetupData) {
         connection = await db();
         await connection.beginTransaction();
 
-        // 1. Busca a senha do pré-usuário
+        // 1. Busca a senha do pré-usuário para migrar para a tabela definitiva
         const [preRows] = await connection.execute('SELECT senha FROM preUsers WHERE id = ?', [data.preUserId]);
         const preUser = (preRows as any[])[0];
-        if (!preUser) throw new Error("Pré-usuário não encontrado.");
+        if (!preUser) throw new Error("Registro de pré-cadastro não encontrado.");
 
         const hashedPassword = preUser.senha;
 
-        // 2. Cria a Empresa e o Usuário usando a procedure existente
+        // 2. Cria a Empresa e o Usuário usando a procedure interna do sistema
         // PROCEDURE `admFunctionsCadastraTeste` (nome_empresa, endereco, rep, atv, login, senha, email, nomeUser, contato, cpf, genero)
         await connection.execute(
             'CALL admFunctionsCadastraTeste(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -47,16 +47,16 @@ export async function completeSetup(data: SetupData) {
             ]
         );
 
-        // 3. Recupera o ID da empresa recém-criada
+        // 3. Recupera o ID da empresa recém-criada para os próximos passos
         const [compRows] = await connection.execute(
             'SELECT idempresa FROM empresa WHERE nome_empresa = ? AND representanteEmpresa = ? ORDER BY idempresa DESC LIMIT 1',
             [data.companyName, data.legalRepresentative]
         );
         const newCompany = (compRows as any[])[0];
-        if (!newCompany) throw new Error("Falha ao recuperar ID da nova empresa.");
+        if (!newCompany) throw new Error("Falha ao recuperar ID da nova empresa criada.");
         const companyId = newCompany.idempresa;
 
-        // 4. Se for plano pago (id > 2), processa o Asaas
+        // 4. Se for plano pago (id > 2), processa a integração com o Asaas
         let asaasCustomerId = null;
         if (data.planId > 2) {
             const asaasResult = await createAsaasCustomer({
@@ -68,8 +68,7 @@ export async function completeSetup(data: SetupData) {
             });
 
             if (!asaasResult.success || !asaasResult.customerId) {
-                // SE O PLANO É PAGO E O ASAAS FALHOU, PARAMOS TUDO
-                throw new Error(asaasResult.message || "Erro ao criar registro no gateway de pagamento.");
+                throw new Error(asaasResult.message || "Erro ao criar registro no gateway de pagamento (Asaas).");
             }
 
             asaasCustomerId = asaasResult.customerId;
@@ -82,6 +81,7 @@ export async function completeSetup(data: SetupData) {
             const planInfo = planPrices[data.planId];
 
             if (planInfo) {
+                // Cria a assinatura mensal recorrente
                 const subResult = await createAsaasSubscription({
                     customerId: asaasCustomerId,
                     planPrice: planInfo.price,
@@ -89,8 +89,9 @@ export async function completeSetup(data: SetupData) {
                     dueDateDay: parseInt(data.diaVencimento)
                 });
 
-                if (!subResult.success) throw new Error(subResult.message);
+                if (!subResult.success) throw new Error(`Erro ao criar assinatura: ${subResult.message}`);
 
+                // Cria a cobrança proporcional imediata
                 const proResult = await createAsaasProrataCharge({
                     customerId: asaasCustomerId,
                     planPrice: planInfo.price,
@@ -98,11 +99,11 @@ export async function completeSetup(data: SetupData) {
                     dueDateDay: parseInt(data.diaVencimento)
                 });
                 
-                if (!proResult.success) throw new Error(proResult.message);
+                if (!proResult.success) throw new Error(`Erro ao criar cobrança proporcional: ${proResult.message}`);
             }
         }
 
-        // 5. Atualiza os dados fiscais e comerciais na tabela empresa
+        // 5. Atualiza os dados fiscais, comerciais e vincula o Asaas na tabela empresa
         const updateQuery = `
             UPDATE empresa SET 
                 idPlano = ?,
@@ -129,11 +130,11 @@ export async function completeSetup(data: SetupData) {
             asaasCustomerId, isPaid ? 'Pendente' : null, testStart, testEnd, companyId
         ]);
 
-        // 6. Busca o ID do usuário criado para retornar ao login
+        // 6. Busca o ID do usuário criado para permitir o login automático/redirecionamento
         const [userRows] = await connection.execute('SELECT idusuarios FROM usuarios WHERE idempresa = ? AND login = ?', [companyId, data.login]);
         const userId = (userRows as any[])[0]?.idusuarios;
 
-        // 7. Deleta o pré-usuário
+        // 7. REMOÇÃO CRUCIAL: Deleta o pré-usuário pois o cadastro agora é definitivo
         await connection.execute('DELETE FROM preUsers WHERE id = ?', [data.preUserId]);
 
         await connection.commit();
@@ -142,7 +143,7 @@ export async function completeSetup(data: SetupData) {
     } catch (error) {
         if (connection) await connection.rollback();
         console.error("Setup Completion Error:", error);
-        return { success: false, message: error instanceof Error ? error.message : "Erro ao finalizar configuração." };
+        return { success: false, message: error instanceof Error ? error.message : "Erro crítico ao finalizar configuração." };
     } finally {
         if (connection) await connection.end();
     }
