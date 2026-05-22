@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -19,7 +20,7 @@ import { useToast } from '@/hooks/use-toast';
 import AnimatedSection from '@/components/home/AnimatedSection';
 
 const loginSchema = z.object({
-  email: z.string().email({ message: "Por favor, insira um e-mail válido." }),
+  email: z.string().min(1, { message: "E-mail ou Login é obrigatório." }),
   password: z.string().min(1, { message: "A senha é obrigatória." }),
 });
 
@@ -32,42 +33,35 @@ const LoginPage = () => {
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
+    defaultValues: { email: '', password: '' },
   });
 
   const onSubmit = async (values: LoginFormValues) => {
     setLoading(true);
     try {
       const result = await loginUser(values);
-      if (result.success && result.user) {
-        toast({
-          title: "Login bem-sucedido!",
-          description: "Redirecionando para o painel...",
-        });
-        
-        // A proper session management system should be implemented
+      if (result.success) {
         if (typeof window !== 'undefined') {
+            // Se for pré-usuário, guardamos os dados básicos para o setup
+            if (result.needsSetup) {
+                localStorage.setItem('preUser', JSON.stringify(result.user));
+                toast({ title: "Bem-vindo!", description: "Vamos configurar seu sistema NexusPro." });
+                router.push('/setup');
+                return;
+            }
+
+            // Login normal
             localStorage.setItem('companyId', result.user.idempresa.toString());
             localStorage.setItem('userId', result.user.idusuarios.toString());
         }
 
+        toast({ title: "Login realizado!", description: "Acessando painel..." });
         router.push('/dashboard');
       } else {
-        toast({
-          variant: "destructive",
-          title: "Erro de Login",
-          description: result.message,
-        });
+        toast({ variant: "destructive", title: "Erro de Login", description: result.message });
       }
     } catch (error) {
-       toast({
-        variant: "destructive",
-        title: "Erro inesperado",
-        description: "Ocorreu um erro. Por favor, tente novamente.",
-      });
+       toast({ variant: "destructive", title: "Erro inesperado", description: "Tente novamente mais tarde." });
     } finally {
       setLoading(false);
     }
@@ -77,12 +71,12 @@ const LoginPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
       <Header />
-      <main className="flex-grow flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
+      <main className="flex-grow flex items-center justify-center px-4 py-12">
         <AnimatedSection className="w-full max-w-md">
-          <Card className="shadow-lg border-gray-200 dark:border-gray-700">
-            <CardHeader className="text-center space-y-2">
-              <CardTitle className="text-3xl font-bold font-headline">Área do Cliente</CardTitle>
-              <CardDescription>Acesse sua conta para gerenciar seu negócio.</CardDescription>
+          <Card className="shadow-lg">
+            <CardHeader className="text-center">
+              <CardTitle className="text-3xl font-bold font-headline">Acessar NexusPro</CardTitle>
+              <CardDescription>Insira suas credenciais para gerenciar seu negócio.</CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...form}>
@@ -92,10 +86,8 @@ const LoginPage = () => {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>E-mail</FormLabel>
-                        <FormControl>
-                          <Input type="email" placeholder="seuemail@exemplo.com" {...field} />
-                        </FormControl>
+                        <FormLabel>E-mail ou Login</FormLabel>
+                        <FormControl><Input placeholder="seuemail@exemplo.com" {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -107,34 +99,21 @@ const LoginPage = () => {
                       <FormItem>
                         <div className="flex items-center justify-between">
                            <FormLabel>Senha</FormLabel>
-                           <Link href="#" className="text-sm text-blue-600 hover:underline dark:text-blue-400">
-                            Esqueceu a senha?
-                          </Link>
+                           <Link href="#" className="text-xs text-blue-600 hover:underline">Esqueceu a senha?</Link>
                         </div>
-                        <FormControl>
-                          <Input type="password" placeholder="Sua senha" {...field} />
-                        </FormControl>
+                        <FormControl><Input type="password" placeholder="Sua senha" {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                   <Button type="submit" className="w-full text-lg py-6" disabled={loading}>
-                    {loading ? (
-                       <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    ) : (
-                       <LogIn className="mr-2 h-5 w-5" />
-                    )}
-                    {loading ? 'Entrando...' : 'Entrar'}
+                    {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <LogIn className="mr-2 h-5 w-5" />}
+                    {loading ? 'Autenticando...' : 'Entrar'}
                   </Button>
                 </form>
               </Form>
               <div className="mt-6 text-center text-sm">
-                    <p className="text-gray-600 dark:text-gray-400">
-                        Não tem uma conta?{' '}
-                        <Link href="/signup" className="font-medium text-blue-600 hover:underline dark:text-blue-400">
-                            Cadastre-se aqui.
-                        </Link>
-                    </p>
+                    <p className="text-muted-foreground">Não tem uma conta? <Link href="/signup" className="font-semibold text-blue-600 hover:underline">Comece agora.</Link></p>
                 </div>
             </CardContent>
           </Card>

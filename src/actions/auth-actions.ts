@@ -5,7 +5,6 @@ import { z } from 'zod';
 import { db } from '@/lib/db';
 import * as crypto from 'crypto';
 import { isValidCPF, isValidCNPJ } from '@/lib/validators';
-import { createAsaasCustomer, createAsaasSubscription, createAsaasProrataCharge } from './asaas-actions';
 
 // --- Helper Functions ---
 
@@ -15,60 +14,26 @@ function sha256Hash(password: string): string {
     return hash.digest('hex');
 }
 
-
 // --- Schemas ---
 
-// Base schema without refinement, so it can be extended.
-const baseRegistrationSchema = z.object({
-  // User
-  fullName: z.string().min(3, "Nome completo é obrigatório"),
+const preRegistrationSchema = z.object({
+  nome: z.string().min(3, "Nome completo é obrigatório"),
+  cnpj: z.string().refine(isValidCNPJ, "CNPJ inválido"),
   cpf: z.string().refine(isValidCPF, "CPF inválido"),
-  gender: z.enum(["male", "female", "other"], { required_error: "Gênero é obrigatório"}),
+  email: z.string().email("E-mail inválido"),
   login: z.string().min(3, "Login deve ter pelo menos 3 caracteres"),
   password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
   confirmPassword: z.string().min(6),
-  phone: z.string().min(10, "Telefone inválido"),
-  email: z.string().email("E-mail inválido"),
-  
-  // Company
-  companyName: z.string().min(2, "Nome da empresa é obrigatório"),
-  companyAddress: z.string().min(10, "Endereço completo é obrigatório"),
-  legalRepresentative: z.string().min(3, "Representante legal é obrigatório"),
-  mainActivity: z.string().min(3, "Atividade principal é obrigatória"),
-});
-
-// Final free registration schema with password confirmation refinement.
-const registrationSchema = baseRegistrationSchema.refine((data) => data.password === data.confirmPassword, {
-  message: "As senhas não coincidem",
-  path: ["confirmPassword"], 
-});
-
-// Paid registration schema extends the base and adds its own refinement.
-const paidRegistrationSchema = baseRegistrationSchema.extend({
-  // Additional Company Data
-  cnpj: z.string().refine(isValidCNPJ, "CNPJ inválido."),
-  inscricaoEstadual: z.string().min(1, "Inscrição Estadual é obrigatória."),
-  regimeTributario: z.string({ required_error: "Regime Tributário é obrigatório." }),
-  segmentoMercado: z.string().min(3, "Segmento de mercado é obrigatório."),
-  diaVencimento: z.string({ required_error: "Dia de vencimento é obrigatório." }),
-  emailComercial: z.string().email("E-mail comercial inválido."),
-  instagram: z.string().optional(),
-  // Plan Data
-  planId: z.number({ required_error: "Plano é obrigatório."}),
-  planName: z.string({ required_error: "Nome do plano é obrigatório."}),
-  planPrice: z.number({ required_error: "Preço do plano é obrigatório."}),
-
+  planId: z.number().optional(), // 2 para teste, 3-5 para pagos
 }).refine((data) => data.password === data.confirmPassword, {
   message: "As senhas não coincidem",
   path: ["confirmPassword"],
 });
 
-
 const loginSchema = z.object({
-  email: z.string().email({ message: "Por favor, insira um e-mail válido." }),
-  password: z.string().min(1, { message: "A senha é obrigatória." }),
+  email: z.string().min(1, "E-mail ou Login é obrigatório"),
+  password: z.string().min(1, "A senha é obrigatória."),
 });
-
 
 // --- Server Actions ---
 
@@ -76,242 +41,62 @@ export async function checkUserExists(login: string, email: string): Promise<{ s
     let connection;
     try {
         connection = await db();
-        const [existingUsers] = await connection.execute('SELECT login, email FROM usuarios WHERE login = ? OR email = ?', [login, email]);
-        const users = existingUsers as any[];
+        // Verifica em usuários reais e pré-usuários
+        const [users] = await connection.execute('SELECT login, email FROM usuarios WHERE login = ? OR email = ?', [login, email]);
+        const [preUsers] = await connection.execute('SELECT login, email FROM preUsers WHERE login = ? OR email = ?', [login, email]);
+        
+        const allUsers = [...(users as any[]), ...(preUsers as any[])];
 
-        if (users.length > 0) {
-            const loginExists = users.some(u => u.login === login);
-            const emailExists = users.some(u => u.email === email);
+        if (allUsers.length > 0) {
+            const loginExists = allUsers.some(u => u.login === login);
+            const emailExists = allUsers.some(u => u.email === email);
 
-            if (loginExists && emailExists) {
-                return { success: false, message: 'O login e o e-mail informados já estão em uso.' };
-            }
-            if (loginExists) {
-                return { success: false, message: 'O login informado já está em uso.' };
-            }
-            if (emailExists) {
-                return { success: false, message: 'O e-mail informado já está em uso.' };
-            }
+            if (loginExists && emailExists) return { success: false, message: 'O login e o e-mail informados já estão em uso.' };
+            if (loginExists) return { success: false, message: 'O login informado já está em uso.' };
+            if (emailExists) return { success: false, message: 'O e-mail informado já está em uso.' };
         }
         return { success: true };
     } catch (error) {
         console.error('Check User Exists Error:', error);
-        return { success: false, message: 'Ocorreu um erro no servidor ao verificar os dados.' };
+        return { success: false, message: 'Erro ao verificar disponibilidade dos dados.' };
     } finally {
         if (connection) await connection.end();
     }
 }
 
-
-export async function registerUserAndCompany(data: unknown) {
-  const validation = registrationSchema.safeParse(data);
-
-  if (!validation.success) {
-    console.error('Validation Error:', validation.error.flatten().fieldErrors);
-    const firstError = Object.values(validation.error.flatten().fieldErrors)[0]?.[0];
-    return { success: false, message: firstError || 'Dados de cadastro inválidos. Verifique os campos.' };
-  }
-  
-  const { 
-      // User data
-      login, password, fullName, email, cpf, gender, phone,
-      // Company data
-      companyName, companyAddress, legalRepresentative, mainActivity
-  } = validation.data;
-  
-  let connection;
-  try {
-    connection = await db();
-
-    // Re-check just in case of a race condition
-    const [existingUser] = await connection.execute('SELECT idusuarios FROM usuarios WHERE login = ? OR email = ?', [login, email]);
-    if ((existingUser as any[]).length > 0) {
-      return { success: false, message: 'Login ou e-mail de usuário já cadastrado.' };
+export async function registerPreUser(data: unknown) {
+    const validation = preRegistrationSchema.safeParse(data);
+    if (!validation.success) {
+        const firstError = Object.values(validation.error.flatten().fieldErrors)[0]?.[0];
+        return { success: false, message: firstError || 'Dados inválidos.' };
     }
 
+    const { nome, cnpj, cpf, email, login, password, planId } = validation.data;
     const hashedPassword = sha256Hash(password);
-
-    // Call the new unified stored procedure
-    // PROCEDURE `admFunctionsCadastraTeste` (nome_empresa, endereco, rep, atv, login, senha, email, nomeUser, contato, cpf, genero)
-    const [result] = await connection.execute(
-        'CALL admFunctionsCadastraTeste(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [
-            companyName,         // nome_empresa
-            companyAddress,      // endereco
-            legalRepresentative, // rep
-            mainActivity,        // atv
-            login,               // login
-            hashedPassword,      // senha
-            email,               // email
-            fullName,            // nomeUser
-            phone,               // contato
-            cpf,                 // cpf
-            gender               // genero
-        ]
-    );
-    
-    // Assuming the procedure returns some indication of success.
-    // Adjust based on actual procedure return value if necessary.
-    return { success: true, message: 'Cadastro realizado com sucesso!' }; 
-
-  } catch (error) {
-    console.error('Registration Error:', error);
-    // Specific check for connection errors
-    if (error instanceof Error && 'code' in error && (error as any).code.includes('CONN')) {
-      return { success: false, message: 'Não foi possível conectar ao banco de dados. Verifique as credenciais no ambiente de produção.' };
-    }
-    if (error instanceof Error && (error as any).sqlMessage) {
-       return { success: false, message: `Erro no banco de dados: ${(error as any).sqlMessage}` };
-    }
-    return { success: false, message: 'Ocorreu um erro no servidor ao tentar realizar o cadastro.' };
-  } finally {
-    if (connection) await connection.end();
-  }
-}
-
-export async function registerPaidUserAndCompany(data: unknown) {
-  const validation = paidRegistrationSchema.safeParse(data);
-
-  if (!validation.success) {
-    console.error('Validation Error:', validation.error.flatten().fieldErrors);
-    const firstError = Object.values(validation.error.flatten().fieldErrors)[0]?.[0];
-    return { success: false, message: firstError || 'Dados de cadastro inválidos. Verifique os campos.' };
-  }
-  
-  const { 
-      // User data
-      login, password, fullName, email, cpf, gender, phone,
-      // Company basic data
-      companyName, companyAddress, legalRepresentative, mainActivity,
-      // Company fiscal/commercial data
-      cnpj, inscricaoEstadual, regimeTributario, segmentoMercado, diaVencimento, emailComercial, instagram,
-      // Plan data
-      planId, planName, planPrice
-  } = validation.data;
-  
-  let connection;
-  try {
-    connection = await db();
-    await connection.beginTransaction();
-
-    // 1. Re-check for existing user
-    const [existingUser] = await connection.execute('SELECT idusuarios FROM usuarios WHERE login = ? OR email = ?', [login, email]);
-    if ((existingUser as any[]).length > 0) {
-      await connection.rollback();
-      return { success: false, message: 'Login ou e-mail de usuário já cadastrado.' };
-    }
-
-    // 2. Hash password
-    const hashedPassword = sha256Hash(password);
-
-    // 3. Call the stored procedure to create user and company (initially as test plan)
-    const [result] = await connection.execute(
-        'CALL admFunctionsCadastraTeste(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [
-            companyName, companyAddress, legalRepresentative, mainActivity,
-            login, hashedPassword, email, fullName, phone, cpf, gender
-        ]
-    );
-
-    // 4. Get the newly created company's ID
-    const [companyRows] = await connection.execute(
-      'SELECT idempresa FROM empresa WHERE nome_empresa = ? AND representanteEmpresa = ? ORDER BY idempresa DESC LIMIT 1',
-      [companyName, legalRepresentative]
-    );
-    const newCompany = (companyRows as any[])[0];
-    if (!newCompany || !newCompany.idempresa) {
-        await connection.rollback();
-        return { success: false, message: 'Falha ao recuperar a empresa recém-criada.' };
-    }
-    const companyId = newCompany.idempresa;
-
-    // 5. Create customer in Asaas
     const cleanedCnpj = cnpj.replace(/[^\d]/g, '');
-    const asaasResult = await createAsaasCustomer({
-      name: companyName,
-      cpfCnpj: cleanedCnpj,
-      email: emailComercial,
-      phone: phone, 
-      address: companyAddress,
-    });
+    const cleanedCpf = cpf.replace(/[^\d]/g, '');
 
-    if (!asaasResult.success || !asaasResult.customerId) {
-      await connection.rollback(); 
-      return { success: false, message: `Falha ao criar cliente no gateway de pagamento: ${asaasResult.message}` };
+    let connection;
+    try {
+        connection = await db();
+        // Note: Assumindo que a tabela preUsers foi criada conforme solicitado. 
+        // Adicionei planId para sabermos qual plano ele escolheu no setup.
+        await connection.execute(
+            'INSERT INTO preUsers (nome, cnpj, cpf, email, senha, login, planId) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [nome, cleanedCnpj, cleanedCpf, email, hashedPassword, login, planId || 2]
+        );
+        return { success: true, message: 'Pré-cadastro realizado com sucesso!' };
+    } catch (error) {
+        console.error('Pre-Registration Error:', error);
+        return { success: false, message: 'Falha ao realizar pré-cadastro no servidor.' };
+    } finally {
+        if (connection) await connection.end();
     }
-    const asaasCustomerId = asaasResult.customerId;
-
-    // 6. Create Asaas Subscription and Prorata Charge
-    const subscriptionResult = await createAsaasSubscription({
-        customerId: asaasCustomerId,
-        planPrice: planPrice,
-        planName: planName,
-        dueDateDay: parseInt(diaVencimento),
-    });
-    if (!subscriptionResult.success) {
-        await connection.rollback();
-        return { success: false, message: `Falha ao criar assinatura: ${subscriptionResult.message}` };
-    }
-
-    const prorataResult = await createAsaasProrataCharge({
-        customerId: asaasCustomerId,
-        planPrice: planPrice,
-        planName: planName,
-        dueDateDay: parseInt(diaVencimento),
-    });
-    if (!prorataResult.success) {
-        await connection.rollback();
-        return { success: false, message: `Falha ao criar cobrança proporcional: ${prorataResult.message}` };
-    }
-
-    // 7. Update company with all data
-    const updateQuery = `
-      UPDATE empresa SET 
-        idPlano = ?,
-        cnpj_empresa = ?, 
-        inscricaoEstadual = ?, 
-        regimeTributario = ?, 
-        segmentoMercado = ?, 
-        diaVencimento = ?, 
-        emailComercial = ?, 
-        instagram = ?,
-        idAsaas = ?,
-        pagamentoMes = 'Pendente',
-        periodoTesteInicio = NULL,
-        periodoTesteFim = NULL
-      WHERE idempresa = ?
-    `;
-    await connection.execute(updateQuery, [
-      planId, cleanedCnpj, inscricaoEstadual, parseInt(regimeTributario), segmentoMercado,
-      parseInt(diaVencimento), emailComercial, instagram || '', asaasCustomerId, companyId,
-    ]);
-
-    await connection.commit();
-
-    return { success: true, message: 'Cadastro, faturamento e assinatura criados com sucesso!' }; 
-
-  } catch (error) {
-    if (connection) await connection.rollback();
-    console.error('Paid Registration Error:', error);
-    if (error instanceof Error && 'code' in error && (error as any).code.includes('CONN')) {
-      return { success: false, message: 'Não foi possível conectar ao banco de dados.' };
-    }
-    if (error instanceof Error && (error as any).sqlMessage) {
-       return { success: false, message: `Erro no banco de dados: ${(error as any).sqlMessage}` };
-    }
-    return { success: false, message: 'Ocorreu um erro no servidor ao tentar realizar o cadastro.' };
-  } finally {
-    if (connection) await connection.end();
-  }
 }
-
 
 export async function loginUser(data: unknown) {
   const validation = loginSchema.safeParse(data);
-
-  if (!validation.success) {
-    return { success: false, message: 'Dados de login inválidos.' };
-  }
+  if (!validation.success) return { success: false, message: 'Dados de login inválidos.' };
 
   const { email, password } = validation.data;
   const hashedPassword = sha256Hash(password);
@@ -319,27 +104,43 @@ export async function loginUser(data: unknown) {
   let connection;
   try {
     connection = await db();
-    const query = 'SELECT * FROM usuarios WHERE email = ? AND senha = ? AND admUser = 1';
-    const [rows] = await connection.execute(query, [email, hashedPassword]);
+
+    // 1. Tenta login como Pré-Usuário
+    const [preRows] = await connection.execute(
+        'SELECT * FROM preUsers WHERE (email = ? OR login = ?) AND senha = ?',
+        [email, email, hashedPassword]
+    );
+
+    if ((preRows as any[]).length > 0) {
+        const preUser = (preRows as any[])[0];
+        return { 
+            success: true, 
+            needsSetup: true, 
+            user: { 
+                id: preUser.id, 
+                nome: preUser.nome, 
+                email: preUser.email, 
+                cnpj: preUser.cnpj,
+                planId: preUser.planId 
+            } 
+        };
+    }
+
+    // 2. Tenta login Normal
+    const [rows] = await connection.execute(
+        'SELECT * FROM usuarios WHERE (email = ? OR login = ?) AND senha = ? AND admUser = 1',
+        [email, email, hashedPassword]
+    );
 
     if ((rows as any[]).length > 0) {
       const user = (rows as any[])[0];
-      // Note: In a real app, you would create a session/JWT here.
-      // We are returning the user object directly for simplicity.
-      return { success: true, message: 'Login bem-sucedido!', user };
+      return { success: true, needsSetup: false, user };
     } else {
-      return { success: false, message: 'E-mail, senha ou permissão inválidos.' };
+      return { success: false, message: 'Credenciais inválidas ou acesso não autorizado.' };
     }
   } catch (error) {
     console.error('Login Error:', error);
-    // Specific check for connection errors
-    if (error instanceof Error && 'code' in error && (error as any).code.includes('CONN')) {
-       return { success: false, message: 'Não foi possível conectar ao banco de dados. Verifique as credenciais no ambiente de produção.' };
-    }
-     if (error instanceof Error && (error as any).sqlMessage) {
-       return { success: false, message: `Erro no banco de dados: ${(error as any).sqlMessage}` };
-    }
-    return { success: false, message: 'Ocorreu um erro no servidor durante o login.' };
+    return { success: false, message: 'Erro no servidor durante o login.' };
   } finally {
     if (connection) await connection.end();
   }
