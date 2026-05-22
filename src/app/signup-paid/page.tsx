@@ -29,7 +29,6 @@ const registrationSchema = z.object({
   cnpj: z.string().refine(isValidCNPJ, "CNPJ inválido"),
   cpf: z.string().refine(isValidCPF, "CPF inválido"),
   email: z.string().email("E-mail inválido"),
-  login: z.string().min(3, "Login deve ter pelo menos 3 caracteres"),
   password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
   confirmPassword: z.string().min(6),
 }).refine((data) => data.password === data.confirmPassword, {
@@ -51,7 +50,7 @@ const SignUpPaidContent = () => {
 
     const form = useForm<RegistrationFormValues>({
       resolver: zodResolver(registrationSchema),
-      defaultValues: { nome: "", cnpj: "", cpf: "", login: "", password: "", confirmPassword: "", email: "" },
+      defaultValues: { nome: "", cnpj: "", cpf: "", password: "", confirmPassword: "", email: "" },
     });
 
     const formatCPF = (value: string) => {
@@ -74,7 +73,7 @@ const SignUpPaidContent = () => {
     const onSubmit = async (values: RegistrationFormValues) => {
         setLoading(true);
         try {
-            const userCheck = await checkUserExists(values.login, values.email);
+            const userCheck = await checkUserExists(values.email, values.email);
             if (!userCheck.success) {
                 toast({ variant: "destructive", title: "Ops!", description: userCheck.message });
                 setLoading(false);
@@ -83,7 +82,7 @@ const SignUpPaidContent = () => {
 
             const result = await registerPreUser({ ...values, planId: selectedPlan.id });
             if (result.success) {
-                toast({ title: "Inscrição Iniciada!", description: "Agora faça login para configurar sua empresa e faturamento." });
+                toast({ title: "Inscrição Iniciada!", description: "Agora faça login com seu e-mail para configurar sua empresa." });
                 router.push('/login');
             } else {
                 toast({ variant: "destructive", title: "Erro", description: result.message });
@@ -121,10 +120,7 @@ const SignUpPaidContent = () => {
                                     )} />
                                 </div>
                                 <FormField control={form.control} name="email" render={({ field }) => (
-                                    <FormItem><FormLabel>E-mail Principal</FormLabel><FormControl><Input type="email" placeholder="contato@empresa.com" {...field} /></FormControl><FormMessage /></FormItem>
-                                )} />
-                                <FormField control={form.control} name="login" render={({ field }) => (
-                                    <FormItem><FormLabel>Escolha um Login</FormLabel><FormControl><Input placeholder="Como você entrará no sistema" {...field} /></FormControl><FormMessage /></FormItem>
+                                    <FormItem><FormLabel>E-mail Principal (Será seu login inicial)</FormLabel><FormControl><Input type="email" placeholder="contato@empresa.com" {...field} /></FormControl><FormMessage /></FormItem>
                                 )} />
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <FormField control={form.control} name="password" render={({ field }) => (

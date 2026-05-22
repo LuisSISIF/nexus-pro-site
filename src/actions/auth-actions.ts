@@ -21,7 +21,6 @@ const preRegistrationSchema = z.object({
   cnpj: z.string().refine(isValidCNPJ, "CNPJ inválido"),
   cpf: z.string().refine(isValidCPF, "CPF inválido"),
   email: z.string().email("E-mail inválido"),
-  login: z.string().min(3, "Login deve ter pelo menos 3 caracteres"),
   password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
   confirmPassword: z.string().min(6),
   planId: z.number().optional(), // 2 para teste, 3-5 para pagos
@@ -71,7 +70,7 @@ export async function registerPreUser(data: unknown) {
         return { success: false, message: firstError || 'Dados inválidos.' };
     }
 
-    const { nome, cnpj, cpf, email, login, password, planId } = validation.data;
+    const { nome, cnpj, cpf, email, password, planId } = validation.data;
     const hashedPassword = sha256Hash(password);
     const cleanedCnpj = cnpj.replace(/[^\d]/g, '');
     const cleanedCpf = cpf.replace(/[^\d]/g, '');
@@ -79,11 +78,10 @@ export async function registerPreUser(data: unknown) {
     let connection;
     try {
         connection = await db();
-        // Note: Assumindo que a tabela preUsers foi criada conforme solicitado. 
-        // Adicionei planId para sabermos qual plano ele escolheu no setup.
+        // Usamos o e-mail como login inicial na tabela preUsers
         await connection.execute(
             'INSERT INTO preUsers (nome, cnpj, cpf, email, senha, login, planId) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [nome, cleanedCnpj, cleanedCpf, email, hashedPassword, login, planId || 2]
+            [nome, cleanedCnpj, cleanedCpf, email, hashedPassword, email, planId || 2]
         );
         return { success: true, message: 'Pré-cadastro realizado com sucesso!' };
     } catch (error) {

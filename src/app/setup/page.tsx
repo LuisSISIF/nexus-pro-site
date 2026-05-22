@@ -12,12 +12,13 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Rocket, Loader2, Save, MapPin, Building, ShieldCheck, Phone } from 'lucide-react';
+import { Rocket, Loader2, Save, MapPin, Building, ShieldCheck, Phone, UserCircle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { completeSetup } from '@/actions/setup-actions';
+import { checkUserExists } from '@/actions/auth-actions';
 import AnimatedSection from '@/components/home/AnimatedSection';
 
 const setupSchema = z.object({
@@ -26,6 +27,7 @@ const setupSchema = z.object({
   legalRepresentative: z.string().min(3, "Representante legal é obrigatório"),
   mainActivity: z.string().min(3, "Atividade principal é obrigatória"),
   phone: z.string().min(10, "Telefone inválido"),
+  login: z.string().min(3, "O login deve ter pelo menos 3 caracteres"),
   inscricaoEstadual: z.string().min(1, "Inscrição Estadual é obrigatória"),
   regimeTributario: z.string({ required_error: "Regime é obrigatório" }),
   segmentoMercado: z.string().min(3, "Segmento é obrigatório"),
@@ -54,7 +56,7 @@ export default function SetupPage() {
         resolver: zodResolver(setupSchema),
         defaultValues: {
             companyName: "", companyAddress: "", legalRepresentative: "", mainActivity: "", phone: "",
-            inscricaoEstadual: "", regimeTributario: "3", segmentoMercado: "", diaVencimento: "10",
+            login: "", inscricaoEstadual: "", regimeTributario: "3", segmentoMercado: "", diaVencimento: "10",
             emailComercial: "",
         }
     });
@@ -70,6 +72,14 @@ export default function SetupPage() {
     const onSubmit = async (values: SetupFormValues) => {
         setLoading(true);
         try {
+            // Verifica se o novo login escolhido já existe
+            const loginCheck = await checkUserExists(values.login, values.emailComercial);
+            if (!loginCheck.success && loginCheck.message?.includes('login')) {
+                toast({ variant: "destructive", title: "Login indisponível", description: "Este nome de usuário já está sendo usado. Escolha outro." });
+                setLoading(false);
+                return;
+            }
+
             const result = await completeSetup({
                 ...values,
                 preUserId: preUser.id,
@@ -78,7 +88,6 @@ export default function SetupPage() {
                 cpf: preUser.cpf,
                 nomeAdmin: preUser.nome,
                 emailAdmin: preUser.email,
-                login: preUser.login,
                 // A senha não é passada aqui por segurança, o setup-action buscará do preUser no banco
             });
 
@@ -136,7 +145,7 @@ export default function SetupPage() {
                                             )} />
                                         </div>
                                         <FormField control={form.control} name="companyAddress" render={({ field }) => (
-                                            <FormItem><FormLabel>Endereço Completo</FormLabel><FormControl><div className="relative"><MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground"/><Textarea className="pl-10" placeholder="Rua, Número, Bairro, Cidade - UF" {...field} /></div></FormControl><FormMessage /></FormItem>
+                                            <FormItem><FormLabel>Endereço Completos</FormLabel><FormControl><div className="relative"><MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground"/><Textarea className="pl-10" placeholder="Rua, Número, Bairro, Cidade - UF" {...field} /></div></FormControl><FormMessage /></FormItem>
                                         )} />
                                     </div>
 
@@ -164,11 +173,11 @@ export default function SetupPage() {
                                         </div>
                                     </div>
 
-                                    {/* Seção Contato */}
+                                    {/* Seção Contato e Acesso */}
                                     <div className="space-y-6">
                                         <div className="flex items-center gap-2 border-l-4 border-blue-600 pl-3">
-                                            <Phone className="w-5 h-5 text-blue-600" />
-                                            <h3 className="text-xl font-bold">Contato e Responsável</h3>
+                                            <UserCircle className="w-5 h-5 text-blue-600" />
+                                            <h3 className="text-xl font-bold">Contato e Acesso</h3>
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <FormField control={form.control} name="legalRepresentative" render={({ field }) => (
@@ -178,9 +187,14 @@ export default function SetupPage() {
                                                 <FormItem><FormLabel>WhatsApp / Telefone</FormLabel><FormControl><Input placeholder="(00) 00000-0000" {...field} /></FormControl><FormMessage /></FormItem>
                                             )} />
                                         </div>
-                                        <FormField control={form.control} name="emailComercial" render={({ field }) => (
-                                            <FormItem><FormLabel>E-mail Comercial (para faturas)</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage /></FormItem>
-                                        )} />
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <FormField control={form.control} name="emailComercial" render={({ field }) => (
+                                                <FormItem><FormLabel>E-mail Comercial (para faturas)</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage /></FormItem>
+                                            )} />
+                                            <FormField control={form.control} name="login" render={({ field }) => (
+                                                <FormItem><FormLabel>Escolha seu Nome de Usuário (Login)</FormLabel><FormControl><Input placeholder="ex: joao.loja" {...field} /></FormControl><FormMessage /></FormItem>
+                                            )} />
+                                        </div>
                                     </div>
 
                                     <Button type="submit" className="w-full text-xl py-8 bg-blue-600 hover:bg-blue-700 shadow-2xl transition-all hover:scale-[1.01]" disabled={loading}>

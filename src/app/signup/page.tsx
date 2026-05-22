@@ -24,7 +24,6 @@ const registrationSchema = z.object({
   cnpj: z.string().refine(isValidCNPJ, "CNPJ inválido"),
   cpf: z.string().refine(isValidCPF, "CPF inválido"),
   email: z.string().email("E-mail inválido"),
-  login: z.string().min(3, "Login deve ter pelo menos 3 caracteres"),
   password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
   confirmPassword: z.string().min(6),
 }).refine((data) => data.password === data.confirmPassword, {
@@ -42,7 +41,7 @@ const SignUpPage = () => {
     
     const form = useForm<RegistrationFormValues>({
       resolver: zodResolver(registrationSchema),
-      defaultValues: { nome: "", cnpj: "", cpf: "", login: "", password: "", confirmPassword: "", email: "" },
+      defaultValues: { nome: "", cnpj: "", cpf: "", password: "", confirmPassword: "", email: "" },
     });
 
     const formatCPF = (value: string) => {
@@ -65,7 +64,8 @@ const SignUpPage = () => {
     const onSubmit = async (values: RegistrationFormValues) => {
         setLoading(true);
         try {
-            const userCheck = await checkUserExists(values.login, values.email);
+            // Verifica apenas o e-mail inicial, o login será verificado no setup
+            const userCheck = await checkUserExists(values.email, values.email);
             if (!userCheck.success) {
                 toast({ variant: "destructive", title: "Ops!", description: userCheck.message });
                 setLoading(false);
@@ -111,10 +111,7 @@ const SignUpPage = () => {
                         )} />
                     </div>
                     <FormField control={form.control} name="email" render={({ field }) => (
-                        <FormItem><FormLabel>E-mail</FormLabel><FormControl><Input type="email" placeholder="seu-email@exemplo.com" {...field} /></FormControl><FormMessage /></FormItem>
-                    )} />
-                    <FormField control={form.control} name="login" render={({ field }) => (
-                        <FormItem><FormLabel>Escolha um Usuário (Login)</FormLabel><FormControl><Input placeholder="ex: joao_nexus" {...field} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>E-mail (Será seu login inicial)</FormLabel><FormControl><Input type="email" placeholder="seu-email@exemplo.com" {...field} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                        <FormField control={form.control} name="password" render={({ field }) => (
