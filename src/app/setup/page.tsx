@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -8,7 +7,6 @@ import Footer from '@/components/home/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -27,7 +25,7 @@ const setupSchema = z.object({
   legalRepresentative: z.string().min(3, "Representante legal é obrigatório"),
   mainActivity: z.string().min(3, "Atividade principal é obrigatória"),
   phone: z.string().min(10, "Telefone inválido"),
-  login: z.string().min(3, "O login deve ter pelo menos 3 caracteres"),
+  login: z.string().min(6, "O login deve ter pelo menos 6 caracteres"),
   inscricaoEstadual: z.string().min(1, "Inscrição Estadual é obrigatória"),
   regimeTributario: z.string({ required_error: "Regime é obrigatório" }),
   segmentoMercado: z.string().min(3, "Segmento é obrigatório"),
@@ -55,8 +53,16 @@ export default function SetupPage() {
     const form = useForm<SetupFormValues>({
         resolver: zodResolver(setupSchema),
         defaultValues: {
-            companyName: "", companyAddress: "", legalRepresentative: "", mainActivity: "", phone: "",
-            login: "", inscricaoEstadual: "", regimeTributario: "3", segmentoMercado: "", diaVencimento: "10",
+            companyName: "",
+            companyAddress: "",
+            legalRepresentative: "",
+            mainActivity: "",
+            phone: "",
+            login: "",
+            inscricaoEstadual: "",
+            regimeTributario: "3",
+            segmentoMercado: "",
+            diaVencimento: "10",
             emailComercial: "",
         }
     });
@@ -71,10 +77,13 @@ export default function SetupPage() {
     const onSubmit = async (values: SetupFormValues) => {
         setLoading(true);
         try {
-            // Verifica se o login escolhido já existe na tabela de usuários definitivos
             const loginCheck = await checkUserExists(values.login, values.emailComercial);
             if (!loginCheck.success && loginCheck.message?.includes('login')) {
-                toast({ variant: "destructive", title: "Login indisponível", description: "Este nome de usuário já está sendo usado por outro cliente. Por favor, escolha outro." });
+                toast({ 
+                    variant: "destructive", 
+                    title: "Login indisponível", 
+                    description: "Este nome de usuário já está sendo usado por outro cliente. Por favor, escolha outro." 
+                });
                 setLoading(false);
                 return;
             }
@@ -82,7 +91,7 @@ export default function SetupPage() {
             const result = await completeSetup({
                 ...values,
                 preUserId: preUser.id,
-                planId: preUser.planId,
+                planId: preUser.planId || 2,
                 cnpj: preUser.cnpj,
                 cpf: preUser.cpf,
                 nomeAdmin: preUser.nome,
@@ -136,14 +145,31 @@ export default function SetupPage() {
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <FormField control={form.control} name="companyName" render={({ field }) => (
-                                                <FormItem><FormLabel>Razão Social / Nome da Loja</FormLabel><FormControl><Input placeholder="Ex: Nexus Pro Store" {...field} /></FormControl><FormMessage /></FormItem>
+                                                <FormItem>
+                                                    <FormLabel>Razão Social / Nome da Loja</FormLabel>
+                                                    <FormControl><Input placeholder="Ex: Nexus Pro Store" {...field} /></FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
                                             )} />
                                             <FormField control={form.control} name="mainActivity" render={({ field }) => (
-                                                <FormItem><FormLabel>Ramo de Atividade</FormLabel><FormControl><Input placeholder="Ex: Varejo de Eletrônicos" {...field} /></FormControl><FormMessage /></FormItem>
+                                                <FormItem>
+                                                    <FormLabel>Ramo de Atividade</FormLabel>
+                                                    <FormControl><Input placeholder="Ex: Varejo de Eletrônicos" {...field} /></FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
                                             )} />
                                         </div>
                                         <FormField control={form.control} name="companyAddress" render={({ field }) => (
-                                            <FormItem><FormLabel>Endereço Completo</FormLabel><FormControl><div className="relative"><MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground"/><Textarea className="pl-10" placeholder="Rua, Número, Bairro, Cidade - UF" {...field} /></div></FormControl><FormMessage /></FormItem>
+                                            <FormItem>
+                                                <FormLabel>Endereço Completo</FormLabel>
+                                                <FormControl>
+                                                    <div className="relative">
+                                                        <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                                                        <Textarea className="pl-10" placeholder="Rua, Número, Bairro, Cidade - UF" {...field} />
+                                                    </div>
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
                                         )} />
                                     </div>
 
@@ -155,18 +181,54 @@ export default function SetupPage() {
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <FormField control={form.control} name="inscricaoEstadual" render={({ field }) => (
-                                                <FormItem><FormLabel>Inscrição Estadual</FormLabel><FormControl><Input placeholder="Número ou 'Isento'" {...field} /></FormControl><FormMessage /></FormItem>
+                                                <FormItem>
+                                                    <FormLabel>Inscrição Estadual</FormLabel>
+                                                    <FormControl><Input placeholder="Número ou 'Isento'" {...field} /></FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
                                             )} />
                                             <FormField control={form.control} name="regimeTributario" render={({ field }) => (
-                                                <FormItem><FormLabel>Regime Tributário</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger></FormControl><SelectContent><SelectItem value="1">Lucro Real</SelectItem><SelectItem value="2">Lucro Presumido</SelectItem><SelectItem value="3">Simples Nacional</SelectItem><SelectItem value="4">MEI</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+                                                <FormItem>
+                                                    <FormLabel>Regime Tributário</FormLabel>
+                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                        <FormControl>
+                                                            <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                                                        </FormControl>
+                                                        <SelectContent>
+                                                            <SelectItem value="1">Lucro Real</SelectItem>
+                                                            <SelectItem value="2">Lucro Presumido</SelectItem>
+                                                            <SelectItem value="3">Simples Nacional</SelectItem>
+                                                            <SelectItem value="4">MEI</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <FormMessage />
+                                                </FormItem>
                                             )} />
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <FormField control={form.control} name="segmentoMercado" render={({ field }) => (
-                                                <FormItem><FormLabel>Segmento de Mercado</FormLabel><FormControl><Input placeholder="Ex: Vestuário" {...field} /></FormControl><FormMessage /></FormItem>
+                                                <FormItem>
+                                                    <FormLabel>Segmento de Mercado</FormLabel>
+                                                    <FormControl><Input placeholder="Ex: Vestuário" {...field} /></FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
                                             )} />
                                             <FormField control={form.control} name="diaVencimento" render={({ field }) => (
-                                                <FormItem><FormLabel>Dia de Vencimento Desejado</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="5">Dia 5</SelectItem><SelectItem value="10">Dia 10</SelectItem><SelectItem value="15">Dia 15</SelectItem><SelectItem value="20">Dia 20</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+                                                <FormItem>
+                                                    <FormLabel>Dia de Vencimento Desejado</FormLabel>
+                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                        <FormControl>
+                                                            <SelectTrigger><SelectValue /></SelectTrigger>
+                                                        </FormControl>
+                                                        <SelectContent>
+                                                            <SelectItem value="5">Dia 5</SelectItem>
+                                                            <SelectItem value="10">Dia 10</SelectItem>
+                                                            <SelectItem value="15">Dia 15</SelectItem>
+                                                            <SelectItem value="20">Dia 20</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <FormMessage />
+                                                </FormItem>
                                             )} />
                                         </div>
                                     </div>
@@ -179,15 +241,27 @@ export default function SetupPage() {
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <FormField control={form.control} name="legalRepresentative" render={({ field }) => (
-                                                <FormItem><FormLabel>Representante Legal</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                                                <FormItem>
+                                                    <FormLabel>Representante Legal</FormLabel>
+                                                    <FormControl><Input {...field} /></FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
                                             )} />
                                             <FormField control={form.control} name="phone" render={({ field }) => (
-                                                <FormItem><FormLabel>WhatsApp / Telefone</FormLabel><FormControl><Input placeholder="(00) 00000-0000" {...field} /></FormControl><FormMessage /></FormItem>
+                                                <FormItem>
+                                                    <FormLabel>WhatsApp / Telefone</FormLabel>
+                                                    <FormControl><Input placeholder="(00) 00000-0000" {...field} /></FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
                                             )} />
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <FormField control={form.control} name="emailComercial" render={({ field }) => (
-                                                <FormItem><FormLabel>E-mail Comercial (para cobrança)</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage /></FormItem>
+                                                <FormItem>
+                                                    <FormLabel>E-mail Comercial (para cobrança)</FormLabel>
+                                                    <FormControl><Input type="email" {...field} /></FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
                                             )} />
                                             <FormField control={form.control} name="login" render={({ field }) => (
                                                 <FormItem>
@@ -198,7 +272,7 @@ export default function SetupPage() {
                                                             <Input className="pl-10" placeholder="Este será seu login de acesso" {...field} />
                                                         </div>
                                                     </FormControl>
-                                                    <FormDescription>Mínimo 3 caracteres. Você usará este nome para entrar no sistema.</FormDescription>
+                                                    <FormDescription>Mínimo 6 caracteres. Você usará este nome para entrar no sistema.</FormDescription>
                                                     <FormMessage />
                                                 </FormItem>
                                             )} />
